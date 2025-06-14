@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
 import { InvestmentsPieChart } from "./InvestmentsPieChart";
+import { InvestmentPortfolioSummary } from "./InvestmentPortfolioSummary";
 
 interface Investment {
   id: string;
@@ -145,6 +146,9 @@ export function InvestmentList() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Novo: Resumo Visual da Carteira (Top posições + evolução mensal) */}
+      <InvestmentPortfolioSummary investments={investments} />
 
       {/* Gráfico de Pizza de Distribuição por Tipo */}
       <div className="max-w-3xl mx-auto">
