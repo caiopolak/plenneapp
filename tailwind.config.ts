@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -39,11 +40,7 @@ export default {
         },
         background: "#FFFFFF",
         foreground: "#1C1C1C",
-          border: {
-            DEFAULT: "#e5e7eb",
-            border: "#e5e7eb", // Cor cinza-clara padrão Tailwind
-          },
-        },
+      },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
         inter: ["Inter", "sans-serif"],

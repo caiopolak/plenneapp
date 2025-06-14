@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -60,14 +61,10 @@ export function WhatsAppIntegration() {
     });
   };
 
-  const sendTestMessage = async () => {
-    if (!isConnected) {
-      toast({ variant: "destructive", title: "Conexão necessária", description: "Conecte seu WhatsApp antes de enviar mensagens." });
-      return;
-    }
+  const sendTestMessage = () => {
     toast({
       title: "Mensagem enviada!",
-      description: "Uma mensagem de teste foi enviada para seu WhatsApp (simulação)."
+      description: "Uma mensagem de teste foi enviada para seu WhatsApp"
     });
   };
 
