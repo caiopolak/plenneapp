@@ -17,6 +17,8 @@ import { SubscriptionPlans } from '@/components/subscription/SubscriptionPlans';
 import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration";
 import Education from './Education';
 import { DashboardQuickActions } from "@/components/dashboard/DashboardQuickActions";
+import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 
 export default function FinancieApp() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -25,7 +27,7 @@ export default function FinancieApp() {
 
   return (
     <ProtectedRoute>
-      <SidebarProvider>
+      <WorkspaceProvider>
         <div className="flex min-h-screen w-full bg-gradient-to-br from-background to-neutral-light relative">
           <AppSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
           <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
@@ -127,7 +129,7 @@ export default function FinancieApp() {
         {/* Fundo decorativo suave - usando o seu gradiente oficial */}
         <div className="fixed left-[-40px] top-[-90px] w-[360px] h-[360px] bg-gradient-to-tr from-primary/10 via-secondary/20 to-attention/10 rounded-full blur-3xl z-0 pointer-events-none" />
         <div className="fixed bottom-[-90px] right-[-80px] w-[420px] h-[420px] bg-gradient-to-bl from-secondary/10 via-primary/10 to-attention/10 rounded-full blur-3xl z-0 pointer-events-none" />
-      </SidebarProvider>
+      </WorkspaceProvider>
     </ProtectedRoute>
   );
 }
