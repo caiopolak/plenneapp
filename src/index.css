@@ -29,7 +29,7 @@
     background-repeat: no-repeat;
     background-size: cover;
   }
-  h1, h2, h3, h4, .font-display {
+  h1, h2, h3, h4 {
     @apply font-display tracking-tight;
   }
   .vibrant-text {
