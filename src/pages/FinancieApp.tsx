@@ -13,7 +13,7 @@ import { FinancialCharts } from "@/components/analytics/FinancialCharts";
 import { TransactionList } from '@/components/transactions/TransactionList';
 import { GoalList } from '@/components/goals/GoalList';
 import { InvestmentList } from '@/components/investments/InvestmentList';
-import { SubscriptionPlans } from "@/components/subscription/SubscriptionPlans";
+import { SubscriptionPlans } from '@/components/subscription/SubscriptionPlans";
 import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration";
 import Education from './Education';
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
