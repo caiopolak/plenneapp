@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +19,7 @@ import Education from './Education';
 import { LogoPlenne } from '../components/layout/LogoPlenne';
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration"; // <-- FIX: Proper import
+import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration";
 import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
 import { AnalyticsOverview } from "@/components/dashboard/AnalyticsOverview";
 import { DashboardQuickActions } from "@/components/dashboard/DashboardQuickActions";
@@ -33,16 +34,16 @@ export default function FinancieApp() {
       <SidebarProvider>
         <div className="flex min-h-screen w-full bg-gradient-to-b from-[#F8FAFC] via-[#E7FAF4] to-white">
           <AppSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-          <main className="flex-1 min-h-screen flex flex-col">
+          <main className="flex-1 flex flex-col min-h-screen">
             {/* Modern Header */}
-            <header className="flex justify-between items-center px-8 py-6 border-b bg-white/80 shadow-sm rounded-t-lg">
-              <div className="flex items-center gap-4">
+            <header className="flex flex-col sm:flex-row justify-between items-center px-2 sm:px-6 py-3 sm:py-4 md:px-8 md:py-6 border-b bg-white/90 shadow-sm rounded-t-lg gap-3 sm:gap-0 z-30">
+              <div className="flex items-center gap-3 sm:gap-5">
                 <LogoPlenne />
-                <span className="ml-2 text-lg font-semibold text-[#017F66] hidden sm:inline">Sua vida financeira, plena.</span>
+                <span className="ml-1 sm:ml-2 text-base sm:text-lg font-semibold text-[#017F66] hidden xs:inline">Sua vida financeira, plena.</span>
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3 sm:gap-6 mt-2 sm:mt-0">
                 <div className="text-right">
-                  <p className="text-base font-semibold text-[--primary]">{profile?.full_name || "Usuário"}</p>
+                  <p className="text-sm sm:text-base font-semibold text-[--primary]">{profile?.full_name || "Usuário"}</p>
                   <p className="text-xs text-gray-400 font-inter">{profile?.email}</p>
                 </div>
                 <Button
@@ -58,24 +59,27 @@ export default function FinancieApp() {
             </header>
 
             {/* Dashboard Section */}
-            <section className="flex-1 p-6 sm:p-8 overflow-y-auto bg-gradient-to-br from-green-50/25 via-blue-50/25 to-white">
+            <section className="flex-1 w-full px-1 xs:px-2 sm:px-4 md:px-8 pt-1 sm:pt-6 pb-3 sm:pb-8 overflow-y-auto bg-gradient-to-br from-green-50/25 via-blue-50/25 to-white">
+              <div className="max-w-[1160px] mx-auto w-full">
               {activeTab === "dashboard" && (
-                <div className="space-y-8 mb-12 animate-fade-in">
+                <div className="space-y-6 sm:space-y-8 mb-10 animate-fade-in">
                   {/* Novo card de boas-vindas */}
-                  <WelcomeCard 
-                    name={profile?.full_name?.split(" ")[0] || "Usuário"}
-                    plan={subscription?.plan}
-                    onViewReports={() => setActiveTab("analytics")}
-                  />
+                  <div className="mb-2 sm:mb-3">
+                    <WelcomeCard 
+                      name={profile?.full_name?.split(" ")[0] || "Usuário"}
+                      plan={subscription?.plan}
+                      onViewReports={() => setActiveTab("analytics")}
+                    />
+                  </div>
                   
                   {/* Overview Dinâmico */}
                   <AnalyticsOverview />
 
                   {/* Alinhamento visual com Analytics e Ações */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-7 mt-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-7 sm:mt-10">
                     <Card className="col-span-2 bg-[#f5f8ff] border-[--electric]/20 shadow-lg animate-fade-in">
                       <CardHeader>
-                        <CardTitle>Análises Visuais</CardTitle>
+                        <CardTitle className="text-base sm:text-lg">Análises Visuais</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <FinancialCharts />
@@ -83,7 +87,7 @@ export default function FinancieApp() {
                     </Card>
                     <Card className="bg-gradient-to-br from-[--gold]/10 to-[--emerald]/10 border-none shadow-xl animate-fade-in">
                       <CardHeader>
-                        <CardTitle>Ações rápidas</CardTitle>
+                        <CardTitle className="text-base sm:text-lg">Ações rápidas</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <DashboardQuickActions />
@@ -100,10 +104,11 @@ export default function FinancieApp() {
               {activeTab === "education" && <Education />}
               {activeTab === "whatsapp" && <WhatsAppIntegration />}
               {activeTab === "subscription" && <SubscriptionPlans />}
+              </div>
             </section>
 
-            <footer className="bg-[--primary] text-white py-8 mt-10 text-center">
-              <span className="text-sm text-white/80">
+            <footer className="bg-[--primary] text-white py-6 sm:py-8 mt-8 text-center">
+              <span className="text-xs sm:text-sm text-white/80">
                 © 2025 Plenne. Educação, atitude e inteligência financeira sem complicação.
               </span>
             </footer>
@@ -113,3 +118,4 @@ export default function FinancieApp() {
     </ProtectedRoute>
   );
 }
+
