@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
+import { InvestmentsPieChart } from "./InvestmentsPieChart";
 
 interface Investment {
   id: string;
@@ -144,6 +144,11 @@ export function InvestmentList() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Gráfico de Pizza de Distribuição por Tipo */}
+      <div className="max-w-3xl mx-auto">
+        <InvestmentsPieChart investments={investments} />
       </div>
 
       <div className="flex justify-between items-center">
