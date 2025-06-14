@@ -1,237 +1,194 @@
 
 import React, { useState } from 'react';
-import { Header } from '@/components/layout/Header';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { FinancialSummary } from '@/components/dashboard/FinancialSummary';
 import { TransactionList } from '@/components/transactions/TransactionList';
 import { GoalList } from '@/components/goals/GoalList';
 import { InvestmentList } from '@/components/investments/InvestmentList';
 import { FinancialCharts } from '@/components/analytics/FinancialCharts';
 import { SubscriptionPlans } from '@/components/subscription/SubscriptionPlans';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { 
+  BarChart3, 
+  Target, 
+  TrendingUp, 
+  CreditCard, 
+  Crown, 
+  LogOut,
+  BookOpen,
+  Bell,
+  Sparkles,
+  DollarSign,
+  Home
+} from 'lucide-react';
+import Education from './Education';
 
-export function FinancieApp() {
-  const [currentSection, setCurrentSection] = useState('dashboard');
-  const { profile, subscription, loading } = useProfile();
+export default function FinancieApp() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const { signOut } = useAuth();
+  const { profile, subscription } = useProfile();
 
-  if (loading) {
+  const getPlanBadge = () => {
+    if (!subscription) return null;
+    
+    const planColors = {
+      free: 'bg-gray-500',
+      pro: 'bg-[#f8961e]',
+      business: 'bg-[#2f9e44]'
+    };
+
+    const planLabels = {
+      free: 'Free',
+      pro: 'Pro',
+      business: 'Business'
+    };
+
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
+      <Badge className={`${planColors[subscription.plan]} text-white`}>
+        <Crown className="w-3 h-3 mr-1" />
+        {planLabels[subscription.plan]}
+      </Badge>
     );
-  }
-
-  const renderContent = () => {
-    switch (currentSection) {
-      case 'dashboard':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-600 mt-2">Visão geral das suas finanças</p>
-            </div>
-            <FinancialSummary />
-          </div>
-        );
-        
-      case 'transactions':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Transações</h1>
-              <p className="text-gray-600 mt-2">Gerencie suas receitas e despesas</p>
-            </div>
-            <TransactionList />
-          </div>
-        );
-        
-      case 'goals':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Metas Financeiras</h1>
-              <p className="text-gray-600 mt-2">Acompanhe o progresso dos seus objetivos</p>
-            </div>
-            <GoalList />
-          </div>
-        );
-        
-      case 'investments':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Investimentos</h1>
-              <p className="text-gray-600 mt-2">Gerencie sua carteira de investimentos</p>
-            </div>
-            <InvestmentList />
-          </div>
-        );
-        
-      case 'reports':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Relatórios e Análises</h1>
-              <p className="text-gray-600 mt-2">Visualize gráficos e tendências financeiras</p>
-            </div>
-            <FinancialCharts />
-          </div>
-        );
-        
-      case 'subscription':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight">Planos de Assinatura</h2>
-              <p className="text-muted-foreground">
-                Escolha o plano que melhor se adapta às suas necessidades
-              </p>
-            </div>
-            <SubscriptionPlans />
-          </div>
-        );
-        
-      case 'profile':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Perfil do Usuário</h1>
-              <p className="text-gray-600 mt-2">Gerencie suas informações pessoais</p>
-            </div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Informações Pessoais</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <strong>Nome:</strong> {profile?.full_name || 'Não informado'}
-                  </div>
-                  <div>
-                    <strong>Email:</strong> {profile?.email}
-                  </div>
-                  <div>
-                    <strong>Telefone:</strong> {profile?.phone || 'Não informado'}
-                  </div>
-                  <div>
-                    <strong>Moeda:</strong> {profile?.currency || 'BRL'}
-                  </div>
-                  <div>
-                    <strong>Plano Atual:</strong> {subscription?.plan || 'free'}
-                  </div>
-                  <div>
-                    <strong>Perfil de Risco:</strong> {profile?.risk_profile || 'moderate'}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Configurações de Notificação</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span>Notificações por Email</span>
-                    <span className="text-green-600">Ativado</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Notificações Push</span>
-                    <span className="text-green-600">Ativado</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        );
-        
-      case 'settings':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Configurações</h1>
-              <p className="text-gray-600 mt-2">Personalize sua experiência no FinanciePRO</p>
-            </div>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Preferências</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-medium">Tema</h3>
-                  <p className="text-sm text-muted-foreground">Claro (padrão)</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="font-medium">Moeda</h3>
-                  <p className="text-sm text-muted-foreground">Real Brasileiro (R$)</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="font-medium">Perfil de Risco</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {profile?.risk_profile === 'conservative' && 'Conservador'}
-                    {profile?.risk_profile === 'moderate' && 'Moderado'}
-                    {profile?.risk_profile === 'aggressive' && 'Arrojado'}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Dicas Financeiras</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-medium text-blue-800 mb-2">💡 Dica de Hoje</h4>
-                  <p className="text-sm text-blue-600">
-                    Você sabia? Guardar 10% da sua renda por mês pode mudar sua vida em 1 ano.
-                  </p>
-                </div>
-                
-                <div className="p-4 bg-green-50 rounded-lg">
-                  <h4 className="font-medium text-green-800 mb-2">🎯 Desafio da Semana</h4>
-                  <p className="text-sm text-green-600">
-                    Passe 7 dias sem gastar com delivery. Consegue? Registre suas economias!
-                  </p>
-                </div>
-                
-                <div className="p-4 bg-orange-50 rounded-lg">
-                  <h4 className="font-medium text-orange-800 mb-2">⚠️ Alerta Inteligente</h4>
-                  <p className="text-sm text-orange-600">
-                    Use o orçamento mensal para evitar surpresas no final do mês.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        );
-        
-      default:
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>{currentSection}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Esta seção está em desenvolvimento. Em breve teremos todas as funcionalidades implementadas!</p>
-            </CardContent>
-          </Card>
-        );
-    }
   };
 
+  const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: Home },
+    { id: 'transactions', label: 'Transações', icon: CreditCard },
+    { id: 'goals', label: 'Metas', icon: Target },
+    { id: 'investments', label: 'Investimentos', icon: TrendingUp },
+    { id: 'analytics', label: 'Análises', icon: BarChart3 },
+    { id: 'education', label: 'Educação', icon: BookOpen },
+    { id: 'subscription', label: 'Planos', icon: Crown },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header onNavigate={setCurrentSection} currentSection={currentSection} />
-      <main className="container mx-auto px-4 py-8">
-        {renderContent()}
-      </main>
-    </div>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gradient-to-br from-[#f4f4f4] to-white">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b border-[#003f5c]/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#003f5c] to-[#2f9e44] rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-[#003f5c]">FinanciePRO</h1>
+                  <p className="text-xs text-[#2b2b2b]/60">Você no controle do seu dinheiro</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                {getPlanBadge()}
+                <div className="text-right">
+                  <p className="text-sm font-medium text-[#003f5c]">
+                    {profile?.full_name || 'Usuário'}
+                  </p>
+                  <p className="text-xs text-[#2b2b2b]/60">{profile?.email}</p>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={signOut}
+                  className="text-[#2b2b2b] hover:text-[#d62828] hover:bg-[#d62828]/10"
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Navigation */}
+        <nav className="bg-[#003f5c] shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex space-x-8 overflow-x-auto py-4">
+              {menuItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                      activeTab === item.id
+                        ? 'bg-[#2f9e44] text-white shadow-md'
+                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {item.label}
+                    {item.id === 'education' && (
+                      <Sparkles className="w-3 h-3 text-[#f8961e]" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </nav>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {activeTab === 'dashboard' && <FinancialSummary />}
+          {activeTab === 'transactions' && <TransactionList />}
+          {activeTab === 'goals' && <GoalList />}
+          {activeTab === 'investments' && <InvestmentList />}
+          {activeTab === 'analytics' && <FinancialCharts />}
+          {activeTab === 'education' && <Education />}
+          {activeTab === 'subscription' && <SubscriptionPlans />}
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-[#003f5c] text-white py-8 mt-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 bg-gradient-to-r from-[#2f9e44] to-[#f8961e] rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold">FinanciePRO</h3>
+                </div>
+                <p className="text-white/80 text-sm">
+                  Sua plataforma completa de gestão financeira e educação para uma vida próspera.
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold mb-3">Recursos</h4>
+                <ul className="space-y-2 text-sm text-white/80">
+                  <li>• Controle de Transações</li>
+                  <li>• Metas Financeiras</li>
+                  <li>• Gestão de Investimentos</li>
+                  <li>• Educação Financeira</li>
+                  <li>• Assistente WhatsApp</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold mb-3">Bordões</h4>
+                <ul className="space-y-2 text-sm text-white/80">
+                  <li>"Organize. Economize. Evolua."</li>
+                  <li>"Você no controle do seu dinheiro"</li>
+                  <li>"A vida financeira que você merece"</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="border-t border-white/20 mt-8 pt-6 text-center">
+              <p className="text-white/60 text-sm">
+                © 2025 FinanciePRO. Todos os direitos reservados. 
+                <span className="text-[#2f9e44] font-medium"> Educação financeira prática, no seu ritmo.</span>
+              </p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </ProtectedRoute>
   );
 }
