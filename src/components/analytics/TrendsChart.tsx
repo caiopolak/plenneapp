@@ -119,8 +119,8 @@ const options: ChartOptions<"line"> = {
     },
     y: {
       grid: {
-        borderDash: [2, 3],
         color: "#e5e7eb",
+        borderDash: [2, 3], // Moved borderDash into the correct grid object
       },
       ticks: {
         color: "#64748b",
