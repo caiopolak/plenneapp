@@ -1,10 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { TrendsChartCard } from './TrendsChartCard';
+import { IncomeByCategoryChart } from './IncomeByCategoryChart';
+import { ExpenseByCategoryChart } from './ExpenseByCategoryChart';
+import { CategoryComparisonChart } from './CategoryComparisonChart';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { TrendsChart } from './TrendsChart';
 
 interface ChartData {
   name: string;
@@ -33,7 +35,6 @@ export function FinancialCharts() {
     if (!user) return;
 
     try {
-      // Calculate date range based on selected period
       const endDate = new Date();
       const startDate = new Date();
       
@@ -52,7 +53,6 @@ export function FinancialCharts() {
           break;
       }
 
-      // Fetch transactions for the period
       const { data: transactions, error } = await supabase
         .from('transactions')
         .select('type, amount, category, date')
@@ -62,7 +62,6 @@ export function FinancialCharts() {
 
       if (error) throw error;
 
-      // Process income by category
       const incomeCategories: { [key: string]: number } = {};
       const expenseCategories: { [key: string]: number } = {};
       
@@ -74,7 +73,6 @@ export function FinancialCharts() {
         }
       });
 
-      // Convert to chart data
       const incomeChartData = Object.entries(incomeCategories).map(([category, amount], index) => ({
         name: category,
         value: amount,
@@ -87,7 +85,6 @@ export function FinancialCharts() {
         color: COLORS[index % COLORS.length]
       }));
 
-      // Process monthly trend
       const monthlyData: { [key: string]: { income: number; expense: number } } = {};
       
       transactions?.forEach(transaction => {
@@ -124,6 +121,7 @@ export function FinancialCharts() {
 
   useEffect(() => {
     fetchChartData();
+    // eslint-disable-next-line
   }, [user, selectedPeriod]);
 
   if (loading) {
@@ -149,99 +147,14 @@ export function FinancialCharts() {
         </div>
       </div>
 
-      <Card className="p-4 rounded-xl shadow-lg border-0 bg-gradient-to-br from-[#f8fafc] to-white/70">
-        <CardHeader>
-          <CardTitle className="text-[--primary] font-bold flex gap-3 items-center">📈 Tendência Receitas x Despesas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TrendsChart data={monthlyTrend} />
-        </CardContent>
-      </Card>
+      <TrendsChartCard data={monthlyTrend} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-        <Card className="shadow rounded-xl border-0 bg-gradient-to-br from-green-50 to-white/80">
-          <CardHeader>
-            <CardTitle className="flex gap-2 items-center text-green-700">🍀 Receitas por Categoria</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {incomeByCategory.length > 0 ? (
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie
-                    data={incomeByCategory}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={90}
-                    fill="#2f9e44"
-                    dataKey="value"
-                  >
-                    {incomeByCategory.map((entry, idx) => (
-                      <Cell key={`cell-income-${idx}`} fill={COLORS[idx % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[220px] flex items-center justify-center text-muted-foreground">
-                Nenhuma receita no período selecionado
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="shadow rounded-xl border-0 bg-gradient-to-br from-red-50 to-white/80">
-          <CardHeader>
-            <CardTitle className="flex gap-2 items-center text-red-700">💸 Despesas por Categoria</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {expenseByCategory.length > 0 ? (
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie
-                    data={expenseByCategory}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={90}
-                    fill="#d62828"
-                    dataKey="value"
-                  >
-                    {expenseByCategory.map((entry, idx) => (
-                      <Cell key={`cell-expense-${idx}`} fill={COLORS[idx % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[220px] flex items-center justify-center text-muted-foreground">
-                Nenhuma despesa no período selecionado
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <IncomeByCategoryChart data={incomeByCategory} />
+        <ExpenseByCategoryChart data={expenseByCategory} />
       </div>
 
-      <Card className="shadow rounded-xl border-0 bg-gradient-to-r from-yellow-50 via-blue-50 to-green-50">
-        <CardHeader>
-          <CardTitle className="flex gap-2 items-center text-blue-900">📊 Comparativo Geral por Categoria</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={[...incomeByCategory, ...expenseByCategory]}>
-              <CartesianGrid strokeDasharray="2 2" />
-              <XAxis dataKey="name" />
-              <YAxis tickFormatter={(v) => `R$ ${v.toLocaleString()}`} />
-              <Tooltip formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`} />
-              <Bar dataKey="value" fill="#003f5c" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      <CategoryComparisonChart data={[...incomeByCategory, ...expenseByCategory]} />
     </div>
   );
 }
