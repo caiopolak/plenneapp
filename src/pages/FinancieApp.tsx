@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -20,11 +19,21 @@ import Education from './Education';
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { QuickNotifications } from "@/components/dashboard/QuickNotifications";
+import { FinancialTipsCard } from "@/components/dashboard/FinancialTipsCard";
+import { FinancialAlertsList } from "@/components/dashboard/FinancialAlertsList";
+import { BudgetList } from "@/components/budget/BudgetList";
 
 export default function FinancieApp() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { signOut } = useAuth();
   const { profile, subscription } = useProfile();
+
+  // Abre modal de nova transação
+  const handleAddTransaction = () => {
+    setActiveTab("transactions");
+    // Ideal: abrir modal, aqui apenas navega para tab para exemplo compatível
+  };
 
   return (
     <ProtectedRoute>
@@ -50,12 +59,13 @@ export default function FinancieApp() {
                   <LogOut className="w-5 h-5" />
                 </Button>
               </div>
-              {/* Header desktop */}
+              {/* Header desktop e notificações rápidas */}
               <header className="hidden sm:flex flex-row justify-between items-center px-6 md:px-12 py-5 border-b border-primary/15 bg-surface/90 shadow-card gap-4 sticky top-0 z-30 backdrop-blur-lg">
                 <div className="flex items-center gap-4">
                   <LogoPlenne />
                   <span className="slogan hidden xs:inline">Você no controle do seu dinheiro, de verdade.</span>
                 </div>
+                <QuickNotifications onAddTransaction={handleAddTransaction} />
                 <div className="flex items-center gap-6">
                   <div className="text-right">
                     <p className="text-base font-bold text-primary font-display">
@@ -78,20 +88,56 @@ export default function FinancieApp() {
               {/* Main Content */}
               <section className="flex-1 w-full px-2 sm:px-4 md:px-10 pt-6 pb-10 bg-gradient-to-br from-background/80 to-neutral-light/70 min-h-[calc(100vh-56px)] sm:min-h-[calc(100vh-80px)] transition-padding">
                 <div className="max-w-[1320px] mx-auto w-full">
-                  {/* Nova Home com cards de overview e abas */}
-                  <div className="space-y-8 animate-fade-in">
-                    <div className="mb-3">
-                      <WelcomeCard 
-                        name={profile?.full_name?.split(" ")[0] || "Usuário"}
-                        plan={subscription?.plan}
-                        onViewReports={() => setActiveTab("analytics")}
-                      />
+                  {/* Nova Home: cards de overview e abas (dashboard no print) */}
+                  {activeTab === "dashboard" && (
+                    <div className="space-y-6 animate-fade-in">
+                      {/* Linha de saldo/receita/despesa */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          {/* Card Saldo Atual */}
+                          <div className="bg-white rounded-xl p-6 shadow hover:scale-105 transition-transform border border-green-50">
+                            <div className="font-bold text-xl text-primary mb-1">Saldo Atual</div>
+                            <div className="text-3xl font-bold text-green-700">R$ 5.247,89</div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="bg-white rounded-xl p-6 shadow hover:scale-105 transition-transform border border-green-50">
+                            <div className="font-bold text-xl text-green-800 mb-1">Receitas</div>
+                            <div className="text-3xl font-bold text-green-700">R$ 8.500,00</div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="bg-white rounded-xl p-6 shadow hover:scale-105 transition-transform border border-red-50">
+                            <div className="font-bold text-xl text-red-700 mb-1">Despesas</div>
+                            <div className="text-3xl font-bold text-red-600">R$ 3.252,11</div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Linha de gráficos */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div className="col-span-1 xl:col-span-2 bg-white rounded-xl p-6 shadow border">
+                          {/* Espaço para chart de Receita x Despesa */}
+                          <div className="text-lg font-bold mb-2 text-graphite">Receitas vs Despesas</div>
+                          {/* Aqui troque por gráfico real (exemplo placeholder) */}
+                          <div className="h-56 flex items-center justify-center text-muted-foreground bg-gray-50 rounded">[ Gráfico de barras aqui ]</div>
+                        </div>
+                        <div className="bg-white rounded-xl p-6 shadow border flex flex-col">
+                          <div className="text-lg font-bold mb-2 text-graphite">Distribuição de Gastos</div>
+                          <div className="h-56 flex items-center justify-center text-muted-foreground bg-gray-50 rounded">[ Gráfico pizza aqui ]</div>
+                        </div>
+                      </div>
+                      {/* Finanças card dicas/alertas */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FinancialTipsCard />
+                        <FinancialAlertsList />
+                      </div>
+                      {/* Orçamentos Mensais */}
+                      <div>
+                        <BudgetList />
+                      </div>
                     </div>
-                    <AnalyticsOverview />
-                    <div className="mt-8">
-                      <DashboardTabs />
-                    </div>
-                  </div>
+                  )}
+
                   {/* As demais abas como Analytics/Education etc permanecem */}
                   {activeTab === "analytics" && (
                     <div className="animate-fade-in">
@@ -108,6 +154,20 @@ export default function FinancieApp() {
                   {activeTab === "whatsapp" && (
                     <div className="animate-fade-in">
                       <h1 className="font-display text-4xl text-secondary mb-8">Assistente WhatsApp</h1>
+                      {/* Exemplo de integração/CTA */}
+                      <Card className="mb-8">
+                        <CardHeader>
+                          <CardTitle>Ative o Assistente Financeiro via WhatsApp</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="mb-2">Comunique-se com o Plenne pelo WhatsApp para <strong>cadastrar transações, consultar saldo, definir metas e tirar dúvidas financeiras via IA</strong>! Exclusivo para assinantes <span className="font-bold text-green-600">Business</span>.</div>
+                          <Button asChild>
+                            <a href="https://wa.me/5599999999999?text=Olá,+quero+ativar+meu+Assistente+Plenne!" target="_blank" rel="noopener noreferrer">
+                              Ativar WhatsApp Financeiro
+                            </a>
+                          </Button>
+                        </CardContent>
+                      </Card>
                       <WhatsAppIntegration />
                     </div>
                   )}
