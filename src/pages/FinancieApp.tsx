@@ -31,23 +31,23 @@ export default function FinancieApp() {
           <AppSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
           <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
             {/* Header */}
-            <header className="flex flex-col sm:flex-row justify-between items-center px-4 md:px-8 py-4 border-b border-border/80 z-30 bg-surface/80 backdrop-blur-lg shadow-neon gap-4 sticky top-0">
+            <header className="flex flex-col sm:flex-row justify-between items-center px-6 md:px-12 py-5 border-b border-primary/15 bg-surface/95 shadow-card gap-4 sticky top-0 z-30 backdrop-blur-lg">
               <div className="flex items-center gap-4">
-                <LogoPlenne showSymbol={false} />
-                <h1 className="text-xl md:text-2xl font-display vibrant-text tracking-wide hidden xs:inline drop-shadow-md">Sua vida financeira, plena e vibrante.</h1>
+                <LogoPlenne />
+                <span className="slogan hidden xs:inline">Você no controle do seu dinheiro, de verdade.</span>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <p className="text-base font-semibold text-white">
+                  <p className="text-base font-bold text-primary font-display">
                     {profile?.full_name || "Usuário"}
                   </p>
-                  <p className="text-xs text-white/70 font-text">{profile?.email}</p>
+                  <p className="text-xs text-graphite/60 font-text">{profile?.email}</p>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={signOut}
-                  className="text-white/80 hover:text-primary hover:bg-primary/15 rounded-full"
+                  className="text-primary hover:text-secondary hover:bg-secondary/10 rounded-full"
                   aria-label="Sair"
                 >
                   <LogOut className="w-5 h-5" />
@@ -56,23 +56,23 @@ export default function FinancieApp() {
             </header>
 
             {/* Main Content */}
-            <section className="flex-1 w-full px-4 md:px-8 pt-6 pb-8 overflow-y-auto">
-              <div className="max-w-[1400px] mx-auto w-full">
+            <section className="flex-1 w-full px-4 md:px-10 pt-8 pb-10 bg-background">
+              <div className="max-w-[1320px] mx-auto w-full">
                 {activeTab === "dashboard" && (
-                  <div className="space-y-8 animate-fade-in">
+                  <div className="space-y-10 animate-fade-in">
                     <WelcomeCard 
                       name={profile?.full_name?.split(" ")[0] || "Usuário"}
                       plan={subscription?.plan}
                       onViewReports={() => setActiveTab("analytics")}
                     />
                     <AnalyticsOverview />
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-8">
-                      <div className="xl:col-span-2 shadow-vibrant rounded-2xl border-none relative overflow-hidden bg-surface/80 backdrop-blur-lg p-6">
-                         <h2 className="text-2xl font-display vibrant-text mb-4">Análise de Performance</h2>
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-10">
+                      <div className="xl:col-span-2 shadow-card rounded-2xl bg-surface p-7">
+                         <h2 className="text-2xl font-display font-bold brand-gradient-text mb-4">Análise de Performance</h2>
                          <FinancialCharts />
                       </div>
-                      <div className="shadow-vibrant rounded-2xl border-none bg-surface/80 backdrop-blur-lg p-6">
-                        <h2 className="text-2xl font-display text-white/90 mb-4">Ações Rápidas</h2>
+                      <div className="shadow-accent rounded-2xl bg-surface p-7">
+                        <h2 className="text-2xl font-display text-secondary mb-4">Ações Rápidas</h2>
                         <DashboardQuickActions />
                       </div>
                     </div>
@@ -81,13 +81,13 @@ export default function FinancieApp() {
 
                 {activeTab === "transactions" && (
                   <div className="animate-fade-in">
-                    <h1 className="font-display text-4xl vibrant-text mb-8">Transações</h1>
+                    <h1 className="font-display text-4xl text-primary mb-8">Transações</h1>
                     <TransactionList />
                   </div>
                 )}
                 {activeTab === "goals" && (
                   <div className="animate-fade-in">
-                    <h1 className="font-display text-4xl text-accent mb-8">Metas</h1>
+                    <h1 className="font-display text-4xl text-attention mb-8">Metas</h1>
                     <GoalList />
                   </div>
                 )}
@@ -99,25 +99,25 @@ export default function FinancieApp() {
                 )}
                 {activeTab === "analytics" && (
                   <div className="animate-fade-in">
-                    <h1 className="font-display text-4xl vibrant-text mb-8">Análises Detalhadas</h1>
+                    <h1 className="font-display text-4xl brand-gradient-text mb-8">Análises Detalhadas</h1>
                     <FinancialCharts />
                   </div>
                 )}
                 {activeTab === "education" && (
                   <div className="animate-fade-in">
-                    <h1 className="font-display text-4xl vibrant-text mb-8">Educação Financeira</h1>
+                    <h1 className="font-display text-4xl text-secondary mb-8">Educação Financeira</h1>
                     <Education />
                   </div>
                 )}
                 {activeTab === "whatsapp" && (
                   <div className="animate-fade-in">
-                    <h1 className="font-display text-4xl text-success mb-8">Assistente WhatsApp</h1>
+                    <h1 className="font-display text-4xl text-secondary mb-8">Assistente WhatsApp</h1>
                     <WhatsAppIntegration />
                   </div>
                 )}
                 {activeTab === "subscription" && (
                   <div className="animate-fade-in">
-                    <h1 className="font-display text-4xl text-purple-400 mb-8">Sua Assinatura</h1>
+                    <h1 className="font-display text-4xl text-attention mb-8">Sua Assinatura</h1>
                     <SubscriptionPlans />
                   </div>
                 )}
@@ -126,10 +126,11 @@ export default function FinancieApp() {
             
           </main>
         </div>
-        {/* Elementos de fundo dinâmico */}
-        <div className="fixed left-[-50px] top-[-100px] w-[300px] h-[300px] bg-primary/10 rounded-full blur-3xl z-0 animate-blob pointer-events-none" />
-        <div className="fixed bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-secondary/10 rounded-full blur-3xl z-0 animate-blob pointer-events-none animation-delay-3000" />
+        {/* Fundo decorativo suave */}
+        <div className="fixed left-[-40px] top-[-90px] w-[360px] h-[360px] bg-primary/10 rounded-full blur-3xl z-0 pointer-events-none" />
+        <div className="fixed bottom-[-90px] right-[-80px] w-[420px] h-[420px] bg-secondary/10 rounded-full blur-3xl z-0 pointer-events-none" />
       </SidebarProvider>
     </ProtectedRoute>
   );
 }
+

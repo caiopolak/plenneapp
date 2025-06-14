@@ -2,19 +2,28 @@
 import React from "react";
 
 /**
- * Logo tipográfico Plenne + símbolo (círculo pleno com folha/crescimento).
- * Repaginado para a identidade "Plenne Neon".
+ * Plenne Logo: Círculo azul petróleo com folha (crescimento), fonte moderna.
  */
-export function LogoPlenne({ showSymbol = true, className = "" }: { showSymbol?: boolean; className?: string }) {
+export function LogoPlenne({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {showSymbol && (
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="16" cy="16" r="15" fill="var(--primary)" stroke="var(--accent)" strokeWidth="2"/>
-          <path d="M16.1105 22.0439C18.6605 20.0439 21.2105 17.5439 21.2105 13.5439C21.2105 9.54392 18.0105 7.04392 16.1105 7.04392C14.2105 7.04392 11.0105 9.54392 11.0105 13.5439C11.0105 17.5439 13.5605 20.0439 16.1105 22.0439Z" fill="var(--accent)"/>
-        </svg>
-      )}
-      <span className="font-display font-bold text-2xl tracking-tight text-white">Plenne</span>
+    <div className={`flex items-center gap-3 ${className}`}>
+      <svg
+        width="38"
+        height="38"
+        viewBox="0 0 38 38"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden
+      >
+        <circle cx="19" cy="19" r="18" fill="#003f5c" stroke="#2f9e44" strokeWidth="2"/>
+        {/* folha/crescimento */}
+        <path d="M19 11c2.5 1.5 7 7 0 16" stroke="#2f9e44" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+        <ellipse cx="19" cy="11" rx="2.3" ry="2.1" fill="#2f9e44" />
+      </svg>
+      <span className="font-display font-extrabold text-2xl brand-gradient-text tracking-tight select-none">
+        Plenne
+      </span>
     </div>
   );
 }
+

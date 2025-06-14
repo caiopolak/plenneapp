@@ -20,59 +20,45 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "var(--primary)",
-          foreground: "var(--foreground)",
+          DEFAULT: "#003f5c",
+          foreground: "#f4f4f4",
         },
         secondary: {
-          DEFAULT: "var(--secondary)",
-          foreground: "var(--foreground)",
+          DEFAULT: "#2f9e44",
+          foreground: "#f4f4f4",
         },
-        accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--surface)",
+        neutral: {
+          light: "#f4f4f4",
+          dark: "#2b2b2b",
         },
-        success: "var(--success)",
-        danger: "var(--danger)",
-        background: "var(--background)",
-        surface: "var(--surface)",
-        border: "var(--border)",
-        foreground: "var(--foreground)",
+        graphite: "#2b2b2b",
+        attention: "#f8961e",
+        error: "#d62828",
+        accent: "#f8961e",
+        background: "#f4f4f4",
+        surface: "#ffffff",
       },
       fontFamily: {
-        display: ["'Space Grotesk'", "sans-serif"],
-        text: ["'Inter'", "sans-serif"],
+        display: ["Poppins", "sans-serif"],
+        text: ["Inter", "sans-serif"],
+        highlight: ["Montserrat", "IBM Plex Sans", "sans-serif"],
       },
       borderRadius: {
-        xl: "calc(var(--radius) + 4px)",
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 4px)",
-        sm: "calc(var(--radius) - 8px)",
+        xl: "1.2rem",
+        lg: "1rem",
+        md: "0.75rem",
+        sm: "0.5rem",
       },
       boxShadow: {
-        neon: "0 2px 30px 0 rgba(255,86,169,0.3), 0 1.5px 10px 0 rgba(60,142,255,0.14)",
-        vibrant: "0 2px 22px 0 rgba(170,93,255,0.3), 0 4px 22px 0 rgba(255,214,0,0.09)"
+        card: "0 4px 32px 0 rgba(44, 63, 92, 0.12)",
+        accent: "0 2px 16px 0 rgba(47, 158, 68, 0.08), 0 6px 32px 0 rgba(0,63,92,0.10)",
       },
       backgroundImage: {
-        "vibrant-gradient": "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 45%, var(--accent) 100%)",
-        "vibrant-mobile": "linear-gradient(120deg, var(--primary) 20%, var(--accent) 90%)"
+        "blue-green-gradient": "linear-gradient(120deg, #003f5c 0%, #2f9e44 100%)",
+        "attention-gradient": "linear-gradient(98deg, #f8961e 15%, #003f5c 89%)"
       },
-      animation: {
-        blob: "blob 8s infinite",
-        "fade-in": "fade-in 0.5s ease-out forwards",
-      },
-      keyframes: {
-        blob: {
-          "0%": { transform: "scale(1) translate(0px, 0px)" },
-          "33%": { transform: "scale(1.1) translate(30px, -20px)" },
-          "66%": { transform: "scale(0.95) translate(-24px, 22px)" },
-          "100%": { transform: "scale(1) translate(0px, 0px)" }
-        },
-        "fade-in": {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-      }
     }
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+

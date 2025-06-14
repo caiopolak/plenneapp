@@ -36,17 +36,17 @@ const settingsItems = [
 ]
 
 export function AppSidebar({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (tab: string) => void }) {
-  const { profile, subscription } = useProfile();
-  
+  const { profile } = useProfile();
+
   const renderMenuItems = (items: typeof navItems) => {
     return items.map(item => (
       <SidebarMenuItem key={item.id}>
         <SidebarMenuButton
           isActive={activeTab === item.id}
           onClick={() => setActiveTab(item.id)}
-          className="justify-start"
+          className="justify-start font-display text-base rounded-lg transition-all px-2 py-2 gap-3 hover:bg-primary/15 focus-visible:bg-primary/20"
         >
-          <item.icon className="w-5 h-5" />
+          <item.icon className={`w-6 h-6 ${activeTab === item.id ? "text-primary" : "text-secondary"}`} />
           <span>{item.label}</span>
           {'new' in item && item.new && <Badge variant="secondary" className="ml-auto">Novo</Badge>}
         </SidebarMenuButton>
@@ -55,28 +55,28 @@ export function AppSidebar({ activeTab, setActiveTab }: { activeTab: string, set
   }
 
   return (
-    <Sidebar className="border-r border-border/80 bg-surface/50">
-      <SidebarHeader className="p-4 border-b border-border/80">
+    <Sidebar className="border-r border-primary/20 bg-surface/95 shadow-card min-h-screen">
+      <SidebarHeader className="p-6 border-b border-gray-200 bg-neutral-light">
         <LogoPlenne />
       </SidebarHeader>
-      <SidebarContent className="p-4">
-        <div className="space-y-6">
+      <SidebarContent className="p-5 pt-8">
+        <div className="space-y-7">
           <SidebarGroup>
-            <SidebarGroupLabel>Principal</SidebarGroupLabel>
+            <SidebarGroupLabel className="uppercase font-bold text-xs text-primary tracking-wider">Navegação</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>{renderMenuItems(navItems)}</SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
 
           <SidebarGroup>
-            <SidebarGroupLabel>Ferramentas</SidebarGroupLabel>
+            <SidebarGroupLabel className="uppercase font-bold text-xs text-secondary tracking-wider">Ferramentas</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>{renderMenuItems(toolsItems)}</SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         </div>
       </SidebarContent>
-      <SidebarFooter className="p-4 mt-auto border-t border-border/80">
+      <SidebarFooter className="p-5 mt-auto border-t border-primary/20 bg-neutral-light">
          <SidebarMenu>
             {renderMenuItems(settingsItems)}
          </SidebarMenu>
@@ -84,3 +84,4 @@ export function AppSidebar({ activeTab, setActiveTab }: { activeTab: string, set
     </Sidebar>
   );
 }
+
