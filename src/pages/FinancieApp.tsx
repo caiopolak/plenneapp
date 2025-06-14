@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +19,9 @@ import { LogoPlenne } from '../components/layout/LogoPlenne';
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration"; // <-- FIX: Proper import
+import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
+import { AnalyticsOverview } from "@/components/dashboard/AnalyticsOverview";
+import { DashboardQuickActions } from "@/components/dashboard/DashboardQuickActions";
 
 export default function FinancieApp() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -58,56 +60,20 @@ export default function FinancieApp() {
             {/* Dashboard Section */}
             <section className="flex-1 p-6 sm:p-8 overflow-y-auto bg-gradient-to-br from-green-50/25 via-blue-50/25 to-white">
               {activeTab === "dashboard" && (
-                <div className="space-y-6 mb-10">
-                  {/* Welcome Card */}
-                  <Card className="bg-gradient-to-r from-[--primary]/80 to-[--secondary]/80 text-white mb-4 shadow-lg">
-                    <CardContent className="flex flex-col md:flex-row items-center justify-between gap-4 py-6 px-8">
-                      <div>
-                        <h2 className="text-2xl font-bold">Olá, {profile?.full_name?.split(" ")[0] || "Usuário"}!</h2>
-                        <p className="text-white/80 text-base mt-1">Aqui está o resumo da sua vida financeira.</p>
-                      </div>
-                      <div className="flex gap-3">
-                        <Badge className="bg-[--gold] text-[--graphite] text-base rounded-full uppercase">
-                          {subscription?.plan || "FREE"}
-                        </Badge>
-                        <Button variant="secondary" size="sm" className="shadow">
-                          Ver Relatórios
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                <div className="space-y-8 mb-12 animate-fade-in">
+                  {/* Novo card de boas-vindas */}
+                  <WelcomeCard 
+                    name={profile?.full_name?.split(" ")[0] || "Usuário"}
+                    plan={subscription?.plan}
+                    onViewReports={() => setActiveTab("analytics")}
+                  />
+                  
+                  {/* Overview Dinâmico */}
+                  <AnalyticsOverview />
 
-                  {/* Modern Analytics Overview */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Resumo financeiro</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <FinancialSummary />
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Metas e Desafios</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <GoalList />
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Investimentos</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <InvestmentList />
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  {/* Visual Analytics & Quick Actions */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                    <Card className="col-span-2 bg-[#f5f8ff] border-[--electric]/20">
+                  {/* Alinhamento visual com Analytics e Ações */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-7 mt-8">
+                    <Card className="col-span-2 bg-[#f5f8ff] border-[--electric]/20 shadow-lg animate-fade-in">
                       <CardHeader>
                         <CardTitle>Análises Visuais</CardTitle>
                       </CardHeader>
@@ -115,25 +81,12 @@ export default function FinancieApp() {
                         <FinancialCharts />
                       </CardContent>
                     </Card>
-                    <Card className="bg-gradient-to-br from-[--gold]/10 to-[--emerald]/10 border-none shadow-sm">
+                    <Card className="bg-gradient-to-br from-[--gold]/10 to-[--emerald]/10 border-none shadow-xl animate-fade-in">
                       <CardHeader>
                         <CardTitle>Ações rápidas</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <ul className="space-y-2">
-                          <li>
-                            <Button size="sm" variant="secondary" className="w-full">Nova Transação</Button>
-                          </li>
-                          <li>
-                            <Button size="sm" variant="outline" className="w-full">Nova Meta</Button>
-                          </li>
-                          <li>
-                            <Button size="sm" variant="outline" className="w-full">Novo Investimento</Button>
-                          </li>
-                          <li>
-                            <Button size="sm" className="w-full bg-[--electric]">Acessar Educação Financeira</Button>
-                          </li>
-                        </ul>
+                        <DashboardQuickActions />
                       </CardContent>
                     </Card>
                   </div>
