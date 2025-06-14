@@ -210,6 +210,10 @@ export default function FinancieApp() {
                           )}
                         </div>
                       </div>
+                      {/* NOVO: DashboardTabs integrado após os gráficos */}
+                      <div className="mt-8">
+                        <DashboardTabs />
+                      </div>
                       {/* Finanças card dicas/alertas */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FinancialTipsCard />
