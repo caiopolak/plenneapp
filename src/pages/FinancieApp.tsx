@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -26,6 +26,10 @@ import { FinancialAlertsList } from "@/components/dashboard/FinancialAlertsList"
 import ProfilePage from "./ProfilePage";
 // Card component imports (fix missing references)
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { TrendsChartCard } from "@/components/analytics/TrendsChartCard";
+import { ExpenseByCategoryChart } from "@/components/analytics/ExpenseByCategoryChart";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 export default function FinancieApp() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -37,6 +41,72 @@ export default function FinancieApp() {
     setActiveTab("transactions");
     // Ideal: abrir modal, aqui apenas navega para tab para exemplo compatível
   };
+
+  // Custom hooks para gráficos
+  const { user } = useAuth();
+  const [trendData, setTrendData] = useState([]);
+  const [expenseByCategoryData, setExpenseByCategoryData] = useState([]);
+  const [loadingGraphs, setLoadingGraphs] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    async function fetchGraphs() {
+      setLoadingGraphs(true);
+      try {
+        // Gráfico linha: Receitas vs Despesas últimos 6 meses
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setMonth(endDate.getMonth() - 5);
+        const { data: transactions } = await supabase
+          .from('transactions')
+          .select('amount, type, date, category')
+          .eq('user_id', user.id)
+          .gte('date', startDate.toISOString().split('T')[0])
+          .lte('date', endDate.toISOString().split('T')[0]);
+
+        // Formatar dados para gráfico de tendência
+        const monthMap = {};
+        transactions?.forEach(tx => {
+          const month = tx.date.substring(0, 7);
+          if (!monthMap[month]) monthMap[month] = { income: 0, expense: 0, month };
+          if (tx.type === "income") monthMap[month].income += Number(tx.amount);
+          if (tx.type === "expense") monthMap[month].expense += Number(tx.amount);
+        });
+        const trend = Object.values(monthMap)
+          .sort((a, b) => a.month.localeCompare(b.month))
+          .map(d => ({
+            month: new Date(d.month + "-01").toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }),
+            income: d.income,
+            expense: d.expense
+          }));
+        setTrendData(trend);
+
+        // Gráfico pizza: despesas por categoria no mês atual
+        const current = new Date();
+        const mStart = new Date(current.getFullYear(), current.getMonth(), 1);
+        const mEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+        const expenseCats = {};
+        transactions?.filter(tx =>
+          tx.type === "expense" &&
+          new Date(tx.date) >= mStart &&
+          new Date(tx.date) <= mEnd
+        ).forEach(tx => {
+          expenseCats[tx.category] = (expenseCats[tx.category] || 0) + Number(tx.amount);
+        });
+        const COLORS = ['#003f5c', '#2f9e44', '#f8961e', '#d62828', '#6f42c1', '#20c997'];
+        const expCatData = Object.entries(expenseCats).map(([name, value], i) => ({
+          name, value, color: COLORS[i % COLORS.length]
+        }));
+        setExpenseByCategoryData(expCatData);
+
+      } catch (e) {
+        setTrendData([]);
+        setExpenseByCategoryData([]);
+      }
+      setLoadingGraphs(false);
+    }
+    fetchGraphs();
+  }, [user]);
 
   return (
     <ProtectedRoute>
@@ -116,17 +186,23 @@ export default function FinancieApp() {
                           </div>
                         </div>
                       </div>
-                      {/* Linha de gráficos */}
+                      {/* Linha de gráficos - agora usando gráficos reais */}
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                         <div className="col-span-1 xl:col-span-2 bg-white rounded-xl p-6 shadow border">
-                          {/* Espaço para chart de Receita x Despesa */}
                           <div className="text-lg font-bold mb-2 text-graphite">Receitas vs Despesas</div>
-                          {/* Aqui troque por gráfico real (exemplo placeholder) */}
-                          <div className="h-56 flex items-center justify-center text-muted-foreground bg-gray-50 rounded">[ Gráfico de barras aqui ]</div>
+                          {loadingGraphs ? (
+                            <div className="h-56 flex items-center justify-center text-muted-foreground bg-gray-50 rounded animate-pulse">Carregando gráfico...</div>
+                          ) : (
+                            <TrendsChartCard data={trendData} />
+                          )}
                         </div>
                         <div className="bg-white rounded-xl p-6 shadow border flex flex-col">
                           <div className="text-lg font-bold mb-2 text-graphite">Distribuição de Gastos</div>
-                          <div className="h-56 flex items-center justify-center text-muted-foreground bg-gray-50 rounded">[ Gráfico pizza aqui ]</div>
+                          {loadingGraphs ? (
+                            <div className="h-56 flex items-center justify-center text-muted-foreground bg-gray-50 rounded animate-pulse">Carregando gráfico...</div>
+                          ) : (
+                            <ExpenseByCategoryChart data={expenseByCategoryData} />
+                          )}
                         </div>
                       </div>
                       {/* Finanças card dicas/alertas */}
