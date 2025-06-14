@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { GoalForm } from './GoalForm';
 import { Tables } from '@/integrations/supabase/types';
+import { GoalDetailsModal } from "./GoalDetailsModal";
 
 type Goal = Tables<'financial_goals'>;
 
@@ -25,6 +25,8 @@ export function GoalList() {
   const [showForm, setShowForm] = useState(false);
   const [addingAmount, setAddingAmount] = useState<string>('');
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+  const [detailsGoal, setDetailsGoal] = useState<Goal | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const { toast } = useToast();
   const { user } = useAuth();
@@ -197,6 +199,16 @@ export function GoalList() {
                       </div>
                     </div>
                     <div className="flex gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setDetailsGoal(goal);
+                          setShowDetailsModal(true);
+                        }}
+                      >
+                        Detalhes
+                      </Button>
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button 
@@ -327,6 +339,14 @@ export function GoalList() {
           })}
         </div>
       )}
+      <GoalDetailsModal
+        open={showDetailsModal}
+        onOpenChange={(open) => {
+          setShowDetailsModal(open);
+          if (!open) setDetailsGoal(null);
+        }}
+        goal={detailsGoal}
+      />
     </div>
   );
 }
