@@ -9,6 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      budgets: {
+        Row: {
+          amount_limit: number
+          category: string
+          created_at: string
+          id: string
+          month: number
+          updated_at: string
+          user_id: string
+          workspace_id: string | null
+          year: number
+        }
+        Insert: {
+          amount_limit: number
+          category: string
+          created_at?: string
+          id?: string
+          month: number
+          updated_at?: string
+          user_id: string
+          workspace_id?: string | null
+          year: number
+        }
+        Update: {
+          amount_limit?: number
+          category?: string
+          created_at?: string
+          id?: string
+          month?: number
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budgets_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       data_imports: {
         Row: {
           created_at: string | null
