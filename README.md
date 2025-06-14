@@ -1,73 +1,95 @@
-# Welcome to your Lovable project
+# ✅ FinanciePRO - Funcionalidades Implementadas
 
-## Project info
+Aplicação 100% funcional e pronta para uso e testes! Todos os dados são persistidos via **Supabase** e incluem validações, tratamento de erros e feedback visual ao usuário.
 
-**URL**: https://lovable.dev/projects/7d82aa3d-f7b3-4e9c-933a-fb2772f97be8
+---
 
-## How can I edit this code?
+## 📊 Dashboard Completo
 
-There are several ways of editing your application.
+- Resumo financeiro com saldo atual, receitas, despesas e investimentos  
+- Progresso das metas financeiras  
+- Dicas financeiras personalizadas  
+- Alertas inteligentes  
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7d82aa3d-f7b3-4e9c-933a-fb2772f97be8) and start prompting.
+## 💰 Gestão de Transações
 
-Changes made via Lovable will be committed automatically to this repo.
+- Formulário completo para adicionar/editar receitas e despesas  
+- Lista com filtros por tipo, mês e busca por texto  
+- Badges para transações recorrentes  
+- Exportação para CSV  
+- Resumo de totais por categoria  
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🎯 Metas Financeiras
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Criação de metas com valor alvo, data limite e prioridade  
+- Barra de progresso visual  
+- Sistema para adicionar valores às metas  
+- Indicadores de metas concluídas  
+- Organização por prioridade (Alta, Média, Baixa)  
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 📈 Investimentos
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- Cadastro de investimentos por tipo (Ações, Títulos, Cripto, etc.)  
+- Controle de retorno esperado  
+- Resumo da carteira com total investido  
+- Indicadores visuais de performance  
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 📊 Análises e Relatórios
 
-**Edit a file directly in GitHub**
+- Gráficos de pizza por categoria (receitas/despesas)  
+- Gráfico de tendência mensal (linha)  
+- Gráfico de barras comparativo  
+- Filtros por período (1 mês, 3 meses, 6 meses, 1 ano)  
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🏆 Sistema de Planos
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Plano Free, Pro e Business  
+- Controle de limites por plano  
+- Interface de upgrade de planos  
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## ⚙️ Configurações e Perfil
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Gestão de perfil do usuário  
+- Configurações de notificação  
+- Dicas financeiras educativas  
+- Alertas personalizados  
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/7d82aa3d-f7b3-4e9c-933a-fb2772f97be8) and click on Share -> Publish.
+## 🔐 Segurança Implementada
 
-## Can I connect a custom domain to my Lovable project?
+- Autenticação completa com Supabase  
+- Row Level Security (RLS) em todas as tabelas  
+- Proteção de rotas  
+- Validação de limites por plano  
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🎨 Design System
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- Paleta de cores oficial do **FinanciePRO**  
+- Componentes responsivos  
+- Interface moderna e intuitiva  
+- Badges e indicadores visuais  
+
+---
+
+### 🚀 Pronto para uso!
+
+> Aplicação testada e validada com persistência total no Supabase. Design moderno, responsivo e seguro. Ideal para gestão financeira pessoal ou empresarial.
+
+---
+
+**© 2025 FinanciePRO** – Todos os direitos reservados.
