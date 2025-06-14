@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { FinancialSummary } from '@/components/dashboard/FinancialSummary';
 import { TransactionList } from '@/components/transactions/TransactionList';
@@ -21,12 +20,12 @@ import {
   Crown, 
   LogOut,
   BookOpen,
-  Bell,
   Sparkles,
   DollarSign,
   Home
 } from 'lucide-react';
 import Education from './Education';
+import { LogoPlenne } from '../components/layout/LogoPlenne';
 
 export default function FinancieApp() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -37,9 +36,9 @@ export default function FinancieApp() {
     if (!subscription) return null;
     
     const planColors = {
-      free: 'bg-gray-500',
-      pro: 'bg-[#f8961e]',
-      business: 'bg-[#2f9e44]'
+      free: 'bg-[--primary]',
+      pro: 'bg-[--accent] text-[--accent-foreground]',
+      business: 'bg-[--secondary]'
     };
 
     const planLabels = {
@@ -68,34 +67,33 @@ export default function FinancieApp() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-[#f4f4f4] to-white">
+      <div className="min-h-screen bg-gradient-to-br from-[#E7FAF4] via-[#F8FAFC] to-white font-poppins">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b border-[#003f5c]/10">
+        <header className="bg-white shadow-sm border-b border-[--primary]/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-[#003f5c] to-[#2f9e44] rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[#003f5c]">FinanciePRO</h1>
-                  <p className="text-xs text-[#2b2b2b]/60">Você no controle do seu dinheiro</p>
+            <div className="flex justify-between items-center h-20">
+              <div className="flex items-center gap-4">
+                <LogoPlenne />
+                <div className="flex flex-col">
+                  <span className="text-xl font-extrabold text-[--primary] tracking-tight leading-tight">
+                    Plenne
+                  </span>
+                  <p className="text-xs text-gray-500 font-inter font-medium tracking-wide">Sua vida financeira, plena.</p>
                 </div>
               </div>
-              
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 {getPlanBadge()}
                 <div className="text-right">
-                  <p className="text-sm font-medium text-[#003f5c]">
+                  <p className="text-base font-semibold text-[--primary]">
                     {profile?.full_name || 'Usuário'}
                   </p>
-                  <p className="text-xs text-[#2b2b2b]/60">{profile?.email}</p>
+                  <p className="text-xs text-gray-400 font-inter">{profile?.email}</p>
                 </div>
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={signOut}
-                  className="text-[#2b2b2b] hover:text-[#d62828] hover:bg-[#d62828]/10"
+                  className="text-gray-800 hover:text-[--accent] hover:bg-[--accent]/10"
                 >
                   <LogOut className="w-4 h-4" />
                 </Button>
@@ -105,7 +103,7 @@ export default function FinancieApp() {
         </header>
 
         {/* Navigation */}
-        <nav className="bg-[#003f5c] shadow-lg">
+        <nav className="bg-[--primary] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex space-x-8 overflow-x-auto py-4">
               {menuItems.map((item) => {
@@ -114,16 +112,16 @@ export default function FinancieApp() {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-base font-semibold tracking-tight transition-colors ${
                       activeTab === item.id
-                        ? 'bg-[#2f9e44] text-white shadow-md'
-                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                        ? 'bg-[--gold] text-[--graphite] shadow'
+                        : 'text-white hover:text-[--accent] hover:bg-[--electric]/10'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-5 h-5" />
                     {item.label}
                     {item.id === 'education' && (
-                      <Sparkles className="w-3 h-3 text-[#f8961e]" />
+                      <Sparkles className="w-4 h-4 text-[--gold]" />
                     )}
                   </button>
                 );
@@ -133,7 +131,7 @@ export default function FinancieApp() {
         </nav>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           {activeTab === 'dashboard' && <FinancialSummary />}
           {activeTab === 'transactions' && <TransactionList />}
           {activeTab === 'goals' && <GoalList />}
@@ -144,46 +142,41 @@ export default function FinancieApp() {
         </main>
 
         {/* Footer */}
-        <footer className="bg-[#003f5c] text-white py-8 mt-16">
+        <footer className="bg-[--primary] text-white py-10 mt-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 bg-gradient-to-r from-[#2f9e44] to-[#f8961e] rounded-lg flex items-center justify-center">
-                    <DollarSign className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold">FinanciePRO</h3>
+                <div className="flex items-center gap-3 mb-4">
+                  <LogoPlenne showSymbol />
+                  <h3 className="text-lg font-bold tracking-tight">Plenne</h3>
                 </div>
-                <p className="text-white/80 text-sm">
-                  Sua plataforma completa de gestão financeira e educação para uma vida próspera.
+                <p className="text-white/80 text-sm font-inter">
+                  Plataforma completa de gestão financeira, educação e saúde financeira. Autonomia, atitude e liberdade para uma vida plena.
                 </p>
               </div>
-              
               <div>
                 <h4 className="font-semibold mb-3">Recursos</h4>
-                <ul className="space-y-2 text-sm text-white/80">
+                <ul className="space-y-2 text-sm text-white/80 font-inter">
                   <li>• Controle de Transações</li>
                   <li>• Metas Financeiras</li>
                   <li>• Gestão de Investimentos</li>
-                  <li>• Educação Financeira</li>
-                  <li>• Assistente WhatsApp</li>
+                  <li>• Educação & Dicas Financeiras</li>
+                  <li>• Assistente IA WhatsApp</li>
                 </ul>
               </div>
-              
               <div>
-                <h4 className="font-semibold mb-3">Bordões</h4>
-                <ul className="space-y-2 text-sm text-white/80">
-                  <li>"Organize. Economize. Evolua."</li>
-                  <li>"Você no controle do seu dinheiro"</li>
-                  <li>"A vida financeira que você merece"</li>
+                <h4 className="font-semibold mb-3">Slogans</h4>
+                <ul className="space-y-2 text-sm text-white/80 font-inter">
+                  <li>“Sua vida financeira, plena.”</li>
+                  <li>“Controle, atitude e liberdade.”</li>
+                  <li>“Transforme sua relação com o dinheiro.”</li>
                 </ul>
               </div>
             </div>
-            
             <div className="border-t border-white/20 mt-8 pt-6 text-center">
               <p className="text-white/60 text-sm">
-                © 2025 FinanciePRO. Todos os direitos reservados. 
-                <span className="text-[#2f9e44] font-medium"> Educação financeira prática, no seu ritmo.</span>
+                © 2025 Plenne. Todos os direitos reservados.
+                <span className="text-[--gold] font-medium"> Educação, atitude e inteligência financeira sem complicação.</span>
               </p>
             </div>
           </div>

@@ -12,8 +12,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
-import { DollarSign, LogOut, Settings, User, CreditCard } from 'lucide-react';
+import { LogOut, Settings, User, CreditCard } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { LogoPlenne } from './LogoPlenne';
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -26,22 +27,20 @@ export function Header({ onNavigate, currentSection }: HeaderProps) {
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'pro': return 'bg-blue-500';
-      case 'business': return 'bg-purple-500';
-      default: return 'bg-gray-500';
+      case 'pro': return 'bg-[--accent] text-[--accent-foreground]';
+      case 'business': return 'bg-[--secondary] text-[--secondary-foreground]';
+      default: return 'bg-[--primary] text-[--primary-foreground]';
     }
   };
 
   return (
-    <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="border-b bg-[#FFFFFFDD] backdrop-blur supports-[backdrop-filter]:bg-[#fff]/70 shadow-sm h-16">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <DollarSign className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-xl font-bold">FinanciePRO</span>
+        <div className="flex items-center space-x-3">
+          <LogoPlenne />
+          <span className="hidden sm:block text-md font-medium text-[#0057FF]">Sua vida financeira, plena.</span>
           {subscription && subscription.plan !== 'free' && (
-            <Badge className={`${getPlanColor(subscription.plan)} text-white`}>
+            <Badge className={`${getPlanColor(subscription.plan)} ml-2 text-sm rounded-full font-semibold`}>
               {subscription.plan.toUpperCase()}
             </Badge>
           )}
@@ -52,22 +51,24 @@ export function Header({ onNavigate, currentSection }: HeaderProps) {
             <button
               key={section}
               onClick={() => onNavigate(section)}
-              className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                currentSection === section ? 'text-blue-600' : 'text-gray-600'
+              className={`font-poppins text-sm font-medium transition-colors hover:text-[--primary] ${
+                currentSection === section ? 'text-[--primary]' : 'text-gray-500'
               }`}
             >
-              {section === 'dashboard' && 'Dashboard'}
-              {section === 'transactions' && 'Transações'}
-              {section === 'goals' && 'Metas'}
-              {section === 'investments' && 'Investimentos'}
-              {section === 'reports' && 'Relatórios'}
+              {{
+                dashboard: 'Dashboard',
+                transactions: 'Transações',
+                goals: 'Metas',
+                investments: 'Investimentos',
+                reports: 'Relatórios'
+              }[section]}
             </button>
           ))}
         </nav>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 bg-[#f8fafc] hover:bg-[#e9ecef] shadow-md">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={profile?.avatar_url || ''} alt={profile?.full_name || ''} />
                 <AvatarFallback>
@@ -77,9 +78,9 @@ export function Header({ onNavigate, currentSection }: HeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1 font-poppins">
+                <p className="text-sm font-semibold leading-none text-[--primary]">
                   {profile?.full_name || 'Usuário'}
                 </p>
                 <p className="text-xs leading-none text-muted-foreground">
