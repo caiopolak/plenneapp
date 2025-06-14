@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -127,30 +126,32 @@ export function FinancialCharts() {
   }, [user, selectedPeriod]);
 
   if (loading) {
-    return <div>Carregando gráficos...</div>;
+    return <div className="py-10 text-lg text-[--primary] animate-pulse">Carregando gráficos...</div>;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Análises Financeiras</h2>
-        <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-          <SelectTrigger className="w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1month">Último mês</SelectItem>
-            <SelectItem value="3months">Últimos 3 meses</SelectItem>
-            <SelectItem value="6months">Últimos 6 meses</SelectItem>
-            <SelectItem value="1year">Último ano</SelectItem>
-          </SelectContent>
-        </Select>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row justify-between md:items-end items-start gap-4">
+        <h2 className="text-2xl font-extrabold tracking-tight text-[--primary]">Análises Gráficas</h2>
+        <div>
+          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+            <SelectTrigger className="w-44 bg-white/90 border-gray-200 rounded">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1month">Último mês</SelectItem>
+              <SelectItem value="3months">Últimos 3 meses</SelectItem>
+              <SelectItem value="6months">Últimos 6 meses</SelectItem>
+              <SelectItem value="1year">Último ano</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Monthly Trend Chart */}
-      <Card>
+      {/* Tendência mensal */}
+      <Card className="p-4 rounded-xl shadow-lg border-0 bg-gradient-to-br from-[#f8fafc] to-white/70">
         <CardHeader>
-          <CardTitle>Receitas vs Despesas - Tendência Mensal</CardTitle>
+          <CardTitle className="text-[--primary] font-bold flex gap-3 items-center">📈 Tendência Receitas x Despesas</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -159,25 +160,42 @@ export function FinancialCharts() {
               <XAxis dataKey="month" />
               <YAxis tickFormatter={(value) => `R$ ${value.toLocaleString()}`} />
               <Tooltip 
-                formatter={(value: number) => [`R$ ${value.toFixed(2)}`, '']}
+                formatter={(value: number) => [`R$ ${Number(value).toFixed(2)}`, '']}
                 labelFormatter={(label) => `Mês: ${label}`}
+                wrapperStyle={{ fontFamily: 'Inter, Poppins, sans-serif', fontSize: 14 }}
               />
-              <Line type="monotone" dataKey="income" stroke="#2f9e44" strokeWidth={3} name="Receitas" />
-              <Line type="monotone" dataKey="expense" stroke="#d62828" strokeWidth={3} name="Despesas" />
+              <Line
+                type="monotone"
+                dataKey="income"
+                stroke="#2f9e44"
+                strokeWidth={3}
+                name="Receitas"
+                dot={{ r: 5, fill: "#2f9e44", stroke: "#fff" }}
+                activeDot={{ r: 7 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="expense"
+                stroke="#d62828"
+                strokeWidth={3}
+                name="Despesas"
+                dot={{ r: 5, fill: "#d62828", stroke: "#fff" }}
+                activeDot={{ r: 7 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Income by Category */}
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+        {/* Receitas por categoria */}
+        <Card className="shadow rounded-xl border-0 bg-gradient-to-br from-green-50 to-white/80">
           <CardHeader>
-            <CardTitle>Receitas por Categoria</CardTitle>
+            <CardTitle className="flex gap-2 items-center text-green-700">🍀 Receitas por Categoria</CardTitle>
           </CardHeader>
           <CardContent>
             {incomeByCategory.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
                   <Pie
                     data={incomeByCategory}
@@ -185,33 +203,33 @@ export function FinancialCharts() {
                     cy="50%"
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
+                    outerRadius={90}
+                    fill="#2f9e44"
                     dataKey="value"
                   >
-                    {incomeByCategory.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    {incomeByCategory.map((entry, idx) => (
+                      <Cell key={`cell-income-${idx}`} fill={COLORS[idx % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value: number) => `R$ ${value.toFixed(2)}`} />
+                  <Tooltip formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+              <div className="h-[220px] flex items-center justify-center text-muted-foreground">
                 Nenhuma receita no período selecionado
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Expenses by Category */}
-        <Card>
+        {/* Despesas por categoria */}
+        <Card className="shadow rounded-xl border-0 bg-gradient-to-br from-red-50 to-white/80">
           <CardHeader>
-            <CardTitle>Despesas por Categoria</CardTitle>
+            <CardTitle className="flex gap-2 items-center text-red-700">💸 Despesas por Categoria</CardTitle>
           </CardHeader>
           <CardContent>
             {expenseByCategory.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
                   <Pie
                     data={expenseByCategory}
@@ -219,19 +237,19 @@ export function FinancialCharts() {
                     cy="50%"
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
+                    outerRadius={90}
+                    fill="#d62828"
                     dataKey="value"
                   >
-                    {expenseByCategory.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    {expenseByCategory.map((entry, idx) => (
+                      <Cell key={`cell-expense-${idx}`} fill={COLORS[idx % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value: number) => `R$ ${value.toFixed(2)}`} />
+                  <Tooltip formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+              <div className="h-[220px] flex items-center justify-center text-muted-foreground">
                 Nenhuma despesa no período selecionado
               </div>
             )}
@@ -239,18 +257,18 @@ export function FinancialCharts() {
         </Card>
       </div>
 
-      {/* Category Comparison Bar Chart */}
-      <Card>
+      {/* Comparativo de categorias */}
+      <Card className="shadow rounded-xl border-0 bg-gradient-to-r from-yellow-50 via-blue-50 to-green-50">
         <CardHeader>
-          <CardTitle>Comparativo de Categorias</CardTitle>
+          <CardTitle className="flex gap-2 items-center text-blue-900">📊 Comparativo Geral por Categoria</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={250}>
             <BarChart data={[...incomeByCategory, ...expenseByCategory]}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="2 2" />
               <XAxis dataKey="name" />
-              <YAxis tickFormatter={(value) => `R$ ${value.toLocaleString()}`} />
-              <Tooltip formatter={(value: number) => `R$ ${value.toFixed(2)}`} />
+              <YAxis tickFormatter={(v) => `R$ ${v.toLocaleString()}`} />
+              <Tooltip formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`} />
               <Bar dataKey="value" fill="#003f5c" />
             </BarChart>
           </ResponsiveContainer>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -93,116 +92,130 @@ export function FinancialSummary() {
   const goalsProgress = data.totalGoals > 0 ? (data.completedGoals / data.totalGoals) * 100 : 0;
 
   if (loading) {
-    return <div>Carregando dados financeiros...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[200px] text-lg font-medium text-[--primary] animate-pulse">
+        Carregando dados financeiros...
+      </div>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Saldo Atual</CardTitle>
-          {balance >= 0 ? (
-            <TrendingUp className="h-4 w-4 text-green-600" />
-          ) : (
-            <TrendingDown className="h-4 w-4 text-red-600" />
-          )}
-        </CardHeader>
-        <CardContent>
-          <div className={`text-2xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+    <div className="w-full flex flex-col gap-6">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+        <div className="bg-white rounded-xl px-5 py-4 flex flex-col items-center shadow hover:scale-[1.03] transition-transform border-[--primary]/10 border">
+          <div className="flex items-center gap-2">
+            {balance >= 0 ? (
+              <span className="text-green-600 bg-green-50 rounded-full p-2">
+                <svg width="28" height="28"><g><circle cx="14" cy="14" r="12" fill="#A9FFD5"/><text x="14" y="20" fontSize="18" textAnchor="middle" fill="#22c55e">↑</text></g></svg>
+              </span>
+            ) : (
+              <span className="text-red-600 bg-red-50 rounded-full p-2">
+                <svg width="28" height="28"><g><circle cx="14" cy="14" r="12" fill="#fee2e2"/><text x="14" y="20" fontSize="18" textAnchor="middle" fill="#ef4444">↓</text></g></svg>
+              </span>
+            )}
+            <span className="text-xs text-muted-foreground">Saldo</span>
+          </div>
+          <div className={`text-xl font-extrabold ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}>
             R$ {Math.abs(balance).toFixed(2).replace('.', ',')}
           </div>
-          <p className="text-xs text-muted-foreground">
-            {balance >= 0 ? 'Saldo positivo' : 'Saldo negativo'} este mês
-          </p>
-        </CardContent>
-      </Card>
+          <div className="text-xs text-muted-foreground mt-1">{balance >= 0 ? 'Positivo' : 'Negativo'} este mês</div>
+        </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Receitas</CardTitle>
-          <TrendingUp className="h-4 w-4 text-green-600" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-green-600">
+        <div className="bg-white rounded-xl px-5 py-4 flex flex-col items-center shadow hover:scale-[1.03] transition-transform border-[--primary]/10 border">
+          <div className="flex items-center gap-2">
+            <span className="bg-green-100 text-green-700 rounded-full p-2">R$</span>
+            <span className="text-xs text-muted-foreground">Receitas</span>
+          </div>
+          <div className="text-xl font-bold text-green-600">
             R$ {data.totalIncome.toFixed(2).replace('.', ',')}
           </div>
-          <p className="text-xs text-muted-foreground">
-            Este mês ({data.monthlyTransactions} transações)
-          </p>
-        </CardContent>
-      </Card>
+          <div className="text-xs text-muted-foreground mt-1">
+            {data.monthlyTransactions} transações
+          </div>
+        </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Despesas</CardTitle>
-          <TrendingDown className="h-4 w-4 text-red-600" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-red-600">
+        <div className="bg-white rounded-xl px-5 py-4 flex flex-col items-center shadow hover:scale-[1.03] transition-transform border-[--primary]/10 border">
+          <div className="flex items-center gap-2">
+            <span className="bg-red-100 text-red-700 rounded-full p-2">R$</span>
+            <span className="text-xs text-muted-foreground">Despesas</span>
+          </div>
+          <div className="text-xl font-bold text-red-600">
             R$ {data.totalExpense.toFixed(2).replace('.', ',')}
           </div>
-          <p className="text-xs text-muted-foreground">
+          <div className="text-xs text-muted-foreground mt-1">
             Este mês
-          </p>
-        </CardContent>
-      </Card>
+          </div>
+        </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Investimentos</CardTitle>
-          <PiggyBank className="h-4 w-4 text-blue-600" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-blue-600">
+        <div className="bg-white rounded-xl px-5 py-4 flex flex-col items-center shadow hover:scale-[1.03] transition-transform border-[--primary]/10 border">
+          <div className="flex items-center gap-2">
+            <span className="bg-blue-100 text-blue-600 rounded-full p-2">💰</span>
+            <span className="text-xs text-muted-foreground">Investido</span>
+          </div>
+          <div className="text-xl font-bold text-blue-600">
             R$ {data.totalInvestments.toFixed(2).replace('.', ',')}
           </div>
-          <p className="text-xs text-muted-foreground">
+          <div className="text-xs text-muted-foreground mt-1">
             Total investido
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="md:col-span-2">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Progresso das Metas</CardTitle>
-          <Target className="h-4 w-4 text-orange-600" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {data.completedGoals} de {data.totalGoals} metas
           </div>
-          <div className="mt-2">
-            <Progress value={goalsProgress} className="h-2" />
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            {goalsProgress.toFixed(0)}% das metas concluídas
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card className="md:col-span-2">
-        <CardHeader>
-          <CardTitle className="text-sm font-medium">Dicas Financeiras</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm font-medium text-blue-800">💡 Dica do Dia</p>
-            <p className="text-sm text-blue-600">
-              {balance < 0 
-                ? "Seus gastos estão acima das receitas. Que tal revisar suas despesas?" 
-                : "Parabéns! Você tem um saldo positivo. Considere investir o excedente."}
-            </p>
+      {/* Progresso de Metas + Dica */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow border border-yellow-200 px-6 py-5 flex flex-col justify-between">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xl">🎯</span>
+            <span className="font-bold text-yellow-700">Progresso das Metas</span>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-xl font-bold">{data.completedGoals} / {data.totalGoals} metas</div>
+            {goalsProgress === 100 && data.totalGoals > 0 && (
+              <span className="inline-block bg-green-200 text-green-900 rounded px-3 py-1 text-xs font-bold animate-pulse">Tudo concluído! 🏅</span>
+            )}
+            {goalsProgress >= 70 && goalsProgress < 100 && (
+              <span className="inline-block bg-yellow-100 text-yellow-800 rounded px-3 py-1 text-xs font-bold">Quase lá!</span>
+            )}
+            {goalsProgress < 70 && data.totalGoals > 0 && (
+              <span className="inline-block bg-gray-100 text-gray-500 rounded px-3 py-1 text-xs font-bold">Continue focado</span>
+            )}
+          </div>
+          <div className="mt-4 mb-1 w-full bg-gray-100 rounded">
+            <div
+              className="bg-yellow-400 h-2 rounded transition-all"
+              style={{ width: `${goalsProgress}%`, minWidth: 12, maxWidth: "100%" }}
+            ></div>
+          </div>
+          <div className="text-xs mt-1 text-yellow-900">{goalsProgress.toFixed(0)}% das metas concluídas</div>
+        </div>
+
+        {/* Dicas & Alertas */}
+        <div className="bg-gradient-to-bl from-[#e8f3f1] to-[#FFFDF0] border border-blue-200 rounded-xl shadow px-6 py-5">
+          <div className="flex items-center gap-2">
+            {balance < 0 ? (
+              <span className="bg-red-100 rounded-full p-2 mr-2"><svg width="25" height="25"><circle cx="12" cy="12" r="12" fill="#fee2e2"/><text x="12" y="18" fontSize="16" textAnchor="middle" fill="#ef4444">!</text></svg></span>
+            ) : (
+              <span className="bg-green-100 rounded-full p-2 mr-2"><svg width="25" height="25"><circle cx="12" cy="12" r="12" fill="#d1fae5"/><text x="12" y="18" fontSize="16" textAnchor="middle" fill="#22c55e">✓</text></svg></span>
+            )}
+            <span className={`font-semibold ${balance < 0 ? "text-red-700" : "text-green-700"} text-base`}>
+              {balance < 0 ? "Alerta Finanzas" : "Parabéns!"}
+            </span>
+          </div>
+          <div className={`mt-2 text-sm ${balance < 0 ? "text-red-700 font-medium" : "text-green-800"}`}>
+            {balance < 0
+              ? "Seus gastos superaram as receitas. Reveja despesas e ajuste sua rota!"
+              : "Ótimo! Seu saldo está positivo este mês. Avalie investir o excedente para crescer ainda mais 🚀"}
           </div>
           {data.totalGoals === 0 && (
-            <div className="p-3 bg-orange-50 rounded-lg">
-              <p className="text-sm font-medium text-orange-800">🎯 Sugestão</p>
-              <p className="text-sm text-orange-600">
-                Crie suas primeiras metas financeiras para ter objetivos claros!
-              </p>
+            <div className="mt-4 p-3 rounded-md bg-orange-50 border border-orange-200 flex items-center gap-2">
+              <span className="text-lg">🎯</span>
+              <span className="text-orange-700 font-semibold">
+                Crie sua primeira meta financeira e conquiste seu próximo objetivo!
+              </span>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }
