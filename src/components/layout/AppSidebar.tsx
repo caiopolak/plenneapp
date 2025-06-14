@@ -56,7 +56,7 @@ export function AppSidebar({ activeTab, setActiveTab }: { activeTab: string, set
 
   return (
     <Sidebar className="border-r border-primary/20 bg-surface/95 shadow-card min-h-screen">
-      <SidebarHeader className="p-6 border-b border-gray-200 bg-neutral-light">
+      <SidebarHeader className="p-6 border-b border-gray-200 bg-neutral-light flex items-center justify-center">
         <LogoPlenne />
       </SidebarHeader>
       <SidebarContent className="p-5 pt-8">
@@ -84,4 +84,3 @@ export function AppSidebar({ activeTab, setActiveTab }: { activeTab: string, set
     </Sidebar>
   );
 }
-
