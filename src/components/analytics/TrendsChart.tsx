@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   ResponsiveContainer,
@@ -9,9 +8,6 @@ import {
   YAxis,
   Tooltip,
   Legend,
-  defs,
-  linearGradient,
-  stop,
 } from "recharts";
 
 interface TrendsChartProps {
