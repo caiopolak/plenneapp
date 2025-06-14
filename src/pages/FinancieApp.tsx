@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,7 +27,6 @@ import Education from './Education';
 import { LogoPlenne } from '../components/layout/LogoPlenne';
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration";  // <-- ADDED IMPORT
 
 export default function FinancieApp() {
   const [activeTab, setActiveTab] = useState("dashboard");
