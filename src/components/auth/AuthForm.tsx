@@ -1,13 +1,13 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, DollarSign, User } from 'lucide-react';
+import { Loader2, DollarSign, LogIn } from 'lucide-react';
 
+// Nova paleta, melhor contraste, tipografia destacada, animação sutil de entrada
 export function AuthForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,52 +39,51 @@ export function AuthForm() {
     setForgotPassword(false);
   };
 
-  // Novo Background e Card robusto
+  // Fundo com gradiente, ilustração aprimorada e marca visual da Plenne
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#017F66]/90 via-[#0057FF]/40 to-[#fff] px-2 py-4">
-      <div className="flex flex-col md:flex-row w-full max-w-3xl bg-white/95 rounded-3xl shadow-2xl overflow-hidden animate-fade-in border-2 border-[--primary]/10">
-        {/* Lado Esquerdo - Ilustração ou Slogan */}
-        <div className="hidden md:flex flex-col items-center justify-center flex-1 bg-gradient-to-br from-[--primary]/90 via-emerald-500/50 to-[--white]/45 px-8 py-12 relative">
-          <div className="absolute top-3 left-3">
-            <span className="inline-flex items-center gap-2 font-bold text-lg text-white drop-shadow-md">
-              <DollarSign className="w-7 h-7 text-[--gold]" /> FinanciePRO
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#017F66]/95 via-[#0057FF]/50 to-[#fff] px-2 py-7 select-none">
+      <div className="flex flex-col md:flex-row w-full max-w-3xl bg-white/95 rounded-3xl shadow-2xl overflow-hidden animate-fade-in border-2 border-[--primary]/20">
+        {/* Esquerda: Branding & ilustração */}
+        <div className="hidden md:flex flex-col items-center justify-center flex-1 bg-gradient-to-br from-[--primary]/90 via-[--electric]/25 to-[--gold]/30 px-10 py-12 relative">
+          <div className="absolute top-4 left-4">
+            <span className="inline-flex items-center gap-2 font-extrabold text-xl text-white drop-shadow-md font-poppins">
+              <DollarSign className="w-7 h-7 text-[--gold]" /> Plenne
             </span>
           </div>
           <div className="relative flex-1 flex items-center justify-center w-full z-10">
-            {/* Ilustração simples SVG */}
-            <svg viewBox="0 0 170 120" fill="none" className="w-44 h-44">
-              <ellipse cx="85" cy="100" rx="65" ry="18" fill="#f5b94255"/>
-              <rect x="95" y="60" width="40" height="24" rx="6" fill="#0057FF"/>
-              <rect x="35" y="72" width="60" height="16" rx="6" fill="#017F6688"/>
-              <rect x="52" y="37" width="55" height="28" rx="6" fill="#F5B94299"/>
-              <rect x="60" y="18" width="35" height="18" rx="5" fill="#fff"/>
-              <rect x="92" y="22" width="20" height="10" rx="3" fill="#0057FF"/>
-              <ellipse cx="140" cy="55" rx="8" ry="8" fill="#fff" opacity="0.23"/>
+            {/* Logo/plenitude (simples ilustração SVG) */}
+            <svg viewBox="0 0 172 130" fill="none" className="w-48 h-48">
+              <ellipse cx="90" cy="112" rx="70" ry="18" fill="#f5b94250"/>
+              <rect x="101" y="70" width="45" height="27" rx="7" fill="#0057FF"/>
+              <rect x="36" y="80" width="63" height="16" rx="5" fill="#017F6680"/>
+              <rect x="60" y="42" width="60" height="30" rx="7" fill="#F5B942cc"/>
+              <rect x="68" y="21" width="36" height="19" rx="5" fill="#fff"/>
+              <rect x="102" y="30" width="19" height="9" rx="2" fill="#0057FF"/>
+              <ellipse cx="146" cy="59" rx="9" ry="9" fill="#fff" opacity="0.18"/>
             </svg>
           </div>
           <div className="relative text-center z-10 mt-8">
-            <span className="font-poppins text-lg font-semibold text-white drop-shadow">Sua vida financeira, plena.</span>
-            <p className="text-sm mt-2 text-[#fff9]/90 font-inter">Robusto. Inteligente. Simples. <br /> <span className="font-bold text-[--gold]">Bem-vindo(a)!</span></p>
+            <span className="font-poppins text-xl font-bold text-white drop-shadow-sm">Sua vida financeira, plena.</span>
+            <p className="text-sm mt-2 text-[#fff9]/90 font-inter">Tecnologia, atitude e inteligência <br /><span className="font-bold text-[--gold]">Pra você!</span></p>
           </div>
         </div>
-
-        {/* Lado Direito - Formulário */}
-        <div className="flex-1 flex items-center justify-center px-6 py-10">
+        {/* Direita: Formulário */}
+        <div className="flex-1 flex items-center justify-center px-6 py-10 bg-white bg-opacity-95">
           {forgotPassword ? (
             <Card className="w-full max-w-md border-none shadow-none bg-transparent">
               <CardHeader className="text-center">
                 <div className="mx-auto w-14 h-14 bg-gradient-to-r from-[#003f5c] to-[#2f9e44] rounded-full flex items-center justify-center mb-2 shadow-lg">
-                  <User className="w-6 h-6 text-white" />
+                  <LogIn className="w-6 h-6 text-white" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-[#003f5c]">Recuperar Senha</CardTitle>
-                <CardDescription className="text-[#2b2b2b]/70">
-                  Digite seu email para receber instruções de recuperação
+                <CardTitle className="text-2xl font-bold text-[#003f5c] font-poppins">Recuperar Senha</CardTitle>
+                <CardDescription className="text-[#2b2b2b]/70 font-inter">
+                  Digite seu email para receber instruções
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleResetPassword} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="reset-email" className="text-[#003f5c]">Email</Label>
+                    <Label htmlFor="reset-email" className="text-[#003f5c] font-poppins">Email</Label>
                     <Input
                       id="reset-email"
                       type="email"
@@ -97,7 +96,7 @@ export function AuthForm() {
                   </div>
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-[#2f9e44] to-[#003f5c] hover:from-[#0057ff] hover:to-[#017f66]"
+                    className="w-full bg-gradient-to-r from-[#2f9e44] to-[#003f5c] hover:from-[#0057ff] hover:to-[#017f66] font-bold"
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -106,7 +105,7 @@ export function AuthForm() {
                   <Button
                     type="button"
                     variant="ghost"
-                    className="w-full text-[--primary] hover:bg-[--primary]/10"
+                    className="w-full text-[--primary] hover:bg-[--primary]/10 font-inter"
                     onClick={() => setForgotPassword(false)}
                   >
                     Voltar ao Login
@@ -115,48 +114,50 @@ export function AuthForm() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="w-full max-w-md border-none shadow-xl bg-white/80 animate-scale-in p-1">
+            <Card className="w-full max-w-md border-none shadow-xl bg-white/90 animate-scale-in p-1">
               <CardHeader className="text-center space-y-1">
-                <div className="mx-auto w-14 h-14 bg-gradient-to-r from-[#017F66] to-[#F5B942] rounded-full flex items-center justify-center mb-2 shadow-lg">
+                <div className="mx-auto w-14 h-14 bg-gradient-to-r from-[--primary] to-[--gold] rounded-full flex items-center justify-center mb-2 shadow-lg">
                   <DollarSign className="w-7 h-7 text-white" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-[#017F66]">Acesse sua Conta</CardTitle>
-                <CardDescription className="text-[#2b2b2b]/80 font-medium">
-                  Plataforma <span className='text-[--electric]'>FinanciePRO</span> <br/>
-                  Gerencie <span className='text-[--gold] font-bold'>dinheiro</span> & <span className='text-[--electric] font-bold'>metas</span> <span className='text-[--primary] font-semibold'>com inteligência</span>
+                <CardTitle className="text-2xl font-extrabold text-[--primary] font-poppins">
+                  Entrar na Plenne
+                </CardTitle>
+                <CardDescription className="text-[#2b2b2b]/85 font-inter">
+                  Plataforma <span className='text-[--electric] font-semibold'>Plenne Finance</span> <br/>
+                  Inteligência, metas e segurança para você
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="signin" className="w-full">
                   <TabsList className="grid w-full grid-cols-2 mb-4 bg-[--muted]/70 rounded-lg">
                     <TabsTrigger value="signin" className="data-[state=active]:bg-[--primary] data-[state=active]:text-white text-[--primary]">Entrar</TabsTrigger>
-                    <TabsTrigger value="signup" className="data-[state=active]:bg-[--primary] data-[state=active]:text-white text-[--primary]">Cadastrar</TabsTrigger>
+                    <TabsTrigger value="signup" className="data-[state=active]:bg-[--electric] data-[state=active]:text-white text-[--primary]">Cadastrar</TabsTrigger>
                   </TabsList>
 
                   {/* LOGIN */}
                   <TabsContent value="signin">
                     <form onSubmit={handleSignIn} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="signin-email" className="text-[--primary]">Email</Label>
+                        <Label htmlFor="signin-email" className="text-[--primary] font-poppins">Email</Label>
                         <Input
                           id="signin-email"
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="seu@email.com"
-                          className="border-[--primary]/20 focus:border-[--secondary]"
+                          className="border-[--primary]/20 focus:border-[--electric] font-inter"
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="signin-password" className="text-[--primary]">Senha</Label>
+                        <Label htmlFor="signin-password" className="text-[--primary] font-poppins">Senha</Label>
                         <Input
                           id="signin-password"
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="border-[--primary]/20 focus:border-[--secondary]"
+                          className="border-[--primary]/20 focus:border-[--electric] font-inter"
                           required
                         />
                       </div>
@@ -171,7 +172,7 @@ export function AuthForm() {
                       <Button
                         type="button"
                         variant="ghost"
-                        className="w-full text-[--secondary] hover:bg-[--electric]/10 text-sm"
+                        className="w-full text-[--electric] hover:bg-[--electric]/10 text-sm font-inter"
                         onClick={() => setForgotPassword(true)}
                       >
                         Esqueci minha senha
@@ -183,38 +184,38 @@ export function AuthForm() {
                   <TabsContent value="signup">
                     <form onSubmit={handleSignUp} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="signup-name" className="text-[--primary]">Nome Completo</Label>
+                        <Label htmlFor="signup-name" className="text-[--primary] font-poppins">Nome Completo</Label>
                         <Input
                           id="signup-name"
                           type="text"
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
                           placeholder="Digite seu nome"
-                          className="border-[--primary]/20 focus:border-[--secondary]"
+                          className="border-[--primary]/20 focus:border-[--electric] font-inter"
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="signup-email" className="text-[--primary]">Email</Label>
+                        <Label htmlFor="signup-email" className="text-[--primary] font-poppins">Email</Label>
                         <Input
                           id="signup-email"
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="seu@email.com"
-                          className="border-[--primary]/20 focus:border-[--secondary]"
+                          className="border-[--primary]/20 focus:border-[--electric] font-inter"
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="signup-password" className="text-[--primary]">Senha</Label>
+                        <Label htmlFor="signup-password" className="text-[--primary] font-poppins">Senha</Label>
                         <Input
                           id="signup-password"
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="border-[--primary]/20 focus:border-[--secondary]"
+                          className="border-[--primary]/20 focus:border-[--electric] font-inter"
                           required
                           minLength={6}
                         />
@@ -227,7 +228,7 @@ export function AuthForm() {
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Criar Conta
                       </Button>
-                      <p className="text-xs mt-2 text-muted-foreground text-center">
+                      <p className="text-xs mt-2 text-muted-foreground text-center font-inter">
                         Ao criar uma conta, você aceita nossos termos de uso.
                       </p>
                     </form>
