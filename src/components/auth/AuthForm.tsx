@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, DollarSign, LogIn } from 'lucide-react';
+import { AuthBranding } from './AuthBranding';
 
-// Nova paleta, melhor contraste, tipografia destacada, animação sutil de entrada
 export function AuthForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,33 +39,11 @@ export function AuthForm() {
     setForgotPassword(false);
   };
 
-  // Fundo com gradiente, ilustração aprimorada e marca visual da Plenne
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#017F66]/95 via-[#0057FF]/50 to-[#fff] px-2 py-7 select-none">
       <div className="flex flex-col md:flex-row w-full max-w-3xl bg-white/95 rounded-3xl shadow-2xl overflow-hidden animate-fade-in border-2 border-[--primary]/20">
-        {/* Esquerda: Branding & ilustração */}
-        <div className="hidden md:flex flex-col items-center justify-center flex-1 bg-gradient-to-br from-[--primary]/90 via-[--electric]/25 to-[--gold]/30 px-10 py-12 relative">
-          <div className="absolute top-4 left-4">
-            <span className="inline-flex items-center gap-2 font-extrabold text-xl text-white drop-shadow-md font-poppins">
-              <DollarSign className="w-7 h-7 text-[--gold]" /> Plenne
-            </span>
-          </div>
-          <div className="relative flex-1 flex items-center justify-center w-full z-10">
-            {/* Logo/plenitude (simples ilustração SVG) */}
-            <svg viewBox="0 0 172 130" fill="none" className="w-48 h-48">
-              <ellipse cx="90" cy="112" rx="70" ry="18" fill="#f5b94250"/>
-              <rect x="101" y="70" width="45" height="27" rx="7" fill="#0057FF"/>
-              <rect x="36" y="80" width="63" height="16" rx="5" fill="#017F6680"/>
-              <rect x="60" y="42" width="60" height="30" rx="7" fill="#F5B942cc"/>
-              <rect x="68" y="21" width="36" height="19" rx="5" fill="#fff"/>
-              <rect x="102" y="30" width="19" height="9" rx="2" fill="#0057FF"/>
-              <ellipse cx="146" cy="59" rx="9" ry="9" fill="#fff" opacity="0.18"/>
-            </svg>
-          </div>
-          <div className="relative text-center z-10 mt-8">
-            <span className="font-poppins text-xl font-bold text-white drop-shadow-sm">Sua vida financeira, plena.</span>
-            <p className="text-sm mt-2 text-[#fff9]/90 font-inter">Tecnologia, atitude e inteligência <br /><span className="font-bold text-[--gold]">Pra você!</span></p>
-          </div>
+        <div className="hidden md:flex flex-col items-center justify-center flex-1 relative">
+          <AuthBranding />
         </div>
         {/* Direita: Formulário */}
         <div className="flex-1 flex items-center justify-center px-6 py-10 bg-white bg-opacity-95">

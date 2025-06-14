@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { TrendsChart } from './TrendsChart';
 
 interface ChartData {
   name: string;
@@ -148,47 +149,16 @@ export function FinancialCharts() {
         </div>
       </div>
 
-      {/* Tendência mensal */}
       <Card className="p-4 rounded-xl shadow-lg border-0 bg-gradient-to-br from-[#f8fafc] to-white/70">
         <CardHeader>
           <CardTitle className="text-[--primary] font-bold flex gap-3 items-center">📈 Tendência Receitas x Despesas</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={monthlyTrend}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis tickFormatter={(value) => `R$ ${value.toLocaleString()}`} />
-              <Tooltip 
-                formatter={(value: number) => [`R$ ${Number(value).toFixed(2)}`, '']}
-                labelFormatter={(label) => `Mês: ${label}`}
-                wrapperStyle={{ fontFamily: 'Inter, Poppins, sans-serif', fontSize: 14 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="income"
-                stroke="#2f9e44"
-                strokeWidth={3}
-                name="Receitas"
-                dot={{ r: 5, fill: "#2f9e44", stroke: "#fff" }}
-                activeDot={{ r: 7 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="expense"
-                stroke="#d62828"
-                strokeWidth={3}
-                name="Despesas"
-                dot={{ r: 5, fill: "#d62828", stroke: "#fff" }}
-                activeDot={{ r: 7 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <TrendsChart data={monthlyTrend} />
         </CardContent>
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-        {/* Receitas por categoria */}
         <Card className="shadow rounded-xl border-0 bg-gradient-to-br from-green-50 to-white/80">
           <CardHeader>
             <CardTitle className="flex gap-2 items-center text-green-700">🍀 Receitas por Categoria</CardTitle>
@@ -222,7 +192,6 @@ export function FinancialCharts() {
           </CardContent>
         </Card>
 
-        {/* Despesas por categoria */}
         <Card className="shadow rounded-xl border-0 bg-gradient-to-br from-red-50 to-white/80">
           <CardHeader>
             <CardTitle className="flex gap-2 items-center text-red-700">💸 Despesas por Categoria</CardTitle>
@@ -257,7 +226,6 @@ export function FinancialCharts() {
         </Card>
       </div>
 
-      {/* Comparativo de categorias */}
       <Card className="shadow rounded-xl border-0 bg-gradient-to-r from-yellow-50 via-blue-50 to-green-50">
         <CardHeader>
           <CardTitle className="flex gap-2 items-center text-blue-900">📊 Comparativo Geral por Categoria</CardTitle>
