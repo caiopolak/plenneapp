@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -22,7 +23,10 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { QuickNotifications } from "@/components/dashboard/QuickNotifications";
 import { FinancialTipsCard } from "@/components/dashboard/FinancialTipsCard";
 import { FinancialAlertsList } from "@/components/dashboard/FinancialAlertsList";
-import { BudgetList } from "@/components/budget/BudgetList";
+// import { BudgetList } from "@/components/budget/BudgetList"; // BudgetList temporarily removed
+
+// Card component imports (fix missing references)
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function FinancieApp() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -132,9 +136,9 @@ export default function FinancieApp() {
                         <FinancialAlertsList />
                       </div>
                       {/* Orçamentos Mensais */}
-                      <div>
+                      {/* <div>
                         <BudgetList />
-                      </div>
+                      </div> */}
                     </div>
                   )}
 
