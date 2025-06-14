@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,16 +96,16 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
                   {editId === cat.id ? (
                     <>
                       <Input className="w-36" value={editName} onChange={e => setEditName(e.target.value)} />
-                      <Button onClick={updateCategory} size="xs">Salvar</Button>
-                      <Button onClick={() => setEditId(null)} size="xs" variant="ghost">Cancelar</Button>
+                      <Button onClick={updateCategory} size="sm">Salvar</Button>
+                      <Button onClick={() => setEditId(null)} size="sm" variant="ghost">Cancelar</Button>
                     </>
                   ) : (
                     <>
                       <span className="flex-1">{cat.name}</span>
-                      <Button size="xs" variant="ghost" onClick={() => { setEditId(cat.id); setEditName(cat.name); }}>
+                      <Button size="sm" variant="ghost" onClick={() => { setEditId(cat.id); setEditName(cat.name); }}>
                         <Edit2 className="w-3 h-3" />
                       </Button>
-                      <Button size="xs" variant="ghost" onClick={() => deleteCategory(cat.id)}>
+                      <Button size="sm" variant="ghost" onClick={() => deleteCategory(cat.id)}>
                         <Trash2 className="w-3 h-3" />
                       </Button>
                     </>
