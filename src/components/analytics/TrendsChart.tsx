@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Chart as ChartJS,
@@ -120,7 +119,7 @@ const options: ChartOptions<"line"> = {
     y: {
       grid: {
         color: "#e5e7eb",
-        borderDash: [2, 3], // Moved borderDash into the correct grid object
+        // borderDash: [2, 3], // Moved borderDash into the correct grid object
       },
       ticks: {
         color: "#64748b",
@@ -177,4 +176,3 @@ export function TrendsChart({ data }: TrendsChartProps) {
     </div>
   );
 }
-
