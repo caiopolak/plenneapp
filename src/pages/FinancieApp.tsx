@@ -1,6 +1,11 @@
 
 import React, { useState } from 'react';
 import { Header } from '@/components/layout/Header';
+import { FinancialSummary } from '@/components/dashboard/FinancialSummary';
+import { TransactionList } from '@/components/transactions/TransactionList';
+import { GoalList } from '@/components/goals/GoalList';
+import { InvestmentList } from '@/components/investments/InvestmentList';
+import { FinancialCharts } from '@/components/analytics/FinancialCharts';
 import { SubscriptionPlans } from '@/components/subscription/SubscriptionPlans';
 import { useProfile } from '@/hooks/useProfile';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,54 +27,56 @@ export function FinancieApp() {
     switch (currentSection) {
       case 'dashboard':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Saldo Atual</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">R$ 0,00</div>
-                <p className="text-xs text-muted-foreground">
-                  Sem transações ainda
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Receitas</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">R$ 0,00</div>
-                <p className="text-xs text-muted-foreground">
-                  Este mês
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Despesas</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-red-600">R$ 0,00</div>
-                <p className="text-xs text-muted-foreground">
-                  Este mês
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Economia</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">R$ 0,00</div>
-                <p className="text-xs text-muted-foreground">
-                  Meta mensal
-                </p>
-              </CardContent>
-            </Card>
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+              <p className="text-gray-600 mt-2">Visão geral das suas finanças</p>
+            </div>
+            <FinancialSummary />
+          </div>
+        );
+        
+      case 'transactions':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Transações</h1>
+              <p className="text-gray-600 mt-2">Gerencie suas receitas e despesas</p>
+            </div>
+            <TransactionList />
+          </div>
+        );
+        
+      case 'goals':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Metas Financeiras</h1>
+              <p className="text-gray-600 mt-2">Acompanhe o progresso dos seus objetivos</p>
+            </div>
+            <GoalList />
+          </div>
+        );
+        
+      case 'investments':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Investimentos</h1>
+              <p className="text-gray-600 mt-2">Gerencie sua carteira de investimentos</p>
+            </div>
+            <InvestmentList />
+          </div>
+        );
+        
+      case 'reports':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Relatórios e Análises</h1>
+              <p className="text-gray-600 mt-2">Visualize gráficos e tendências financeiras</p>
+            </div>
+            <FinancialCharts />
           </div>
         );
         
@@ -88,25 +95,121 @@ export function FinancieApp() {
         
       case 'profile':
         return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Perfil do Usuário</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <strong>Nome:</strong> {profile?.full_name || 'Não informado'}
-              </div>
-              <div>
-                <strong>Email:</strong> {profile?.email}
-              </div>
-              <div>
-                <strong>Plano Atual:</strong> {subscription?.plan || 'free'}
-              </div>
-              <div>
-                <strong>Perfil de Risco:</strong> {profile?.risk_profile || 'moderate'}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Perfil do Usuário</h1>
+              <p className="text-gray-600 mt-2">Gerencie suas informações pessoais</p>
+            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Informações Pessoais</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <strong>Nome:</strong> {profile?.full_name || 'Não informado'}
+                  </div>
+                  <div>
+                    <strong>Email:</strong> {profile?.email}
+                  </div>
+                  <div>
+                    <strong>Telefone:</strong> {profile?.phone || 'Não informado'}
+                  </div>
+                  <div>
+                    <strong>Moeda:</strong> {profile?.currency || 'BRL'}
+                  </div>
+                  <div>
+                    <strong>Plano Atual:</strong> {subscription?.plan || 'free'}
+                  </div>
+                  <div>
+                    <strong>Perfil de Risco:</strong> {profile?.risk_profile || 'moderate'}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Configurações de Notificação</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span>Notificações por Email</span>
+                    <span className="text-green-600">Ativado</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Notificações Push</span>
+                    <span className="text-green-600">Ativado</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+        
+      case 'settings':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Configurações</h1>
+              <p className="text-gray-600 mt-2">Personalize sua experiência no FinanciePRO</p>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Preferências</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <h3 className="font-medium">Tema</h3>
+                  <p className="text-sm text-muted-foreground">Claro (padrão)</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="font-medium">Moeda</h3>
+                  <p className="text-sm text-muted-foreground">Real Brasileiro (R$)</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="font-medium">Perfil de Risco</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {profile?.risk_profile === 'conservative' && 'Conservador'}
+                    {profile?.risk_profile === 'moderate' && 'Moderado'}
+                    {profile?.risk_profile === 'aggressive' && 'Arrojado'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Dicas Financeiras</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-4 bg-blue-50 rounded-lg">
+                  <h4 className="font-medium text-blue-800 mb-2">💡 Dica de Hoje</h4>
+                  <p className="text-sm text-blue-600">
+                    Você sabia? Guardar 10% da sua renda por mês pode mudar sua vida em 1 ano.
+                  </p>
+                </div>
+                
+                <div className="p-4 bg-green-50 rounded-lg">
+                  <h4 className="font-medium text-green-800 mb-2">🎯 Desafio da Semana</h4>
+                  <p className="text-sm text-green-600">
+                    Passe 7 dias sem gastar com delivery. Consegue? Registre suas economias!
+                  </p>
+                </div>
+                
+                <div className="p-4 bg-orange-50 rounded-lg">
+                  <h4 className="font-medium text-orange-800 mb-2">⚠️ Alerta Inteligente</h4>
+                  <p className="text-sm text-orange-600">
+                    Use o orçamento mensal para evitar surpresas no final do mês.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         );
         
       default:
