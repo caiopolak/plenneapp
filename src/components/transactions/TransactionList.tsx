@@ -6,23 +6,16 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit2, Trash2, Plus, Search, Download } from 'lucide-react';
+import { Edit2, Trash2, Plus, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { TransactionForm } from './TransactionForm';
+import { Tables } from '@/integrations/supabase/types';
 
-interface Transaction {
-  id: string;
-  type: 'income' | 'expense';
-  amount: number;
-  category: string;
-  description: string;
-  date: string;
-  is_recurring: boolean;
-}
+type Transaction = Tables<'transactions'>;
 
 export function TransactionList() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -127,7 +120,7 @@ export function TransactionList() {
         t.type === 'income' ? 'Receita' : 'Despesa',
         t.category,
         t.description || '',
-        t.amount.toFixed(2)
+        t.amount.toString()
       ])
     ].map(row => row.join(',')).join('\n');
 
@@ -141,11 +134,11 @@ export function TransactionList() {
 
   const totalIncome = filteredTransactions
     .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
   const totalExpense = filteredTransactions
     .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
   const balance = totalIncome - totalExpense;
 
@@ -287,7 +280,7 @@ export function TransactionList() {
                     <span className={`text-lg font-bold ${
                       transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
                     }`}>
-                      {transaction.type === 'income' ? '+' : '-'}R$ {transaction.amount.toFixed(2).replace('.', ',')}
+                      {transaction.type === 'income' ? '+' : '-'}R$ {Number(transaction.amount).toFixed(2).replace('.', ',')}
                     </span>
                     
                     <Dialog>

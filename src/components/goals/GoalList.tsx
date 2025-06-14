@@ -14,15 +14,9 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { GoalForm } from './GoalForm';
+import { Tables } from '@/integrations/supabase/types';
 
-interface Goal {
-  id: string;
-  name: string;
-  target_amount: number;
-  current_amount: number;
-  target_date: string;
-  priority: 'low' | 'medium' | 'high';
-}
+type Goal = Tables<'financial_goals'>;
 
 export function GoalList() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -93,7 +87,7 @@ export function GoalList() {
       const goal = goals.find(g => g.id === goalId);
       if (!goal) return;
 
-      const newCurrentAmount = goal.current_amount + amount;
+      const newCurrentAmount = (goal.current_amount || 0) + amount;
       
       const { error } = await supabase
         .from('financial_goals')
@@ -120,7 +114,7 @@ export function GoalList() {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority: string | null) => {
     switch (priority) {
       case 'high': return 'destructive';
       case 'medium': return 'default';
@@ -129,7 +123,7 @@ export function GoalList() {
     }
   };
 
-  const getPriorityLabel = (priority: string) => {
+  const getPriorityLabel = (priority: string | null) => {
     switch (priority) {
       case 'high': return 'Alta';
       case 'medium': return 'Média';
@@ -180,7 +174,9 @@ export function GoalList() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {goals.map((goal) => {
-            const progress = (goal.current_amount / goal.target_amount) * 100;
+            const currentAmount = goal.current_amount || 0;
+            const targetAmount = goal.target_amount || 0;
+            const progress = targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0;
             const isCompleted = progress >= 100;
             
             return (
@@ -252,19 +248,19 @@ export function GoalList() {
                     <div>
                       <div className="text-sm text-muted-foreground">Atual</div>
                       <div className="font-bold text-green-600">
-                        R$ {goal.current_amount.toFixed(2).replace('.', ',')}
+                        R$ {currentAmount.toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                     <div>
                       <div className="text-sm text-muted-foreground">Meta</div>
                       <div className="font-bold">
-                        R$ {goal.target_amount.toFixed(2).replace('.', ',')}
+                        R$ {targetAmount.toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                     <div>
                       <div className="text-sm text-muted-foreground">Faltam</div>
                       <div className="font-bold text-orange-600">
-                        R$ {Math.max(0, goal.target_amount - goal.current_amount).toFixed(2).replace('.', ',')}
+                        R$ {Math.max(0, targetAmount - currentAmount).toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                   </div>
