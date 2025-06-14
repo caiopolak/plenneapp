@@ -16,7 +16,6 @@ import { InvestmentList } from '@/components/investments/InvestmentList';
 import { SubscriptionPlans } from '@/components/subscription/SubscriptionPlans";
 import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration";
 import Education from './Education';
-import { DashboardQuickActions } from "@/components/dashboard/DashboardQuickActions";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
