@@ -30,11 +30,14 @@
     --muted-foreground: #64748b;
 
     --radius: 0.7rem;
+
+    --border: #e5e7eb; /* Tailwind gray-200 padrão para bordas */
   }
 
   * {
     font-family: 'Poppins', 'Inter', system-ui, sans-serif;
-    /* @apply border-border; */ /* Removed: This class does not exist */
+    /* Use a classe border, ou apenas remova essa linha se não obrigatório */
+    /* @apply border-border; ← REMOVIDO, pois causava erro */
   }
   body {
     font-family: 'Poppins', 'Inter', system-ui, sans-serif;
