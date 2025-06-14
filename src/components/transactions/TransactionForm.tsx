@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSelect } from "../common/WorkspaceSelect";
+import { CategoryManager } from "./CategoryManager";
 
 interface TransactionFormProps {
   onSuccess?: () => void;
@@ -48,6 +49,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
   const [workspaceId, setWorkspaceId] = useState(
     transaction?.workspace_id ?? current?.id ?? ""
   );
+  const [showCustomCat, setShowCustomCat] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +141,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
             label="Workspace"
             disabled={workspaces.length <= 1}
           />
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="type">Tipo</Label>
@@ -169,18 +172,11 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
 
           <div>
             <Label htmlFor="category">Categoria</Label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione uma categoria" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories[type as keyof typeof categories].map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <CategoryManager
+              type={type}
+              value={category}
+              onChange={setCategory}
+            />
           </div>
 
           <div>
@@ -216,13 +212,46 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="recurring"
-              checked={isRecurring}
-              onCheckedChange={setIsRecurring}
-            />
-            <Label htmlFor="recurring">Transação recorrente</Label>
+          {/* Recorrências avançadas */}
+          <div>
+            <div className="flex gap-2 items-center">
+              <Switch
+                id="recurring"
+                checked={isRecurring}
+                onCheckedChange={setIsRecurring}
+              />
+              <Label htmlFor="recurring">Transação recorrente</Label>
+            </div>
+            {isRecurring && (
+              <div className="space-y-2 mt-2">
+                <Label>Padrão de recorrência</Label>
+                <Select
+                  value={transaction?.recurrence_pattern || ""}
+                  onValueChange={(v) => {
+                    // eslint-disable-next-line
+                    transaction ? (transaction.recurrence_pattern = v) : null;
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o padrão" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="monthly">Mensal</SelectItem>
+                    <SelectItem value="weekly">Semanal</SelectItem>
+                    <SelectItem value="yearly">Anual</SelectItem>
+                    <SelectItem value="custom">Personalizado</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Label>Data de término</Label>
+                <Input
+                  type="date"
+                  value={transaction?.recurrence_end_date || ""}
+                  onChange={e => {
+                    if (transaction) transaction.recurrence_end_date = e.target.value;
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">

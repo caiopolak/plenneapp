@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit2, Trash2, Plus, Download } from 'lucide-react';
+import { Edit2, Trash2, Plus, Download, Import } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { TransactionForm } from './TransactionForm';
 import { Tables } from '@/integrations/supabase/types';
+import { ImportTransactionsCSV } from "./ImportTransactionsCSV";
 
 type Transaction = Tables<'transactions'>;
 
@@ -200,6 +200,20 @@ export function TransactionList() {
                     }}
                     onCancel={() => setShowForm(false)}
                   />
+                </DialogContent>
+              </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Import className="w-4 h-4 mr-2" />
+                    Importar CSV
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>Importar transações em lote</DialogTitle>
+                  </DialogHeader>
+                  <ImportTransactionsCSV onSuccess={fetchTransactions} />
                 </DialogContent>
               </Dialog>
               <Button variant="outline" onClick={exportTransactions}>

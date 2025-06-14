@@ -239,6 +239,48 @@ export type Database = {
         }
         Relationships: []
       }
+      transaction_categories: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          type: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          type: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          type?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_categories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transaction_categories_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number
@@ -248,6 +290,8 @@ export type Database = {
           description: string | null
           id: string
           is_recurring: boolean | null
+          recurrence_end_date: string | null
+          recurrence_pattern: string | null
           type: string
           updated_at: string | null
           user_id: string
@@ -261,6 +305,8 @@ export type Database = {
           description?: string | null
           id?: string
           is_recurring?: boolean | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
           type: string
           updated_at?: string | null
           user_id: string
@@ -274,6 +320,8 @@ export type Database = {
           description?: string | null
           id?: string
           is_recurring?: boolean | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
           type?: string
           updated_at?: string | null
           user_id?: string
