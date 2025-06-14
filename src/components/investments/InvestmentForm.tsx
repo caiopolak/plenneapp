@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,8 @@ import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { WorkspaceSelect } from "../common/WorkspaceSelect";
 
 interface InvestmentFormProps {
   onSuccess?: () => void;
@@ -41,11 +42,15 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
   
   const { toast } = useToast();
   const { user } = useAuth();
+  const { current, workspaces } = useWorkspace();
+  const [workspaceId, setWorkspaceId] = useState(
+    investment?.workspace_id ?? current?.id ?? ""
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!name || !type || !amount || !user) {
+
+    if (!name || !type || !amount || !user || !workspaceId) {
       toast({
         variant: "destructive",
         title: "Erro",
@@ -59,6 +64,7 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
     try {
       const investmentData = {
         user_id: user.id,
+        workspace_id: workspaceId,
         name,
         type,
         amount: parseFloat(amount),
@@ -92,7 +98,7 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
       }
 
       if (onSuccess) onSuccess();
-      
+
       // Reset form if it's a new investment
       if (!investment) {
         setName('');
@@ -100,6 +106,7 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
         setAmount('');
         setExpectedReturn('');
         setPurchaseDate(new Date());
+        setWorkspaceId(current?.id ?? "");
       }
 
     } catch (error) {
@@ -123,6 +130,12 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <WorkspaceSelect
+            value={workspaceId}
+            onChange={setWorkspaceId}
+            label="Workspace"
+            disabled={workspaces.length <= 1}
+          />
           <div>
             <Label htmlFor="name">Nome do Investimento</Label>
             <Input

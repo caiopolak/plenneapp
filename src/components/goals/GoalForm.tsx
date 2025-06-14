@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,8 @@ import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { WorkspaceSelect } from "../common/WorkspaceSelect";
 
 interface GoalFormProps {
   onSuccess?: () => void;
@@ -32,11 +33,15 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
   
   const { toast } = useToast();
   const { user } = useAuth();
+  const { current, workspaces } = useWorkspace();
+  const [workspaceId, setWorkspaceId] = useState(
+    goal?.workspace_id ?? current?.id ?? ""
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!name || !targetAmount || !user) {
+
+    if (!name || !targetAmount || !user || !workspaceId) {
       toast({
         variant: "destructive",
         title: "Erro",
@@ -50,6 +55,7 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
     try {
       const goalData = {
         user_id: user.id,
+        workspace_id: workspaceId,
         name,
         target_amount: parseFloat(targetAmount),
         current_amount: parseFloat(currentAmount) || 0,
@@ -83,7 +89,7 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
       }
 
       if (onSuccess) onSuccess();
-      
+
       // Reset form if it's a new goal
       if (!goal) {
         setName('');
@@ -91,6 +97,7 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
         setCurrentAmount('');
         setTargetDate(undefined);
         setPriority('medium');
+        setWorkspaceId(current?.id ?? "");
       }
 
     } catch (error) {
@@ -114,6 +121,12 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <WorkspaceSelect
+            value={workspaceId}
+            onChange={setWorkspaceId}
+            label="Workspace"
+            disabled={workspaces.length <= 1}
+          />
           <div>
             <Label htmlFor="name">Nome da Meta</Label>
             <Input

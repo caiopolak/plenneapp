@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,8 @@ import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { WorkspaceSelect } from "../common/WorkspaceSelect";
 
 interface TransactionFormProps {
   onSuccess?: () => void;
@@ -43,11 +44,15 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
   
   const { toast } = useToast();
   const { user } = useAuth();
+  const { current, workspaces } = useWorkspace();
+  const [workspaceId, setWorkspaceId] = useState(
+    transaction?.workspace_id ?? current?.id ?? ""
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!amount || !category || !user) {
+    if (!amount || !category || !user || !workspaceId) {
       toast({
         variant: "destructive",
         title: "Erro",
@@ -61,6 +66,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
     try {
       const transactionData = {
         user_id: user.id,
+        workspace_id: workspaceId,
         type,
         amount: parseFloat(amount),
         category,
@@ -103,6 +109,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
         setDescription('');
         setDate(new Date());
         setIsRecurring(false);
+        setWorkspaceId(current?.id ?? "");
       }
 
     } catch (error) {
@@ -126,6 +133,12 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <WorkspaceSelect
+            value={workspaceId}
+            onChange={setWorkspaceId}
+            label="Workspace"
+            disabled={workspaces.length <= 1}
+          />
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="type">Tipo</Label>
