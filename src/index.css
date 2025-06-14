@@ -29,13 +29,15 @@
     @apply font-display tracking-tight text-graphite;
   }
   strong, .font-highlight {
-    @apply font-highlight text-primary;
+    font-family: 'Montserrat', 'IBM Plex Sans', 'sans-serif';
+    @apply text-primary;
   }
   .slogan {
     @apply font-display text-lg text-secondary font-semibold;
   }
   .attention-text {
-    @apply text-attention font-highlight;
+    @apply text-attention;
+    font-family: 'Montserrat', 'IBM Plex Sans', 'sans-serif';
   }
   .brand-gradient-text {
     background: linear-gradient(97deg, #003f5c 40%, #2f9e44 95%);
@@ -44,4 +46,3 @@
     background-clip: text;
   }
 }
-
