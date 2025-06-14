@@ -4,8 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, TrendingUp, Shield, Brain, ChevronRight } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 
 interface FinancialTip {
   id: string;
@@ -21,38 +19,73 @@ export function FinancialTips() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-
-  const fetchTips = async () => {
-    try {
-      let query = supabase.from('financial_tips').select('*');
-      
-      if (selectedCategory !== 'all') {
-        query = query.eq('category', selectedCategory);
-      }
-      
-      if (selectedLevel !== 'all') {
-        query = query.eq('difficulty_level', selectedLevel);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setTips(data || []);
-    } catch (error) {
-      console.error('Error fetching tips:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao carregar dicas financeiras"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchTips();
+    // Using mock data since the financial_tips table doesn't exist yet
+    const mockTips: FinancialTip[] = [
+      {
+        id: '1',
+        title: 'Regra dos 50/30/20',
+        content: 'Divida sua renda em: 50% necessidades, 30% desejos, 20% poupança/investimentos. É uma base simples para organizar suas finanças.',
+        category: 'budgeting',
+        difficulty_level: 'beginner',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: '2',
+        title: 'Fundo de Emergência',
+        content: 'Mantenha de 3 a 6 meses de gastos essenciais guardados em uma aplicação de alta liquidez. É sua proteção contra imprevistos.',
+        category: 'emergency_fund',
+        difficulty_level: 'beginner',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: '3',
+        title: 'Diversificação de Investimentos',
+        content: 'Não coloque todos os ovos na mesma cesta. Diversifique entre renda fixa, variável e diferentes setores da economia.',
+        category: 'investments',
+        difficulty_level: 'intermediate',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: '4',
+        title: 'Juros Compostos',
+        content: 'Einstein chamou de "8ª maravilha do mundo". Comece a investir cedo, mesmo pequenas quantias, e deixe o tempo trabalhar a seu favor.',
+        category: 'investments',
+        difficulty_level: 'intermediate',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: '5',
+        title: 'Análise de Fluxo de Caixa',
+        content: 'Acompanhe mensalmente suas entradas e saídas. Identifique padrões e oportunidades de otimização nos seus gastos.',
+        category: 'budgeting',
+        difficulty_level: 'advanced',
+        created_at: new Date().toISOString()
+      },
+      {
+        id: '6',
+        title: 'Planejamento de Aposentadoria',
+        content: 'Comece a se planejar para a aposentadoria o quanto antes. Use a regra dos 4% para calcular quanto precisará acumular.',
+        category: 'investments',
+        difficulty_level: 'advanced',
+        created_at: new Date().toISOString()
+      }
+    ];
+
+    // Filter tips based on selected category and level
+    let filteredTips = mockTips;
+    
+    if (selectedCategory !== 'all') {
+      filteredTips = filteredTips.filter(tip => tip.category === selectedCategory);
+    }
+    
+    if (selectedLevel !== 'all') {
+      filteredTips = filteredTips.filter(tip => tip.difficulty_level === selectedLevel);
+    }
+
+    setTips(filteredTips);
+    setLoading(false);
   }, [selectedCategory, selectedLevel]);
 
   const getCategoryIcon = (category: string) => {
