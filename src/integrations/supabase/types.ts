@@ -204,7 +204,9 @@ export type Database = {
     }
     Functions: {
       check_plan_limits: {
-        Args: { user_uuid: string; resource_type: string }
+        Args:
+          | Record<PropertyKey, never>
+          | { user_uuid: string; resource_type: string }
         Returns: boolean
       }
     }
