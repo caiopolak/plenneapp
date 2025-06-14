@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -22,14 +23,16 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { QuickNotifications } from "@/components/dashboard/QuickNotifications";
 import { FinancialTipsCard } from "@/components/dashboard/FinancialTipsCard";
 import { FinancialAlertsList } from "@/components/dashboard/FinancialAlertsList";
-// import { BudgetList } from "@/components/budget/BudgetList"; // BudgetList temporarily removed
 import ProfilePage from "./ProfilePage";
 // Card component imports (fix missing references)
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TrendsChartCard } from "@/components/analytics/TrendsChartCard";
 import { ExpenseByCategoryChart } from "@/components/analytics/ExpenseByCategoryChart";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+
+// Define types for chart data
+type MonthlyData = { month: string; income: number; expense: number };
+type ExpenseCategoryData = { name: string; value: number; color?: string };
 
 export default function FinancieApp() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -44,8 +47,8 @@ export default function FinancieApp() {
 
   // Custom hooks para gráficos
   const { user } = useAuth();
-  const [trendData, setTrendData] = useState([]);
-  const [expenseByCategoryData, setExpenseByCategoryData] = useState([]);
+  const [trendData, setTrendData] = useState<MonthlyData[]>([]);
+  const [expenseByCategoryData, setExpenseByCategoryData] = useState<ExpenseCategoryData[]>([]);
   const [loadingGraphs, setLoadingGraphs] = useState(true);
 
   useEffect(() => {
@@ -64,15 +67,17 @@ export default function FinancieApp() {
           .gte('date', startDate.toISOString().split('T')[0])
           .lte('date', endDate.toISOString().split('T')[0]);
 
+        type Transaction = { amount: number; type: string; date: string; category: string };
+
         // Formatar dados para gráfico de tendência
-        const monthMap = {};
-        transactions?.forEach(tx => {
+        const monthMap: { [key: string]: { income: number; expense: number; month: string } } = {};
+        (transactions as Transaction[] | null)?.forEach((tx) => {
           const month = tx.date.substring(0, 7);
           if (!monthMap[month]) monthMap[month] = { income: 0, expense: 0, month };
           if (tx.type === "income") monthMap[month].income += Number(tx.amount);
           if (tx.type === "expense") monthMap[month].expense += Number(tx.amount);
         });
-        const trend = Object.values(monthMap)
+        const trend: MonthlyData[] = Object.values(monthMap)
           .sort((a, b) => a.month.localeCompare(b.month))
           .map(d => ({
             month: new Date(d.month + "-01").toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }),
@@ -85,8 +90,8 @@ export default function FinancieApp() {
         const current = new Date();
         const mStart = new Date(current.getFullYear(), current.getMonth(), 1);
         const mEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
-        const expenseCats = {};
-        transactions?.filter(tx =>
+        const expenseCats: { [cat: string]: number } = {};
+        (transactions as Transaction[] | null)?.filter(tx =>
           tx.type === "expense" &&
           new Date(tx.date) >= mStart &&
           new Date(tx.date) <= mEnd
@@ -94,7 +99,7 @@ export default function FinancieApp() {
           expenseCats[tx.category] = (expenseCats[tx.category] || 0) + Number(tx.amount);
         });
         const COLORS = ['#003f5c', '#2f9e44', '#f8961e', '#d62828', '#6f42c1', '#20c997'];
-        const expCatData = Object.entries(expenseCats).map(([name, value], i) => ({
+        const expCatData: ExpenseCategoryData[] = Object.entries(expenseCats).map(([name, value], i) => ({
           name, value, color: COLORS[i % COLORS.length]
         }));
         setExpenseByCategoryData(expCatData);
