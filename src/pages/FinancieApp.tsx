@@ -1,27 +1,22 @@
 
 import React, { useState } from 'react';
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/layout/AppSidebar";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/hooks/useProfile';
+import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { FinancialSummary } from '@/components/dashboard/FinancialSummary';
+import { LogoPlenne } from '../components/layout/LogoPlenne';
+import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
+import { AnalyticsOverview } from "@/components/dashboard/AnalyticsOverview";
+import { FinancialCharts } from "@/components/analytics/FinancialCharts";
 import { TransactionList } from '@/components/transactions/TransactionList';
 import { GoalList } from '@/components/goals/GoalList';
 import { InvestmentList } from '@/components/investments/InvestmentList';
-import { FinancialCharts } from '@/components/analytics/FinancialCharts';
 import { SubscriptionPlans } from '@/components/subscription/SubscriptionPlans';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useAuth } from '@/contexts/AuthContext';
-import { useProfile } from '@/hooks/useProfile';
-import { 
-  LogOut,
-} from 'lucide-react';
-import Education from './Education';
-import { LogoPlenne } from '../components/layout/LogoPlenne';
-import { AppSidebar } from "@/components/layout/AppSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration";
-import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
-import { AnalyticsOverview } from "@/components/dashboard/AnalyticsOverview";
+import Education from './Education';
 import { DashboardQuickActions } from "@/components/dashboard/DashboardQuickActions";
 
 export default function FinancieApp() {
@@ -32,25 +27,27 @@ export default function FinancieApp() {
   return (
     <ProtectedRoute>
       <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-gradient-to-b from-[#F8FAFC] via-[#E7FAF4] to-white">
+        <div className="flex min-h-screen w-full bg-vibrant-gradient md:bg-[radial-gradient(circle_at_10%_25%,rgba(255,86,169,0.15)_0%,rgba(60,142,255,0.09)_45%,#0C0B1A_100%)] transition-colors duration-300 relative">
           <AppSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-          <main className="flex-1 flex flex-col min-h-screen">
-            {/* Modern Header */}
-            <header className="flex flex-col sm:flex-row justify-between items-center px-2 sm:px-6 py-3 sm:py-4 md:px-8 md:py-6 border-b bg-white/90 shadow-sm rounded-t-lg gap-3 sm:gap-0 z-30">
-              <div className="flex items-center gap-3 sm:gap-5">
+          <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+            {/* Header */}
+            <header className="flex flex-col sm:flex-row justify-between items-center px-3 md:px-8 py-3 md:py-6 border-b border-border/50 z-30 bg-surface/95 backdrop-blur-xl shadow-neon gap-4 transition-all">
+              <div className="flex items-center gap-4">
                 <LogoPlenne />
-                <span className="ml-1 sm:ml-2 text-base sm:text-lg font-semibold text-[#017F66] hidden xs:inline">Sua vida financeira, plena.</span>
+                <span className="ml-2 text-lg md:text-2xl font-display vibrant-text tracking-wide hidden xs:inline drop-shadow">Sua vida financeira plena & vibrante.</span>
               </div>
-              <div className="flex items-center gap-3 sm:gap-6 mt-2 sm:mt-0">
+              <div className="flex items-center gap-5">
                 <div className="text-right">
-                  <p className="text-sm sm:text-base font-semibold text-[--primary]">{profile?.full_name || "Usuário"}</p>
-                  <p className="text-xs text-gray-400 font-inter">{profile?.email}</p>
+                  <p className="text-base md:text-lg font-semibold text-accent vibrant-text">
+                    {profile?.full_name || "Usuário"}
+                  </p>
+                  <p className="text-xs text-white/60 font-inter">{profile?.email}</p>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={signOut}
-                  className="text-gray-800 hover:text-[--accent] hover:bg-[--accent]/10"
+                  className="text-white hover:text-primary hover:bg-primary/15 border border-border/40 shadow-vibrant"
                   aria-label="Sair"
                 >
                   <LogOut className="w-4 h-4" />
@@ -58,64 +55,99 @@ export default function FinancieApp() {
               </div>
             </header>
 
-            {/* Dashboard Section */}
-            <section className="flex-1 w-full px-1 xs:px-2 sm:px-4 md:px-8 pt-1 sm:pt-6 pb-3 sm:pb-8 overflow-y-auto bg-gradient-to-br from-green-50/25 via-blue-50/25 to-white">
-              <div className="max-w-[1160px] mx-auto w-full">
-              {activeTab === "dashboard" && (
-                <div className="space-y-6 sm:space-y-8 mb-10 animate-fade-in">
-                  {/* Novo card de boas-vindas */}
-                  <div className="mb-2 sm:mb-3">
-                    <WelcomeCard 
-                      name={profile?.full_name?.split(" ")[0] || "Usuário"}
-                      plan={subscription?.plan}
-                      onViewReports={() => setActiveTab("analytics")}
-                    />
+            {/* Main Content */}
+            <section className="flex-1 w-full px-1 xs:px-2 sm:px-4 md:px-8 pt-2 sm:pt-6 pb-3 sm:pb-8 bg-vibrant-mobile md:bg-transparent transition-colors duration-500 overflow-y-auto">
+              <div className="max-w-[1250px] mx-auto w-full">
+                {activeTab === "dashboard" && (
+                  <div className="space-y-8 mb-10 animate-fade-in">
+                    {/* Card de boas-vindas vibrante */}
+                    <div className="mb-3">
+                      <WelcomeCard 
+                        name={profile?.full_name?.split(" ")[0] || "Usuário"}
+                        plan={subscription?.plan}
+                        onViewReports={() => setActiveTab("analytics")}
+                      />
+                    </div>
+                    <AnalyticsOverview />
+                    {/* GRID Visualizações + Ações rápidas */}
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-8">
+                      <div className="xl:col-span-2 shadow-vibrant rounded-2xl border-none relative overflow-hidden bg-surface/80 backdrop-blur-lg">
+                        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-br from-purple-500/30 via-pink-500/15 to-blue-500/10 rounded-2xl"/>
+                        <div className="relative z-10">
+                          <div className="px-7 pt-7">
+                            <h2 className="text-xl font-display vibrant-text mb-3">Análises Visuais</h2>
+                          </div>
+                          <FinancialCharts />
+                        </div>
+                      </div>
+                      <div className="shadow-vibrant rounded-2xl border-none bg-gradient-to-br from-vibrant-pink/10 via-vibrant-purple/10 to-vibrant-blue/10 backdrop-blur-lg">
+                        <div className="px-6 pt-6">
+                          <h2 className="text-xl font-display text-white/90">Ações rápidas</h2>
+                        </div>
+                        <div className="px-4 pb-8 pt-2">
+                          <DashboardQuickActions />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  
-                  {/* Overview Dinâmico */}
-                  <AnalyticsOverview />
+                )}
 
-                  {/* Alinhamento visual com Analytics e Ações */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-7 sm:mt-10">
-                    <Card className="col-span-2 bg-[#f5f8ff] border-[--electric]/20 shadow-lg animate-fade-in">
-                      <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">Análises Visuais</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <FinancialCharts />
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-br from-[--gold]/10 to-[--emerald]/10 border-none shadow-xl animate-fade-in">
-                      <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">Ações rápidas</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <DashboardQuickActions />
-                      </CardContent>
-                    </Card>
+                {activeTab === "transactions" && (
+                  <div className="animate-fade-in px-0 sm:px-2 md:px-6">
+                    <h1 className="font-display text-3xl vibrant-text mb-6">Transações</h1>
+                    <TransactionList />
                   </div>
-                </div>
-              )}
-
-              {activeTab === "transactions" && <TransactionList />}
-              {activeTab === "goals" && <GoalList />}
-              {activeTab === "investments" && <InvestmentList />}
-              {activeTab === "analytics" && <FinancialCharts />}
-              {activeTab === "education" && <Education />}
-              {activeTab === "whatsapp" && <WhatsAppIntegration />}
-              {activeTab === "subscription" && <SubscriptionPlans />}
+                )}
+                {activeTab === "goals" && (
+                  <div className="animate-fade-in px-0 sm:px-2 md:px-6">
+                    <h1 className="font-display text-3xl text-vibrant-gold mb-6">Metas</h1>
+                    <GoalList />
+                  </div>
+                )}
+                {activeTab === "investments" && (
+                  <div className="animate-fade-in px-0 sm:px-2 md:px-6">
+                    <h1 className="font-display text-3xl text-vibrant-blue mb-6">Investimentos</h1>
+                    <InvestmentList />
+                  </div>
+                )}
+                {activeTab === "analytics" && (
+                  <div className="animate-fade-in px-0 sm:px-2 md:px-6">
+                    <h1 className="font-display text-3xl vibrant-text mb-6">Análises</h1>
+                    <FinancialCharts />
+                  </div>
+                )}
+                {activeTab === "education" && (
+                  <div className="animate-fade-in px-0 sm:px-2 md:px-6">
+                    <h1 className="font-display text-3xl vibrant-text mb-7">Educação Financeira</h1>
+                    <Education />
+                  </div>
+                )}
+                {activeTab === "whatsapp" && (
+                  <div className="animate-fade-in px-0 sm:px-2 md:px-6">
+                    <h1 className="font-display text-3xl text-vibrant-green mb-6">WhatsApp IA</h1>
+                    <WhatsAppIntegration />
+                  </div>
+                )}
+                {activeTab === "subscription" && (
+                  <div className="animate-fade-in px-0 sm:px-2 md:px-6">
+                    <h1 className="font-display text-3xl text-vibrant-purple mb-6">Assinatura</h1>
+                    <SubscriptionPlans />
+                  </div>
+                )}
               </div>
             </section>
 
-            <footer className="bg-[--primary] text-white py-6 sm:py-8 mt-8 text-center">
-              <span className="text-xs sm:text-sm text-white/80">
+            <footer className="bg-primary text-white py-6 sm:py-8 mt-8 text-center rounded-t-[2.5rem] shadow-neon font-display tracking-wide">
+              <span className="text-xs sm:text-base text-white/80">
                 © 2025 Plenne. Educação, atitude e inteligência financeira sem complicação.
               </span>
             </footer>
           </main>
         </div>
+        {/* Elementos de fundo dinâmico */}
+        <div className="fixed left-12 top-[-90px] w-[290px] h-[200px] bg-[radial-gradient(ellipse_at_center,_rgba(255,86,169,0.18)_0%,_transparent_74%)] z-0 animate-blob pointer-events-none" />
+        <div className="fixed bottom-[-100px] right-[-80px] w-[340px] h-[260px] bg-[radial-gradient(circle_at_bottom_right,_rgba(60,142,255,0.14)_0%,_transparent_70%)] z-0 animate-blob pointer-events-none" />
       </SidebarProvider>
     </ProtectedRoute>
   );
 }
-
