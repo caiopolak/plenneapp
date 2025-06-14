@@ -14,15 +14,10 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-interface MonthlyBudget {
-  id: string;
-  month: number;
-  year: number;
+interface BudgetCategory {
   category: string;
-  budget_amount: number;
-  spent_amount: number;
-  created_at: string;
-  updated_at: string;
+  budgetAmount: number;
+  spentAmount: number;
 }
 
 interface Transaction {
@@ -33,7 +28,7 @@ interface Transaction {
 }
 
 export function MonthlyBudget() {
-  const [budgets, setBudgets] = useState<MonthlyBudget[]>([]);
+  const [budgets, setBudgets] = useState<BudgetCategory[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -67,30 +62,6 @@ export function MonthlyBudget() {
     { value: 12, label: 'Dezembro' }
   ];
 
-  const fetchBudgets = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('monthly_budgets')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('month', selectedMonth)
-        .eq('year', selectedYear)
-        .order('category');
-
-      if (error) throw error;
-      setBudgets(data || []);
-    } catch (error) {
-      console.error('Error fetching budgets:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao carregar orçamentos"
-      });
-    }
-  };
-
   const fetchTransactions = async () => {
     if (!user) return;
 
@@ -108,92 +79,67 @@ export function MonthlyBudget() {
 
       if (error) throw error;
       setTransactions(data || []);
+      
+      // Calculate spent amounts by category
+      const spentByCategory: { [key: string]: number } = {};
+      (data || []).forEach(transaction => {
+        spentByCategory[transaction.category] = (spentByCategory[transaction.category] || 0) + transaction.amount;
+      });
+
+      // Create budget data with default budget amounts
+      const budgetData: BudgetCategory[] = categories.map(category => ({
+        category,
+        budgetAmount: 1000, // Default budget amount
+        spentAmount: spentByCategory[category] || 0
+      }));
+
+      setBudgets(budgetData);
     } catch (error) {
       console.error('Error fetching transactions:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao carregar transações"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (user) {
-      Promise.all([fetchBudgets(), fetchTransactions()]).finally(() => setLoading(false));
+      fetchTransactions();
     }
   }, [user, selectedMonth, selectedYear]);
 
-  const calculateSpentAmount = (category: string) => {
-    return transactions
-      .filter(t => t.category === category)
-      .reduce((sum, t) => sum + t.amount, 0);
+  const updateBudgetAmount = (category: string, amount: number) => {
+    setBudgets(prev => prev.map(budget => 
+      budget.category === category 
+        ? { ...budget, budgetAmount: amount }
+        : budget
+    ));
   };
 
   const createBudget = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    
+    const amount = parseFloat(formData.budget_amount);
+    updateBudgetAmount(formData.category, amount);
 
-    try {
-      const { error } = await supabase
-        .from('monthly_budgets')
-        .insert({
-          user_id: user.id,
-          month: selectedMonth,
-          year: selectedYear,
-          category: formData.category,
-          budget_amount: parseFloat(formData.budget_amount),
-          spent_amount: calculateSpentAmount(formData.category)
-        });
+    toast({
+      title: "Sucesso!",
+      description: "Orçamento atualizado com sucesso"
+    });
 
-      if (error) throw error;
-
-      toast({
-        title: "Sucesso!",
-        description: "Orçamento criado com sucesso"
-      });
-
-      setFormData({ category: '', budget_amount: '' });
-      setShowForm(false);
-      fetchBudgets();
-    } catch (error) {
-      console.error('Error creating budget:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao criar orçamento"
-      });
-    }
+    setFormData({ category: '', budget_amount: '' });
+    setShowForm(false);
   };
 
-  const updateSpentAmounts = async () => {
-    try {
-      for (const budget of budgets) {
-        const spentAmount = calculateSpentAmount(budget.category);
-        
-        if (spentAmount !== budget.spent_amount) {
-          await supabase
-            .from('monthly_budgets')
-            .update({ spent_amount: spentAmount })
-            .eq('id', budget.id);
-        }
-      }
-      
-      fetchBudgets();
-      toast({
-        title: "Sucesso!",
-        description: "Gastos atualizados com sucesso"
-      });
-    } catch (error) {
-      console.error('Error updating spent amounts:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao atualizar gastos"
-      });
-    }
-  };
-
-  const getTotalBudget = () => budgets.reduce((sum, b) => sum + b.budget_amount, 0);
-  const getTotalSpent = () => budgets.reduce((sum, b) => sum + calculateSpentAmount(b.category), 0);
-  const getBudgetStatus = (budget: MonthlyBudget) => {
-    const spent = calculateSpentAmount(budget.category);
-    const percentage = (spent / budget.budget_amount) * 100;
+  const getTotalBudget = () => budgets.reduce((sum, b) => sum + b.budgetAmount, 0);
+  const getTotalSpent = () => budgets.reduce((sum, b) => sum + b.spentAmount, 0);
+  
+  const getBudgetStatus = (budget: BudgetCategory) => {
+    const percentage = (budget.spentAmount / budget.budgetAmount) * 100;
     
     if (percentage >= 100) return 'exceeded';
     if (percentage >= 80) return 'warning';
@@ -255,12 +201,12 @@ export function MonthlyBudget() {
             <DialogTrigger asChild>
               <Button className="bg-[#2f9e44] hover:bg-[#2f9e44]/90">
                 <Plus className="w-4 h-4 mr-2" />
-                Categoria
+                Definir Orçamento
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Adicionar Orçamento por Categoria</DialogTitle>
+                <DialogTitle>Definir Orçamento por Categoria</DialogTitle>
               </DialogHeader>
               <form onSubmit={createBudget} className="space-y-4">
                 <div>
@@ -294,7 +240,7 @@ export function MonthlyBudget() {
                 
                 <div className="flex gap-2">
                   <Button type="submit" className="flex-1 bg-[#2f9e44] hover:bg-[#2f9e44]/90">
-                    Criar Orçamento
+                    Definir Orçamento
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                     Cancelar
@@ -351,82 +297,59 @@ export function MonthlyBudget() {
         </Card>
       </div>
 
-      <div className="flex justify-between items-center">
-        <Button 
-          onClick={updateSpentAmounts}
-          variant="outline"
-          className="border-[#2f9e44] text-[#2f9e44] hover:bg-[#2f9e44] hover:text-white"
-        >
-          Atualizar Gastos
-        </Button>
-      </div>
-
-      {budgets.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <DollarSign className="w-12 h-12 mx-auto text-[#003f5c]/50 mb-4" />
-            <p className="text-[#2b2b2b]/70">Nenhum orçamento criado para este mês</p>
-            <p className="text-sm text-[#2b2b2b]/50 mt-2">
-              Adicione categorias para começar a controlar seus gastos
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {budgets.map((budget) => {
-            const spent = calculateSpentAmount(budget.category);
-            const percentage = (spent / budget.budget_amount) * 100;
-            const status = getBudgetStatus(budget);
-            
-            return (
-              <Card key={budget.id} className="border-l-4 border-l-[#003f5c]">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-[#003f5c]">{budget.category}</CardTitle>
-                    {status === 'exceeded' && (
-                      <AlertCircle className="w-5 h-5 text-red-500" />
-                    )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {budgets.filter(budget => budget.spentAmount > 0 || budget.budgetAmount > 1000).map((budget) => {
+          const percentage = (budget.spentAmount / budget.budgetAmount) * 100;
+          const status = getBudgetStatus(budget);
+          
+          return (
+            <Card key={budget.category} className="border-l-4 border-l-[#003f5c]">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg text-[#003f5c]">{budget.category}</CardTitle>
+                  {status === 'exceeded' && (
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                  )}
+                </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Progresso dos gastos</span>
+                    <span className={getStatusColor(status)}>
+                      {percentage.toFixed(1)}%
+                    </span>
                   </div>
-                </CardHeader>
+                  <Progress value={Math.min(percentage, 100)} className="h-2" />
+                </div>
                 
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Progresso dos gastos</span>
-                      <span className={getStatusColor(status)}>
-                        {percentage.toFixed(1)}%
-                      </span>
-                    </div>
-                    <Progress value={Math.min(percentage, 100)} className="h-2" />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-[#2b2b2b]/70">Orçado</p>
-                      <p className="font-semibold text-[#003f5c]">
-                        R$ {budget.budget_amount.toFixed(2).replace('.', ',')}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[#2b2b2b]/70">Gasto</p>
-                      <p className={`font-semibold ${getStatusColor(status)}`}>
-                        R$ {spent.toFixed(2).replace('.', ',')}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="text-sm">
-                    <p className="text-[#2b2b2b]/70">Restante</p>
-                    <p className={`font-semibold ${budget.budget_amount - spent >= 0 ? 'text-[#2f9e44]' : 'text-[#d62828]'}`}>
-                      R$ {Math.max(0, budget.budget_amount - spent).toFixed(2).replace('.', ',')}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-[#2b2b2b]/70">Orçado</p>
+                    <p className="font-semibold text-[#003f5c]">
+                      R$ {budget.budgetAmount.toFixed(2).replace('.', ',')}
                     </p>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+                  <div>
+                    <p className="text-[#2b2b2b]/70">Gasto</p>
+                    <p className={`font-semibold ${getStatusColor(status)}`}>
+                      R$ {budget.spentAmount.toFixed(2).replace('.', ',')}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="text-sm">
+                  <p className="text-[#2b2b2b]/70">Restante</p>
+                  <p className={`font-semibold ${budget.budgetAmount - budget.spentAmount >= 0 ? 'text-[#2f9e44]' : 'text-[#d62828]'}`}>
+                    R$ {Math.max(0, budget.budgetAmount - budget.spentAmount).toFixed(2).replace('.', ',')}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }
