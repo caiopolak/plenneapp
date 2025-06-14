@@ -34,7 +34,7 @@
 
   * {
     font-family: 'Poppins', 'Inter', system-ui, sans-serif;
-    @apply border-border;
+    /* @apply border-border; */ /* Removed: This class does not exist */
   }
   body {
     font-family: 'Poppins', 'Inter', system-ui, sans-serif;
