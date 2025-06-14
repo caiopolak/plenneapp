@@ -1,14 +1,20 @@
+
 import React from "react";
 import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  CartesianGrid,
-  XAxis,
-  YAxis,
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Filler,
   Tooltip,
   Legend,
-} from "recharts";
+  ChartOptions,
+  ChartData,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Filler, Tooltip, Legend);
 
 interface TrendsChartProps {
   data: { month: string; income: number; expense: number }[];
@@ -17,110 +23,158 @@ interface TrendsChartProps {
 const currencyFormat = (value: number) =>
   `R$ ${value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
-const CustomTooltip = ({
-  active,
-  payload,
-  label,
-}: {
-  active?: boolean;
-  payload?: Array<any>;
-  label?: string;
-}) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="rounded-xl border border-gray-200 bg-white/95 px-3 py-2 shadow-xl backdrop-blur-md font-poppins animate-fade-in">
-        <div className="text-xs text-muted-foreground mb-1">Mês: <span className="font-bold text-gray-900">{label}</span></div>
-        {payload.map((entry, i) => (
-          <div key={entry.dataKey} className="flex items-center gap-2 my-1">
-            <span
-              className="inline-block rounded-full"
-              style={{
-                background: entry.color,
-                width: 12,
-                height: 12,
-              }}
-            />
-            <span className="font-semibold">{entry.name}:</span>
-            <span className="ml-1 font-mono">{currencyFormat(entry.value)}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
+// Gerar labels e datasets a partir dos dados recebidos
+function generateChartData(data: TrendsChartProps["data"]): ChartData<"line"> {
+  return {
+    labels: data.map((entry) => entry.month),
+    datasets: [
+      {
+        label: "Receitas",
+        data: data.map((entry) => entry.income),
+        borderColor: "#2f9e44",
+        backgroundColor: ctx => {
+          // Gradiente verde suave para área
+          const chart = ctx.chart;
+          const {ctx: canvasCtx, chartArea} = chart;
+          if (!chartArea) return "rgba(47, 158, 68, 0.14)";
+          const gradient = canvasCtx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          gradient.addColorStop(0, "rgba(47, 158, 68, 0.39)");
+          gradient.addColorStop(1, "rgba(47,158,68,0.01)");
+          return gradient;
+        },
+        fill: true,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#2f9e44",
+        tension: 0.4
+      },
+      {
+        label: "Despesas",
+        data: data.map((entry) => entry.expense),
+        borderColor: "#d62828",
+        backgroundColor: ctx => {
+          // Gradiente vermelho suave para área
+          const chart = ctx.chart;
+          const {ctx: canvasCtx, chartArea} = chart;
+          if (!chartArea) return "rgba(214, 40, 40, 0.09)";
+          const gradient = canvasCtx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          gradient.addColorStop(0, "rgba(214, 40, 40, 0.36)");
+          gradient.addColorStop(1, "rgba(214,40,40,0.01)");
+          return gradient;
+        },
+        fill: true,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#d62828",
+        tension: 0.4
+      },
+    ],
+  };
+}
 
-const CustomLegend = (props: any) => {
-  const { payload } = props;
-  return (
-    <div className="flex gap-7 text-base font-poppins mt-2">
-      {payload.map((entry: any) => (
-        <div key={entry.dataKey} className="flex items-center gap-1">
-          <span
-            className="inline-block rounded-full"
-            style={{ width: 12, height: 12, background: entry.color }}
-          />
-          <span className="font-semibold">{entry.value}</span>
-        </div>
-      ))}
-    </div>
-  );
+const options: ChartOptions<"line"> = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: true,
+      labels: {
+        color: "#374151",
+        font: { family: "Poppins, Inter, sans-serif", size: 15, weight: "bold" },
+        boxWidth: 18,
+        padding: 18,
+      },
+    },
+    tooltip: {
+      enabled: true,
+      backgroundColor: "#fff",
+      borderColor: "#e5e7eb",
+      borderWidth: 1.5,
+      titleColor: "#374151",
+      bodyColor: "#1C1C1C",
+      titleFont: { family: "Poppins, Inter, sans-serif", weight: "bold" },
+      bodyFont: { family: "Poppins, Inter, sans-serif" },
+      callbacks: {
+        label: (ctx) => {
+          let label = ctx.dataset.label || "";
+          if (label) label += ": ";
+          label += currencyFormat(ctx.parsed.y);
+          return label;
+        },
+        title: (ctx) => `Mês: ${ctx[0].label}`,
+      },
+      padding: 12,
+      caretSize: 7,
+      cornerRadius: 8,
+      displayColors: true,
+      usePointStyle: true,
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        color: "#64748b",
+        font: { family: "Poppins, Inter, sans-serif", size: 13 },
+      },
+    },
+    y: {
+      grid: {
+        borderDash: [2, 3],
+        color: "#e5e7eb",
+      },
+      ticks: {
+        color: "#64748b",
+        font: { family: "Poppins, Inter, sans-serif", size: 13 },
+        callback: function(value) {
+          return currencyFormat(Number(value));
+        }
+      },
+    },
+  },
+  interaction: {
+    mode: "index" as const,
+    intersect: false,
+  },
+  elements: {
+    point: {
+      radius: 6,
+      borderWidth: 2,
+      hoverRadius: 9,
+      hoverBorderWidth: 3,
+      backgroundColor: "#fff",
+    },
+    line: {
+      borderWidth: 3,
+      capBezierPoints: true,
+    }
+  },
+  layout: {
+    padding: {
+      top: 18,
+      left: 12,
+      right: 18,
+      bottom: 8,
+    }
+  },
+  animation: {
+    duration: 900,
+    easing: "easeInOutQuart"
+  }
 };
 
 export function TrendsChart({ data }: TrendsChartProps) {
-  return (
-    <ResponsiveContainer width="100%" height={320}>
-      <AreaChart
-        data={data}
-        margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
-      >
-        <defs>
-          <linearGradient id="incomeColor" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#2f9e44" stopOpacity={0.85} />
-            <stop offset="95%" stopColor="#2f9e44" stopOpacity={0.1} />
-          </linearGradient>
-          <linearGradient id="expenseColor" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#d62828" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#d62828" stopOpacity={0.08} />
-          </linearGradient>
-        </defs>
+  if (!data || data.length === 0) {
+    return (
+      <div className="h-80 flex items-center justify-center text-muted-foreground">
+        Sem dados para exibir neste período.
+      </div>
+    );
+  }
 
-        <CartesianGrid strokeDasharray="3 5" className="opacity-70" />
-        <XAxis
-          dataKey="month"
-          tick={{ fontFamily: "Inter, Poppins, sans-serif", fontSize: 13, fill: "#64748b" }}
-        />
-        <YAxis
-          tickFormatter={currencyFormat}
-          tick={{ fontFamily: "Inter, Poppins, sans-serif", fontSize: 13, fill: "#64748b" }}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend content={<CustomLegend />} iconType="circle" />
-        <Area
-          type="monotone"
-          dataKey="income"
-          name="Receitas"
-          stroke="#2f9e44"
-          fill="url(#incomeColor)"
-          fillOpacity={1}
-          strokeWidth={3}
-          activeDot={{ r: 7 }}
-          dot={{ r: 5, fill: "#2f9e44", stroke: "#fff", strokeWidth: 2 }}
-          isAnimationActive
-        />
-        <Area
-          type="monotone"
-          dataKey="expense"
-          name="Despesas"
-          stroke="#d62828"
-          fill="url(#expenseColor)"
-          fillOpacity={1}
-          strokeWidth={3}
-          activeDot={{ r: 7 }}
-          dot={{ r: 5, fill: "#d62828", stroke: "#fff", strokeWidth: 2 }}
-          isAnimationActive
-        />
-      </AreaChart>
-    </ResponsiveContainer>
+  return (
+    <div className="w-full h-[320px] px-2 py-2 rounded-2xl bg-white/85 shadow border border-gray-50 animate-fade-in">
+      <Line data={generateChartData(data)} options={options} />
+    </div>
   );
 }
+
