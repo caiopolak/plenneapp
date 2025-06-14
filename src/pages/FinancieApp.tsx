@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -24,7 +23,7 @@ import { QuickNotifications } from "@/components/dashboard/QuickNotifications";
 import { FinancialTipsCard } from "@/components/dashboard/FinancialTipsCard";
 import { FinancialAlertsList } from "@/components/dashboard/FinancialAlertsList";
 // import { BudgetList } from "@/components/budget/BudgetList"; // BudgetList temporarily removed
-
+import ProfilePage from "./ProfilePage";
 // Card component imports (fix missing references)
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
@@ -179,6 +178,11 @@ export default function FinancieApp() {
                     <div className="animate-fade-in">
                       <h1 className="font-display text-4xl text-attention mb-8">Sua Assinatura</h1>
                       <SubscriptionPlans />
+                    </div>
+                  )}
+                  {activeTab === "profile" && (
+                    <div className="animate-fade-in">
+                      <ProfilePage />
                     </div>
                   )}
                 </div>
