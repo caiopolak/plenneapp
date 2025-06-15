@@ -13,7 +13,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
 import { Tables } from '@/integrations/supabase/types';
-import { calculateTotalInvested, calculateTotalCurrentValue } from './utils/investmentCalculations';
 import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
 import { ImportTransactionsCSV } from "@/components/transactions/ImportTransactionsCSV";
 
@@ -107,6 +106,16 @@ export function InvestmentList() {
     return <div>Carregando investimentos...</div>;
   }
 
+  // Insert calculations locally since utils file is missing
+  function calculateTotalInvested(investments: Investment[]) {
+    return investments.reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
+  }
+  function calculateTotalCurrentValue(investments: Investment[]) {
+    // There is no "current_amount" in your schema:
+    // If you add this field, re-enable this logic; for now, just use the invested value as a placeholder.
+    return investments.reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
+  }
+
   return (
     <div className="space-y-6">
       {/* Toolbar / Botões / Top Actions Block */}
@@ -117,7 +126,7 @@ export function InvestmentList() {
             variant="outline"
             size="sm"
             className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
-            onClick={exportInvestmentsCsv}
+            onClick={() => exportInvestmentsCsv(filteredInvestments)}
           >
             <Download className="w-4 h-4" />
             Exportar CSV
@@ -224,13 +233,13 @@ export function InvestmentList() {
                     <div className="text-right">
                       <div className="text-sm text-muted-foreground font-text">Valor Investido</div>
                       <div className="font-bold text-[--secondary] font-display">
-                        R$ {Number(investment.invested_amount).toFixed(2).replace('.', ',')}
+                        R$ {Number(investment.amount).toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-muted-foreground font-text">Valor Atual</div>
                       <div className="font-bold text-[--primary] font-display">
-                        R$ {Number(investment.current_amount).toFixed(2).replace('.', ',')}
+                        R$ {Number(investment.amount).toFixed(2).replace('.', ',')}
                       </div>
                     </div>
 
