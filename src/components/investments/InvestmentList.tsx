@@ -116,15 +116,15 @@ export function InvestmentList() {
     return <div>Carregando investimentos...</div>;
   }
 
-  // Paleta visual harmonizada conforme identidade
+  // Paleta visual harmonizada conforme identidade (ajuste para combinar com estética e eliminar laranja em destaques/alertas!)
   const getTypeStyles = (type: string) => {
     const map: any = {
-      stocks:    { label: "Ações",       bg: "bg-[#003f5c]",   text: "text-white" },
-      bonds:     { label: "Títulos",     bg: "bg-[#2f9e44]",   text: "text-white" },
-      crypto:    { label: "Criptomoedas",bg: "bg-[#f8961e]",   text: "text-white" },
-      real_estate:{label: "Imóveis",     bg: "bg-[#f4f4f4] border border-[#003f5c]/40", text: "text-[#003f5c]" },
-      funds:     { label: "Fundos",      bg: "bg-[#eaf6ee]",   text: "text-[#2f9e44]" },
-      savings:   { label: "Poupança",    bg: "bg-white border border-[#2f9e44]/40", text: "text-[#2f9e44]" },
+      stocks:      { label: "Ações",       bg: "bg-[#003f5c]",   text: "text-white" },
+      bonds:       { label: "Títulos",     bg: "bg-[#2f9e44]",   text: "text-white" },
+      crypto:      { label: "Criptomoedas",bg: "bg-[#eaf6ee]",   text: "text-[#003f5c] dark:text-[#003f5c]" },
+      real_estate: { label: "Imóveis",     bg: "bg-[#f4f4f4] border border-[#003f5c]/20", text: "text-[#2f9e44]" },
+      funds:       { label: "Fundos",      bg: "bg-[#f4f4f4]",   text: "text-[#003f5c]" },
+      savings:     { label: "Poupança",    bg: "bg-white border border-[#2f9e44]/40", text: "text-[#2f9e44]" },
     };
     return map[type] || { label: type, bg: "bg-[#003f5c]", text: "text-white" };
   };
@@ -154,13 +154,14 @@ export function InvestmentList() {
           </DialogContent>
         </Dialog>
       </div>
-
-      {/* Cards informativos harmonizados */}
+      
+      {/* Cards informativos harmonizados (cores ajustadas, sem laranja) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-gradient-to-tr from-[#003f5c] to-[#2f9e44] shadow-card border-none">
+          {/* Total Investido */}
           <CardContent className="p-6 flex flex-col items-start gap-2">
             <div className="text-sm text-white/90 font-medium flex items-center gap-2 font-display">
-              <TrendingUp className="w-5 h-5 text-[#f8961e]" /> Total Investido
+              <TrendingUp className="w-5 h-5 text-[#f4f4f4]" /> Total Investido
             </div>
             <div className="text-3xl font-extrabold text-white drop-shadow font-display">
               R$ {totalInvested.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
@@ -168,6 +169,7 @@ export function InvestmentList() {
           </CardContent>
         </Card>
         <Card className="bg-[#f4f4f4] shadow-card border-0">
+          {/* Nº Investimentos */}
           <CardContent className="p-6 flex flex-col items-start gap-2">
             <div className="text-sm text-[#003f5c] font-medium flex items-center gap-2 font-display">
               <Plus className="w-5 h-5 text-[#2f9e44]" /> Nº Investimentos
@@ -175,7 +177,8 @@ export function InvestmentList() {
             <div className="text-3xl font-extrabold text-[#003f5c] drop-shadow font-display">{investments.length}</div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-tr from-[#f8961e]/90 to-[#f8961e]/40 shadow-card border-0">
+        <Card className="bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 shadow-card border-0">
+          {/* Retorno Médio Esperado */}
           <CardContent className="p-6 flex flex-col items-start gap-2">
             <div className="text-sm text-white/90 font-medium flex items-center gap-2 font-display">
               <TrendingUp className="w-5 h-5 text-white/80" /> Retorno Médio Esperado
@@ -295,12 +298,13 @@ export function InvestmentList() {
         )}
       </div>
 
-      {/* Dicas & Alertas – AGORA AO FINAL, cores harmonizadas */}
+      {/* Dicas & Alertas – AGORA cores ajustadas (sem laranja) */}
       <div className="mt-10">
-        <Card className="bg-gradient-to-r from-[#f8961e]/30 via-yellow-50 to-white border-0">
+        <Card className="bg-[#f4f4f4] border-0">
           <CardHeader className="flex flex-row gap-2 items-center">
-            <Lightbulb className="w-6 h-6 text-[#f8961e]" />
-            <CardTitle className="text-[#f8961e] text-lg font-bold font-display">Dicas de Investimento</CardTitle>
+            {/* Ícone azul petróleo no lugar do laranja */}
+            <Lightbulb className="w-6 h-6 text-[#003f5c]" />
+            <CardTitle className="text-[#003f5c] text-lg font-bold font-display">Dicas de Investimento</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-5 text-base text-[#2b2b2b] space-y-1 font-text">
@@ -308,6 +312,7 @@ export function InvestmentList() {
               <li>Acompanhe os resultados periodicamente e ajuste seu portfólio conforme objetivos e cenário econômico.</li>
               <li>Mantenha parte do capital em liquidez para oportunidades e imprevistos.</li>
               <li>Busque sempre conhecimento e atualização sobre produtos financeiros antes de investir.</li>
+              <li className="font-bold text-[#2f9e44]">Atenção a riscos: avalie cuidadosamente antes de grandes movimentações!</li>
             </ul>
           </CardContent>
         </Card>
