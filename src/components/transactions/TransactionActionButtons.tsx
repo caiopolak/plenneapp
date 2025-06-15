@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -52,7 +53,6 @@ export function TransactionActionButtons({
             variant="outline"
             size="sm"
             className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
-            onClick={onCreateClick}
           >
             <Plus className="w-4 h-4 mr-2" />
             Nova Transação

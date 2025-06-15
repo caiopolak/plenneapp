@@ -2,8 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Edit2, Trash2, Plus, TrendingUp, TrendingDown, Lightbulb, Import } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Plus, Download, Import } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { exportInvestmentsCsv } from "./utils/exportInvestmentsCsv";
 import { ImportGoalsCSV } from "../goals/ImportGoalsCSV";
@@ -23,27 +22,15 @@ export function InvestmentActionButtons({
 }) {
   const { toast } = useToast();
 
-  const getTypeLabel = (type: string) => {
-    const types = {
-      stocks: 'Ações',
-      bonds: 'Títulos',
-      crypto: 'Criptomoedas',
-      real_estate: 'Imóveis',
-      funds: 'Fundos',
-      savings: 'Poupança'
-    };
-    return types[type as keyof typeof types] || type;
-  };
-
   const handleExportCsv = () => {
     try {
       exportInvestmentsCsv(
         investments.map(inv => ({
           name: inv.name,
-          type: getTypeLabel(inv.type),
+          type: inv.type,
           amount: inv.amount,
-          expected_return: inv.expected_return,
-          purchase_date: inv.purchase_date
+          expected_return: inv.expected_return || inv.return || 0,
+          purchase_date: inv.purchase_date || "",
         }))
       );
       toast({
@@ -65,20 +52,18 @@ export function InvestmentActionButtons({
         variant="outline"
         onClick={handleExportCsv}
         size="sm"
-        className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow w-full sm:w-auto"
+        className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
         aria-label="Exportar investimentos para CSV"
       >
-        <span className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4" />
-          Exportar CSV
-        </span>
+        <Download className="w-4 h-4" />
+        Exportar CSV
       </Button>
       <Dialog>
         <DialogTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow w-full sm:w-auto"
+            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
             aria-label="Importar investimentos de CSV"
           >
             <Import className="w-4 h-4" />
@@ -97,13 +82,11 @@ export function InvestmentActionButtons({
           <Button
             variant="outline"
             size="sm"
-            className="min-w-[170px] font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow w-full sm:w-auto"
-            onClick={onCreateClick}
+            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" /> Novo Investimento
           </Button>
         </DialogTrigger>
-        {/* O formulário de investimento deve ser renderizado no componente pai */}
       </Dialog>
     </div>
   );

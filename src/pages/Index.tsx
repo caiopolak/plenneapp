@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 
 const Index = () => {
   const [showBalance, setShowBalance] = useState(true);
-
   // Estados para modais de criação
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [showGoalForm, setShowGoalForm] = useState(false);
@@ -49,6 +48,11 @@ const Index = () => {
   const monthlyIncome = 11200;
   const monthlyExpenses = 7500;
 
+  // HANDLERS para abrir forms
+  const handleCreateTransaction = () => setShowTransactionForm(true);
+  const handleCreateGoal = () => setShowGoalForm(true);
+  const handleCreateInvestment = () => setShowInvestmentForm(true);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
@@ -64,11 +68,12 @@ const Index = () => {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Botão Nova Transação */}
               <Button
                 variant="outline"
                 size="sm"
                 className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
-                onClick={() => setShowTransactionForm(true)}
+                onClick={handleCreateTransaction}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Nova Transação
@@ -257,19 +262,21 @@ const Index = () => {
             </Card>
           </TabsContent>
 
+          {/* Transações */}
           <TabsContent value="transactions" className="space-y-6">
+            {/* Ações em Transações */}
+            <div className="w-full mb-4">
+              <TransactionActionButtons
+                onExport={() => {}}  // ajuste se necessário
+                onImportSuccess={() => {}}
+                showForm={showTransactionForm}
+                setShowForm={setShowTransactionForm}
+                onCreateClick={handleCreateTransaction}
+              />
+            </div>
             <Card>
               <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
                 <CardTitle>Transações Recentes</CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
-                  onClick={() => setShowTransactionForm(true)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nova Transação
-                </Button>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -305,19 +312,24 @@ const Index = () => {
             </Card>
           </TabsContent>
 
+          {/* Metas */}
           <TabsContent value="goals" className="space-y-6">
+            {/* Ações em Metas */}
+            <div className="w-full mb-4">
+              <GoalActionButtons
+                goals={goals}
+                onSearchChange={() => {}}
+                search={""}
+                priorityFilter={"all"}
+                onPriorityChange={() => {}}
+                onImportSuccess={() => {}}
+                showForm={showGoalForm}
+                setShowForm={setShowGoalForm}
+              />
+            </div>
             <Card>
               <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
                 <CardTitle>Suas Metas Financeiras</CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
-                  onClick={() => setShowGoalForm(true)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nova Meta
-                </Button>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
@@ -350,19 +362,21 @@ const Index = () => {
             </Card>
           </TabsContent>
 
+          {/* Investimentos */}
           <TabsContent value="investments" className="space-y-6">
+            {/* Ações em Investimentos */}
+            <div className="w-full mb-4">
+              <InvestmentActionButtons
+                investments={investments}
+                onImportSuccess={() => {}}
+                onCreateClick={handleCreateInvestment}
+                showForm={showInvestmentForm}
+                setShowForm={setShowInvestmentForm}
+              />
+            </div>
             <Card>
               <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
                 <CardTitle>Portfólio de Investimentos</CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
-                  onClick={() => setShowInvestmentForm(true)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Novo Investimento
-                </Button>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -393,6 +407,7 @@ const Index = () => {
             </Card>
           </TabsContent>
 
+          {/* Relatórios */}
           <TabsContent value="reports" className="space-y-6">
             <Card>
               <CardHeader>
