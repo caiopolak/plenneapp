@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Check } from "lucide-react";
+import { WorkspaceNameEditField } from "./WorkspaceNameEditField";
 
 interface WorkspaceCardProps {
   name: string;
@@ -46,35 +47,13 @@ export function WorkspaceCard({
       >
         <Check className="w-4 h-4" />
       </Button>
-      {editing ? (
-        <>
-          <input
-            autoFocus
-            type="text"
-            className="border rounded-md px-2 py-1 text-base md:text-base min-w-[120px] max-w-[160px] bg-background"
-            value={editName}
-            onChange={e => setEditName && setEditName(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === "Enter" && onSaveEdit) onSaveEdit(editName);
-            }}
-          />
-          <Button
-            size="sm"
-            className="ml-2"
-            onClick={() => onSaveEdit && onSaveEdit(editName)}
-            disabled={!editName.trim()}
-          >
-            Salvar
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="ml-2"
-            onClick={onEdit}
-          >
-            Cancelar
-          </Button>
-        </>
+      {editing && setEditName && onSaveEdit ? (
+        <WorkspaceNameEditField
+          value={editName}
+          onChange={setEditName}
+          onSave={() => onSaveEdit(editName)}
+          onCancel={onEdit}
+        />
       ) : (
         <>
           <span
