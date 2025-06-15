@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import { LogOut } from 'lucide-react';
@@ -112,7 +111,6 @@ export default function FinancieApp() {
   }, [user]);
 
   return (
-    <ProtectedRoute>
       <WorkspaceProvider>
         <SidebarProvider>
           <div className="flex min-h-screen w-full bg-gradient-to-br from-background to-neutral-light relative">
@@ -194,6 +192,5 @@ export default function FinancieApp() {
           <div className="fixed bottom-[-90px] right-[-80px] w-[420px] h-[420px] bg-gradient-to-bl from-secondary/10 via-primary/10 to-attention/10 rounded-full blur-3xl z-0 pointer-events-none" />
         </SidebarProvider>
       </WorkspaceProvider>
-    </ProtectedRoute>
   );
 }
