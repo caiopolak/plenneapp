@@ -16,8 +16,6 @@ serve(async (req) => {
   try {
     const { messages } = await req.json();
 
-    // Cada mensagem: { role: "user" | "assistant", content: string }
-    // Montar payload para Gemini
     const geminiPayload = {
       contents: messages.map((msg: { role: string; content: string }) => ({
         role: msg.role === "assistant" ? "model" : "user",
@@ -32,6 +30,9 @@ serve(async (req) => {
       },
     };
 
+    // LOG o payload que será enviado
+    console.log("Sending payload to Gemini:", JSON.stringify(geminiPayload));
+
     const r = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey,
       {
@@ -42,17 +43,30 @@ serve(async (req) => {
     );
     const data = await r.json();
 
-    // A resposta pode estar em data.candidates[0].content.parts[0].text
+    // LOG o corpo completo da resposta da Gemini
+    console.log("Gemini Response:", JSON.stringify(data));
+
+    // Check for Gemini API error
+    if (data.error) {
+      // Mostra qualquer erro recebido da API Gemini no log
+      console.error("Gemini IA error:", JSON.stringify(data.error));
+      return new Response(JSON.stringify({ error: data.error.message || data.error }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     const answer =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text || 
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "Desculpe, não consegui gerar uma resposta agora.";
 
     return new Response(JSON.stringify({ answer }), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error) {
-    console.error("Gemini IA error:", error);
-    return new Response(JSON.stringify({ error: error.message || String(error) }), {
+    // log do erro JS/detalhes de execução
+    console.error("Financial Assistant Edge Exception:", error?.message, error);
+    return new Response(JSON.stringify({ error: error?.message || String(error) }), {
       status: 500,
       headers: corsHeaders,
     });
