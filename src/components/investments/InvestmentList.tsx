@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,9 @@ import { InvestmentForm } from './InvestmentForm';
 import { Tables } from '@/integrations/supabase/types';
 import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
 import { ImportTransactionsCSV } from "@/components/transactions/ImportTransactionsCSV";
+
+// --- Remove missing investmentCalculations import (and the file doesn't exist) ---
+// import { calculateTotalInvested, calculateTotalCurrentValue } from './utils/investmentCalculations';
 
 type Investment = Tables<'investments'>;
 
@@ -115,26 +119,25 @@ export function InvestmentList() {
 
   return (
     <div className="space-y-6">
-
-      {/* Botões principais lado a lado, responsivos e com mesmo estilo */}
-      <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
+      {/* Toolbar / Botões / Top Actions Block */}
+      <div className="flex justify-between items-center flex-wrap gap-2 mb-4">
         <h2 className="text-2xl font-bold font-display text-[--primary]">Investimentos</h2>
-        <div className="flex flex-wrap gap-2 items-center">
-          {/* Exportar CSV */}
+        <div className="flex gap-2 items-center">
           <Button
-            size="lg"
-            className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition min-w-[190px] flex gap-2"
+            variant="outline"
+            size="sm"
+            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
             onClick={() => exportInvestmentsCsv(investments)}
           >
             <Download className="w-4 h-4" />
             Exportar CSV
           </Button>
-          {/* Importar CSV (abre Dialog) */}
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                size="lg"
-                className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition min-w-[190px] flex gap-2"
+                variant="outline"
+                size="sm"
+                className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
               >
                 <Import className="w-4 h-4" />
                 Importar CSV
@@ -144,14 +147,13 @@ export function InvestmentList() {
               <DialogHeader>
                 <DialogTitle>Importar investimentos em lote</DialogTitle>
               </DialogHeader>
-              {/* Aproveitando componente de transações para importação */}
+              {/* (Reaproveitando componente de transações por simplicidade, você pode criar um específico depois) */}
               <ImportTransactionsCSV onSuccess={fetchInvestments} />
             </DialogContent>
           </Dialog>
-          {/* Novo Investimento */}
           <Dialog open={showInvestForm} onOpenChange={setShowInvestForm}>
             <DialogTrigger asChild>
-              <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition min-w-[190px] flex gap-2">
+              <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition flex gap-2 min-w-[190px]">
                 <Plus className="w-4 h-4" />
                 Novo Investimento
               </Button>
@@ -172,7 +174,6 @@ export function InvestmentList() {
         </div>
       </div>
 
-      {/* --- todo o restante do código permanece igual: filtros, gráficos, cards, lista, etc --- */}
       {/* Filters */}
       <Card className="bg-white border-[--primary]/10">
         <CardHeader>
