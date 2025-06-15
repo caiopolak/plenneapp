@@ -25,6 +25,8 @@ import { TransactionCategoryField } from "./fields/TransactionCategoryField";
 import { TransactionDateField } from "./fields/TransactionDateField";
 import { TransactionDescriptionField } from "./fields/TransactionDescriptionField";
 import { TransactionRecurrenceFields } from "./fields/TransactionRecurrenceFields";
+import { TransactionFieldsGroup } from "./fields/TransactionFieldsGroup";
+import { TransactionFormActions } from "./fields/TransactionFormActions";
 
 interface TransactionFormProps {
   onSuccess?: () => void;
@@ -161,7 +163,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
   return (
     <div className={cn(
       "w-full",
-      isMobile ? "px-3 py-4" : "px-0 py-0" // padding confortável mobile
+      isMobile ? "px-3 py-4" : "px-0 py-0"
     )}>
       <Card className={cn(
         "border-0 shadow-none bg-white",
@@ -191,61 +193,26 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
               disabled={workspaces.length <= 1}
             />
 
-            <div className={cn(
-              "grid gap-4",
-              isMobile ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
-            )}>
-              <TransactionTypeField value={type} onChange={setType} isMobile={isMobile} />
-              <TransactionAmountField value={amount} onChange={setAmount} isMobile={isMobile} />
-            </div>
-
-            <TransactionCategoryField
-              type={type}
-              value={category}
-              onChange={setCategory}
+            {/* Grupo dos campos principais */}
+            <TransactionFieldsGroup
+              type={type} setType={setType}
+              amount={amount} setAmount={setAmount}
+              category={category} setCategory={setCategory}
+              date={date} setDate={setDate}
+              description={description} setDescription={setDescription}
+              isRecurring={isRecurring} setIsRecurring={setIsRecurring}
+              recurrencePattern={recurrencePattern} setRecurrencePattern={setRecurrencePattern}
+              recurrenceEndDate={recurrenceEndDate} setRecurrenceEndDate={setRecurrenceEndDate}
               isMobile={isMobile}
             />
 
-            <TransactionDateField value={date} onChange={setDate} isMobile={isMobile} />
-
-            <TransactionDescriptionField 
-              value={description} 
-              onChange={setDescription} 
-              isMobile={isMobile} 
-            />
-
-            <TransactionRecurrenceFields
-              isRecurring={isRecurring}
-              setIsRecurring={setIsRecurring}
-              recurrencePattern={recurrencePattern}
-              setRecurrencePattern={setRecurrencePattern}
-              recurrenceEndDate={recurrenceEndDate}
-              setRecurrenceEndDate={setRecurrenceEndDate}
+            {/* Botões e ações */}
+            <TransactionFormActions
+              loading={loading}
               isMobile={isMobile}
+              onCancel={onCancel}
+              isEdit={!!transaction}
             />
-
-            <div className={cn(
-              "flex flex-col-reverse sm:flex-row gap-2 pt-4",
-              isMobile && "space-y-2 sm:space-y-0"
-            )}>
-              {onCancel && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onCancel}
-                  className={cn("h-12", isMobile && "text-base")}
-                >
-                  Cancelar
-                </Button>
-              )}
-              <Button
-                type="submit"
-                disabled={loading}
-                className={cn("flex-1 h-12", isMobile && "text-base")}
-              >
-                {loading ? 'Salvando...' : (transaction ? 'Atualizar' : 'Adicionar')}
-              </Button>
-            </div>
           </form>
         </CardContent>
       </Card>
