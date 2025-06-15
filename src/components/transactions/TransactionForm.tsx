@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSelect } from "../common/WorkspaceSelect";
 import { CategoryManager } from "./CategoryManager";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransactionFormProps {
   onSuccess?: () => void;
@@ -46,6 +48,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
   const { toast } = useToast();
   const { user } = useAuth();
   const { current, workspaces } = useWorkspace();
+  const isMobile = useIsMobile();
 
   // workspaceId sempre inicializado corretamente
   const [workspaceId, setWorkspaceId] = useState(
@@ -145,144 +148,154 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          {transaction ? 'Editar Transação' : 'Nova Transação'}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <WorkspaceSelect
-            value={workspaceId}
-            onChange={setWorkspaceId}
-            label="Workspace"
-            disabled={workspaces.length <= 1}
-          />
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="type">Tipo</Label>
-              <Select value={type} onValueChange={setType}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="income">Receita</SelectItem>
-                  <SelectItem value="expense">Despesa</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="amount">Valor (R$)</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0,00"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="category">Categoria</Label>
-            <CategoryManager
-              type={type}
-              value={category}
-              onChange={setCategory}
+    <div className={cn("w-full", isMobile && "px-2")}>
+      <Card className="border-0 shadow-none">
+        <CardHeader className="px-2 sm:px-6">
+          <CardTitle className="text-lg sm:text-xl">
+            {transaction ? 'Editar Transação' : 'Nova Transação'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-2 sm:px-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <WorkspaceSelect
+              value={workspaceId}
+              onChange={setWorkspaceId}
+              label="Workspace"
+              disabled={workspaces.length <= 1}
             />
-          </div>
 
-          <div>
-            <Label htmlFor="date">Data</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : "Selecione uma data"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(date) => date && setDate(date)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div>
-            <Label htmlFor="description">Descrição</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descrição opcional..."
-            />
-          </div>
-
-          {/* Recorrências avançadas */}
-          <div>
-            <div className="flex gap-2 items-center">
-              <Switch
-                id="recurring"
-                checked={isRecurring}
-                onCheckedChange={setIsRecurring}
-              />
-              <Label htmlFor="recurring">Transação recorrente</Label>
-            </div>
-            {isRecurring && (
-              <div className="space-y-2 mt-2">
-                <Label>Padrão de recorrência</Label>
-                <Select
-                  value={transaction?.recurrence_pattern || ""}
-                  onValueChange={(v) => {
-                    if (transaction) transaction.recurrence_pattern = v;
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o padrão" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="type" className="text-sm font-medium">Tipo</Label>
+                <Select value={type} onValueChange={setType}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="monthly">Mensal</SelectItem>
-                    <SelectItem value="weekly">Semanal</SelectItem>
-                    <SelectItem value="yearly">Anual</SelectItem>
-                    <SelectItem value="custom">Personalizado</SelectItem>
+                    <SelectItem value="income">Receita</SelectItem>
+                    <SelectItem value="expense">Despesa</SelectItem>
                   </SelectContent>
                 </Select>
-                <Label>Data de término</Label>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="amount" className="text-sm font-medium">Valor (R$)</Label>
                 <Input
-                  type="date"
-                  value={transaction?.recurrence_end_date || ""}
-                  onChange={e => {
-                    if (transaction) transaction.recurrence_end_date = e.target.value;
-                  }}
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0,00"
+                  required
+                  className="h-10"
                 />
               </div>
-            )}
-          </div>
+            </div>
 
-          <div className="flex gap-2">
-            <Button type="submit" disabled={loading} className="flex-1">
-              {loading ? 'Salvando...' : (transaction ? 'Atualizar' : 'Adicionar')}
-            </Button>
-            {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancelar
+            <div className="space-y-2">
+              <Label htmlFor="category" className="text-sm font-medium">Categoria</Label>
+              <CategoryManager
+                type={type}
+                value={category}
+                onChange={setCategory}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="date" className="text-sm font-medium">Data</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal h-10"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : "Selecione uma data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 z-[300]" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(date) => date && setDate(date)}
+                    initialFocus
+                    className="bg-white"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-sm font-medium">Descrição</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Descrição opcional..."
+                className="min-h-[80px] resize-none"
+              />
+            </div>
+
+            {/* Recorrências avançadas */}
+            <div className="space-y-3">
+              <div className="flex gap-2 items-center">
+                <Switch
+                  id="recurring"
+                  checked={isRecurring}
+                  onCheckedChange={setIsRecurring}
+                />
+                <Label htmlFor="recurring" className="text-sm font-medium">Transação recorrente</Label>
+              </div>
+              {isRecurring && (
+                <div className="space-y-3 pl-4 border-l-2 border-gray-200">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Padrão de recorrência</Label>
+                    <Select
+                      value={transaction?.recurrence_pattern || ""}
+                      onValueChange={(v) => {
+                        if (transaction) transaction.recurrence_pattern = v;
+                      }}
+                    >
+                      <SelectTrigger className="h-10">
+                        <SelectValue placeholder="Selecione o padrão" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="monthly">Mensal</SelectItem>
+                        <SelectItem value="weekly">Semanal</SelectItem>
+                        <SelectItem value="yearly">Anual</SelectItem>
+                        <SelectItem value="custom">Personalizado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Data de término</Label>
+                    <Input
+                      type="date"
+                      value={transaction?.recurrence_end_date || ""}
+                      onChange={e => {
+                        if (transaction) transaction.recurrence_end_date = e.target.value;
+                      }}
+                      className="h-10"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col-reverse sm:flex-row gap-2 pt-4">
+              {onCancel && (
+                <Button type="button" variant="outline" onClick={onCancel} className="h-10">
+                  Cancelar
+                </Button>
+              )}
+              <Button type="submit" disabled={loading} className="flex-1 h-10">
+                {loading ? 'Salvando...' : (transaction ? 'Atualizar' : 'Adicionar')}
               </Button>
-            )}
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

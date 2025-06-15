@@ -9,6 +9,8 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSelect } from "../common/WorkspaceSelect";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 import { GoalNameField } from './fields/GoalNameField';
 import { GoalAmountsFields } from './fields/GoalAmountsFields';
@@ -35,6 +37,8 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const { current, workspaces } = useWorkspace();
+  const isMobile = useIsMobile();
+  
   const [workspaceId, setWorkspaceId] = useState(
     goal?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "")
   );
@@ -119,46 +123,48 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          {goal ? 'Editar Meta' : 'Nova Meta Financeira'}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <WorkspaceSelect
-            value={workspaceId}
-            onChange={setWorkspaceId}
-            label="Workspace"
-            disabled={workspaces.length <= 1}
-          />
-          <GoalNameField name={name} setName={setName} />
-          <GoalAmountsFields
-            targetAmount={targetAmount}
-            setTargetAmount={setTargetAmount}
-            currentAmount={currentAmount}
-            setCurrentAmount={setCurrentAmount}
-          />
-          <GoalDateAndPriorityFields
-            targetDate={targetDate}
-            setTargetDate={setTargetDate}
-            priority={priority}
-            setPriority={setPriority}
-          />
-          <GoalNoteField note={note} setNote={setNote} />
-          <div className="flex gap-2">
-            <Button type="submit" disabled={loading} className="flex-1">
-              {loading ? 'Salvando...' : (goal ? 'Atualizar' : 'Criar Meta')}
-            </Button>
-            {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancelar
+    <div className={cn("w-full", isMobile && "px-2")}>
+      <Card className="border-0 shadow-none">
+        <CardHeader className="px-2 sm:px-6">
+          <CardTitle className="text-lg sm:text-xl">
+            {goal ? 'Editar Meta' : 'Nova Meta Financeira'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-2 sm:px-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <WorkspaceSelect
+              value={workspaceId}
+              onChange={setWorkspaceId}
+              label="Workspace"
+              disabled={workspaces.length <= 1}
+            />
+            <GoalNameField name={name} setName={setName} />
+            <GoalAmountsFields
+              targetAmount={targetAmount}
+              setTargetAmount={setTargetAmount}
+              currentAmount={currentAmount}
+              setCurrentAmount={setCurrentAmount}
+            />
+            <GoalDateAndPriorityFields
+              targetDate={targetDate}
+              setTargetDate={setTargetDate}
+              priority={priority}
+              setPriority={setPriority}
+            />
+            <GoalNoteField note={note} setNote={setNote} />
+            <div className="flex flex-col-reverse sm:flex-row gap-2 pt-4">
+              {onCancel && (
+                <Button type="button" variant="outline" onClick={onCancel} className="h-10">
+                  Cancelar
+                </Button>
+              )}
+              <Button type="submit" disabled={loading} className="flex-1 h-10">
+                {loading ? 'Salvando...' : (goal ? 'Atualizar' : 'Criar Meta')}
               </Button>
-            )}
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
