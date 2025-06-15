@@ -1,16 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit2, Trash2, Plus, TrendingUp, TrendingDown } from 'lucide-react';
+import { Edit2, Trash2, Plus, TrendingUp, TrendingDown, Lightbulb } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
-import { InvestmentsPieChart } from "./InvestmentsPieChart";
 import { InvestmentPortfolioSummary } from "./InvestmentPortfolioSummary";
 
 interface Investment {
@@ -98,12 +98,12 @@ export function InvestmentList() {
 
   const getTypeColor = (type: string) => {
     const colors = {
-      stocks: 'default',
+      stocks: 'primary',
       bonds: 'secondary',
       crypto: 'destructive',
       real_estate: 'outline',
-      funds: 'default',
-      savings: 'secondary'
+      funds: 'secondary',
+      savings: 'primary'
     };
     return colors[type as keyof typeof colors] || 'default';
   };
@@ -118,70 +118,13 @@ export function InvestmentList() {
   }
 
   return (
-    <div className="space-y-7">
-      {/* Informativo geral do painel de investimentos */}
-      <Card className="mb-2 bg-gradient-to-r from-blue-50 via-green-50 to-yellow-50 border-0 shadow-accent">
-        <CardContent className="py-5 px-7 flex flex-col gap-2">
-          <span className="text-lg font-semibold text-blue-900">
-            Gerencie e acompanhe seus investimentos de forma inteligente
-          </span>
-          <span className="text-muted-foreground">
-            Aqui você pode visualizar, adicionar e analisar sua carteira de investimentos. Utilize os resumos para obter uma visão rápida da diversificação da sua carteira, seu total investido e o retorno médio esperado. 
-          </span>
-        </CardContent>
-      </Card>
-      {/* Summary Cards, com visual reforçado */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <Card className="bg-gradient-to-r from-blue-100 to-blue-50 shadow-card border-transparent">
-          <CardContent className="p-5 flex flex-col items-start gap-2">
-            <div className="text-sm text-blue-700 font-medium flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-blue-800" />
-              Total Investido
-            </div>
-            <div className="text-3xl font-extrabold text-blue-900">
-              R$ {totalInvested.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-r from-green-100 to-green-50 shadow-card border-transparent">
-          <CardContent className="p-5 flex flex-col items-start gap-2">
-            <div className="text-sm text-green-700 font-medium flex items-center gap-2">
-              <Plus className="w-5 h-5 text-green-700" />
-              Nº de Investimentos
-            </div>
-            <div className="text-3xl font-extrabold text-green-900">
-              {investments.length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-r from-yellow-100 to-yellow-50 shadow-card border-transparent">
-          <CardContent className="p-5 flex flex-col items-start gap-2">
-            <div className="text-sm text-yellow-800 font-medium flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-yellow-700" />
-              Retorno Médio Esperado
-            </div>
-            <div className="text-3xl font-extrabold text-yellow-700">
-              {averageReturn.toFixed(1)}%
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Resumo Visual da Carteira */}
-      <InvestmentPortfolioSummary investments={investments} />
-      {/* Gráfico de Distribuição */}
-      <div className="max-w-3xl mx-auto">
-        <InvestmentsPieChart investments={investments} />
-      </div>
-
-      {/* Ações rápidas de cadastro */}
-      <div className="flex justify-between items-center mt-6">
-        <h2 className="text-2xl font-bold text-blue-900">Meus Investimentos</h2>
+    <div className="space-y-7 animate-fade-in">
+      {/* Botão/Modal principal: Adicionar Investimento */}
+      <div className="flex w-full justify-end mb-1">
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Novo Investimento
+            <Button size="lg" className="bg-primary text-white hover:bg-primary/90 font-bold shadow-lg">
+              <Plus className="w-5 h-5 mr-2" /> Novo Investimento
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
@@ -198,107 +141,166 @@ export function InvestmentList() {
           </DialogContent>
         </Dialog>
       </div>
-
-      {/* Listagem de investimentos */}
-      {investments.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground">Nenhum investimento registrado</p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Comece a registrar seus investimentos para acompanhar sua carteira!
-            </p>
+      
+      {/* Cards informativos e resumos */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <Card className="bg-gradient-to-tr from-primary/90 to-secondary/80 shadow-card border-none">
+          <CardContent className="p-5 flex flex-col items-start gap-2">
+            <div className="text-sm text-primary-foreground font-medium flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-secondary" /> Total Investido
+            </div>
+            <div className="text-3xl font-extrabold text-white drop-shadow">
+              R$ {totalInvested.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            </div>
           </CardContent>
         </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {investments.map((investment) => (
-            <Card key={investment.id} className="group border-2 border-transparent hover:border-blue-200 hover:shadow-lg transition-all bg-white/95">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg text-blue-900">{investment.name}</CardTitle>
-                    <Badge variant={getTypeColor(investment.type) as any} className="mt-1 shadow-sm">
-                      {getTypeLabel(investment.type)}
-                    </Badge>
-                  </div>
-                  <div className="flex gap-1">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          aria-label="Editar investimento"
-                          onClick={() => setEditingInvestment(investment)}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
-                        <DialogHeader>
-                          <DialogTitle>Editar Investimento</DialogTitle>
-                        </DialogHeader>
-                        {editingInvestment && (
-                          <InvestmentForm 
-                            investment={editingInvestment}
-                            onSuccess={() => {
-                              setEditingInvestment(null);
-                              fetchInvestments();
-                            }}
-                            onCancel={() => setEditingInvestment(null)}
-                          />
-                        )}
-                      </DialogContent>
-                    </Dialog>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      aria-label="Excluir investimento"
-                      onClick={() => deleteInvestment(investment.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Valor Investido</span>
-                  <span className="font-bold text-blue-900">
-                    R$ {investment.amount.toLocaleString("pt-BR", {minimumFractionDigits: 2})}
-                  </span>
-                </div>
-                
-                {investment.expected_return && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Retorno Esperado</span>
-                    <div className="flex items-center gap-1">
-                      {investment.expected_return > 0 ? (
-                        <TrendingUp className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-red-500" />
-                      )}
-                      <span className={`font-bold ${
-                        investment.expected_return > 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {investment.expected_return}%
-                      </span>
+        <Card className="bg-gradient-to-tr from-secondary to-primary/70 shadow-card border-0">
+          <CardContent className="p-5 flex flex-col items-start gap-2">
+            <div className="text-sm text-white/90 font-medium flex items-center gap-2">
+              <Plus className="w-5 h-5 text-white" />
+              Nº Investimentos
+            </div>
+            <div className="text-3xl font-extrabold text-white drop-shadow">{investments.length}</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-tr from-yellow-300 to-yellow-100 shadow-card border-0">
+          <CardContent className="p-5 flex flex-col items-start gap-2">
+            <div className="text-sm text-yellow-900 font-medium flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-yellow-800" /> Retorno Médio Esperado
+            </div>
+            <div className="text-3xl font-extrabold text-yellow-900">
+              {averageReturn.toFixed(1)}%
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Resumo Visual da Carteira – pode ficar aqui ou ser removido se o usuário quiser só análises em outra página */}
+      <InvestmentPortfolioSummary investments={investments} />
+
+      {/* Lista de investimentos */}
+      <div className="flex flex-col gap-2">
+        <h2 className="text-2xl font-bold text-primary mb-2">Meus Investimentos</h2>
+        {investments.length === 0 ? (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground">Nenhum investimento registrado</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Registre seus investimentos e acompanhe sua carteira financeira!
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {investments.map((investment) => (
+              <Card key={investment.id} className="group border-transparent hover:border-primary/30 hover:shadow-lg transition-all bg-gradient-to-tr from-white via-blue-50 to-white">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg text-primary font-display">{investment.name}</CardTitle>
+                      <Badge variant={getTypeColor(investment.type) as any} className="mt-1 shadow-sm">
+                        {getTypeLabel(investment.type)}
+                      </Badge>
+                    </div>
+                    <div className="flex gap-1">
+                      <Dialog open={!!editingInvestment && editingInvestment.id === investment.id} onOpenChange={(open) => !open && setEditingInvestment(null)}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            aria-label="Editar investimento"
+                            onClick={() => setEditingInvestment(investment)}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Editar Investimento</DialogTitle>
+                          </DialogHeader>
+                          {editingInvestment && editingInvestment.id === investment.id && (
+                            <InvestmentForm 
+                              investment={editingInvestment}
+                              onSuccess={() => {
+                                setEditingInvestment(null);
+                                fetchInvestments();
+                              }}
+                              onCancel={() => setEditingInvestment(null)}
+                            />
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label="Excluir investimento"
+                        onClick={() => deleteInvestment(investment.id)}
+                      >
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
                     </div>
                   </div>
-                )}
+                </CardHeader>
                 
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Data da Compra</span>
-                  <span className="text-sm">
-                    {format(new Date(investment.purchase_date), "dd/MM/yyyy", { locale: ptBR })}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Valor Investido</span>
+                    <span className="font-bold text-primary">
+                      R$ {investment.amount.toLocaleString("pt-BR", {minimumFractionDigits: 2})}
+                    </span>
+                  </div>
+                  
+                  {investment.expected_return && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Retorno Esperado</span>
+                      <div className="flex items-center gap-1">
+                        {investment.expected_return > 0 ? (
+                          <TrendingUp className="w-4 h-4 text-secondary" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4 text-destructive" />
+                        )}
+                        <span className={`font-bold ${
+                          investment.expected_return > 0 ? 'text-green-700' : 'text-red-700'
+                        }`}>
+                          {investment.expected_return}%
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Data da Compra</span>
+                    <span className="text-sm">
+                      {format(new Date(investment.purchase_date), "dd/MM/yyyy", { locale: ptBR })}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Dicas Financeiras & Alertas – agora ao final */}
+      <div className="mt-8">
+        <Card className="bg-gradient-to-r from-secondary/70 via-orange-50 to-yellow-50 border-0">
+          <CardHeader className="flex flex-row gap-2 items-center">
+            <Lightbulb className="w-6 h-6 text-yellow-500" />
+            <CardTitle className="text-attention text-lg font-bold">Dicas de Investimento</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-5 text-base text-neutral-700 space-y-1">
+              <li>Priorize uma carteira diversificada: distribua entre renda fixa, variável e alternativas conforme seu perfil.</li>
+              <li>Acompanhe os resultados periodicamente e ajuste seu portfólio conforme objetivos e cenário econômico.</li>
+              <li>Mantenha parte do capital em liquidez para oportunidades e imprevistos.</li>
+              <li>Busque sempre conhecimento e atualização sobre produtos financeiros antes de investir.</li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
+
+// O arquivo ficou longo; após aprovar este layout, recomendo pedir refatoração!
