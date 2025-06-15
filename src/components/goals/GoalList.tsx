@@ -184,6 +184,29 @@ export function GoalList() {
 
   return (
     <div className="space-y-6">
+      {/* Dialog para Nova Meta */}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent
+          className="max-w-xl w-full rounded-2xl p-4 md:p-6"
+          style={{
+            maxWidth: "96vw",
+            width: "100%",
+            margin: "0 auto",
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Nova Meta</DialogTitle>
+          </DialogHeader>
+          <GoalForm
+            onSuccess={() => {
+              setShowForm(false);
+              fetchGoals();
+            }}
+            onCancel={() => setShowForm(false)}
+          />
+        </DialogContent>
+      </Dialog>
+      
       <div className="flex justify-between items-center gap-2 flex-wrap">
         <h2 className="text-2xl font-bold font-display text-[--primary]">Metas Financeiras</h2>
         <GoalActionButtons
