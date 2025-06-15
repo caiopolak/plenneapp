@@ -181,39 +181,21 @@ export function TransactionList() {
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <CardTitle className="font-display text-[--primary]">Transações</CardTitle>
-            {/* Botões alinhados e padronizados */}
+            {/* Botões em linha estilo Investimentos */}
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
+                className="font-display flex gap-1 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
                 onClick={exportTransactions}
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-4 h-4 mr-2" />
                 Exportar CSV
               </Button>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
-                  >
-                    <Import className="w-4 h-4" />
-                    Importar CSV
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-lg">
-                  <DialogHeader>
-                    <DialogTitle>Importar transações em lote</DialogTitle>
-                  </DialogHeader>
-                  <ImportTransactionsCSV onSuccess={fetchTransactions} />
-                </DialogContent>
-              </Dialog>
               <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogTrigger asChild>
-                  <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition flex gap-2 min-w-[190px]">
-                    <Plus className="w-4 h-4" />
+                  <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
+                    <Plus className="w-4 h-4 mr-2" />
                     Nova Transação
                   </Button>
                 </DialogTrigger>
@@ -228,6 +210,20 @@ export function TransactionList() {
                     }}
                     onCancel={() => setShowForm(false)}
                   />
+                </DialogContent>
+              </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="font-display border-[--primary] text-[--primary] hover:bg-[--primary]/5">
+                    <Import className="w-4 h-4 mr-2" />
+                    Importar CSV
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>Importar transações em lote</DialogTitle>
+                  </DialogHeader>
+                  <ImportTransactionsCSV onSuccess={fetchTransactions} />
                 </DialogContent>
               </Dialog>
             </div>
