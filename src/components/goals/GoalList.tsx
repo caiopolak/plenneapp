@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Edit2, Trash2, Plus, TrendingUp, Download } from 'lucide-react';
+import { Edit2, Trash2, Plus, TrendingUp, Download, Import } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +17,7 @@ import { Tables } from '@/integrations/supabase/types';
 import { GoalDetailsModal } from "./GoalDetailsModal";
 import { GoalDepositsHistory } from './GoalDepositsHistory'; // NOVO
 import { exportGoalsCsv } from './utils/exportGoalsCsv';
+import { ImportGoalsCSV } from "./ImportGoalsCSV"; // Novo
 
 type Goal = Tables<'financial_goals'>;
 
@@ -184,7 +185,7 @@ export function GoalList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center gap-2 flex-wrap">
         <h2 className="text-2xl font-bold font-display text-[--primary]">Metas Financeiras</h2>
-        {/* Botões alinhados, gradiente igual ao de Novo Investimento */}
+        {/* Botões Exportar/Importar lado a lado com a mesma estética */}
         <div className="flex gap-2 items-center">
           <Input
             type="text"
@@ -203,14 +204,35 @@ export function GoalList() {
             <option value="medium">Média</option>
             <option value="low">Baixa</option>
           </select>
+          {/* Botão Exportar CSV */}
           <Button
             variant="outline"
             size="sm"
-            className="font-display flex gap-1 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
+            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
             onClick={() => exportGoalsCsv(goals)}
           >
-            <Download size={16} /> Exportar CSV
+            <Download className="w-4 h-4" />
+            Exportar CSV
           </Button>
+          {/* Dialog importar CSV */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
+              >
+                <Import className="w-4 h-4" />
+                Importar CSV
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Importar metas em lote (CSV)</DialogTitle>
+              </DialogHeader>
+              <ImportGoalsCSV onSuccess={fetchGoals} />
+            </DialogContent>
+          </Dialog>
           <Dialog open={showForm} onOpenChange={setShowForm}>
             <DialogTrigger asChild>
               <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
@@ -431,3 +453,4 @@ export function GoalList() {
     </div>
   );
 }
+
