@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bot } from "lucide-react";
@@ -6,21 +7,30 @@ import { Input } from "@/components/ui/input";
 import { callFinancialAssistant } from "@/utils/callFinancialAssistant";
 import { useToast } from "@/hooks/use-toast";
 
+type ChatMessage = { role: "user" | "assistant"; content: string };
+
 export function FinancialAssistant() {
-  const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   const handleSend = async () => {
     if (input.trim().length === 0) return;
-    const nextMessages = [...messages, { role: "user", content: input }];
+    const userMessage: ChatMessage = { role: "user", content: input };
+    const nextMessages = [...messages, userMessage];
     setMessages(nextMessages);
     setInput("");
     setLoading(true);
 
     try {
-      const answer = await callFinancialAssistant(nextMessages);
+      // Ensure we send the correctly-typed messages to the API
+      const answer = await callFinancialAssistant(
+        nextMessages.map(msg => ({
+          role: msg.role,
+          content: msg.content,
+        }))
+      );
       setMessages(msgs => [
         ...msgs,
         { role: "assistant", content: answer }
@@ -81,3 +91,4 @@ export function FinancialAssistant() {
     </div>
   );
 }
+
