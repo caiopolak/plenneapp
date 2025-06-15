@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -22,8 +21,6 @@ import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { QuickNotifications } from "@/components/dashboard/QuickNotifications";
 // FIXED imports below — use default import, not named
-import FinancialTipsCard from "@/components/dashboard/FinancialTipsCard";
-import FinancialAlertsList from "@/components/dashboard/FinancialAlertsList";
 import ProfilePage from "./ProfilePage";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TrendsChartCard } from "@/components/analytics/TrendsChartCard";
@@ -130,8 +127,6 @@ export default function FinancieApp() {
                     <div className="space-y-6 animate-fade-in">
                       {/* Dicas e alertas primeiro */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <FinancialTipsCard />
-                        <FinancialAlertsList />
                       </div>
                       {/* Tabs Transações, Metas, Investimentos */}
                       <div className="mt-0">
