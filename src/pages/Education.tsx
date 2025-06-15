@@ -11,145 +11,170 @@ import { BudgetList } from "@/components/budget/BudgetList";
 
 export default function Education() {
   return (
-    <div className="min-h-screen p-0 bg-gradient-to-br from-[#f4f4f4] to-white">
-      <div
-        className="
-          max-w-4xl mx-auto
-          px-3 sm:px-6 
-          pb-10 
-          pt-6 sm:pt-10
-        "
-      >
-        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-          <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-[--primary]" />
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#003f5c]">
+    <div className="min-h-screen p-0 sm:p-4 bg-gradient-to-br from-[#f4f4f4] to-white">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8 flex items-center gap-4">
+          <BookOpen className="w-8 h-8 text-[--primary]" />
+          <h1 className="text-3xl font-extrabold text-[#003f5c]">
             Educação & Saúde Financeira
           </h1>
         </div>
-        <Tabs defaultValue="tips" className="space-y-4 w-full">
+        <Tabs defaultValue="tips" className="space-y-4">
+          {/* Grid responsiva para as abas ao estilo dos botões do dashboard */}
           <TabsList
-            className="
-              grid grid-cols-1 
-              sm:grid-cols-3 lg:grid-cols-6 gap-2 
-              rounded-xl bg-white/95 shadow-sm border border-[#e8e8e8]
-              px-1 py-1
+            className={`
               w-full
-              "
+              grid
+              grid-cols-2
+              sm:grid-cols-3
+              md:grid-cols-3
+              lg:grid-cols-6
+              gap-2
+              bg-[#f7fafd]
+              py-[5px] px-1
+              shadow-sm
+              rounded-xl
+              mb-2
+            `}
           >
             <TabsTrigger
               value="tips"
-              className="
-                flex items-center gap-1 sm:gap-2 px-2 py-2 rounded-lg font-semibold text-base
-                text-[#017F66] bg-white
-                border border-[#e8e8e8]
-                hover:border-[#017F66] hover:bg-[#f5f5f5]
-                data-[state=active]:border-[--primary] data-[state=active]:bg-[#e5faf4]
-                data-[state=active]:text-[--primary]
-                transition-colors duration-200
-                w-full min-h-10 sm:min-h-[auto]
-              "
+              className={`
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
+              `}
             >
-              <BookOpen className="w-4 h-4" />
-              <span className="text-sm sm:text-base">Dicas</span>
+              <BookOpen className="w-4 h-4 mb-0" />
+              Dicas
             </TabsTrigger>
             <TabsTrigger
               value="alerts"
-              className="
-                flex items-center gap-1 sm:gap-2 px-2 py-2 rounded-lg font-semibold text-base
-                text-[#F5B942] bg-white
-                border border-[#e8e8e8]
-                hover:border-[#F5B942] hover:bg-[#fbf6ea]
-                data-[state=active]:border-[#F5B942] data-[state=active]:bg-[#fef5dd]
-                data-[state=active]:text-[#8a6b0f]
-                transition-colors duration-200
-                w-full min-h-10 sm:min-h-[auto]
-              "
+              className={`
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
+              `}
             >
-              <Bell className="w-4 h-4" />
-              <span className="text-sm sm:text-base">Alertas</span>
+              <Bell className="w-4 h-4 mb-0" />
+              Alertas
             </TabsTrigger>
             <TabsTrigger
               value="challenges"
-              className="
-                flex items-center gap-1 sm:gap-2 px-2 py-2 rounded-lg font-semibold text-base
-                text-[#0057FF] bg-white
-                border border-[#e8e8e8]
-                hover:border-[#0057FF] hover:bg-[#eef4ff]
-                data-[state=active]:border-[#0057FF] data-[state=active]:bg-[#e5efff]
-                data-[state=active]:text-[#0057FF]
-                transition-colors duration-200
-                w-full min-h-10 sm:min-h-[auto]
-              "
+              className={`
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
+              `}
             >
-              <Trophy className="w-4 h-4" />
-              <span className="text-sm sm:text-base">Desafios</span>
+              <Trophy className="w-4 h-4 mb-0" />
+              Desafios
             </TabsTrigger>
             <TabsTrigger
               value="modules"
-              className="
-                flex items-center gap-1 sm:gap-2 px-2 py-2 rounded-lg font-semibold text-base
-                text-[#017F66] bg-white
-                border border-[#e8e8e8]
-                hover:border-[#017F66] hover:bg-[#f5f5f5]
-                data-[state=active]:border-[--primary] data-[state=active]:bg-[#e5faf4]
-                data-[state=active]:text-[--primary]
-                transition-colors duration-200
-                w-full min-h-10 sm:min-h-[auto]
-              "
+              className={`
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
+              `}
             >
-              <GraduationCap className="w-4 h-4" />
-              <span className="text-sm sm:text-base">Aulas</span>
+              <GraduationCap className="w-4 h-4 mb-0" />
+              Aulas
             </TabsTrigger>
             <TabsTrigger
               value="assistant"
-              className="
-                flex items-center gap-1 sm:gap-2 px-2 py-2 rounded-lg font-semibold text-base
-                text-[#003f5c] bg-white
-                border border-[#e8e8e8]
-                hover:border-[#003f5c] hover:bg-[#efefef]
-                data-[state=active]:border-[#003f5c] data-[state=active]:bg-[#e4eafd]
-                data-[state=active]:text-[#003f5c]
-                transition-colors duration-200
-                w-full min-h-10 sm:min-h-[auto]
-              "
+              className={`
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
+              `}
             >
-              <Bot className="w-4 h-4" />
-              <span className="text-sm sm:text-base">Assistente</span>
+              <Bot className="w-4 h-4 mb-0" />
+              Assistente
             </TabsTrigger>
             <TabsTrigger
               value="budgets"
-              className="
-                flex items-center gap-1 sm:gap-2 px-2 py-2 rounded-lg font-semibold text-base
-                text-[#2f9e44] bg-white
-                border border-[#e8e8e8]
-                hover:border-[#2f9e44] hover:bg-[#edfaef]
-                data-[state=active]:border-[#2f9e44] data-[state=active]:bg-[#e3f7e7]
-                data-[state=active]:text-[#2f9e44]
-                transition-colors duration-200
-                w-full min-h-10 sm:min-h-[auto]
-              "
+              className={`
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
+              `}
             >
-              <Wallet className="w-4 h-4" />
-              <span className="text-sm sm:text-base">Orçamentos</span>
+              <Wallet className="w-4 h-4 mb-0" />
+              Orçamentos
             </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="tips" className="space-y-4 mt-4 sm:mt-6">
+          {/* Conteúdos das abas */}
+          <TabsContent value="tips" className="space-y-4">
             <FinancialTips />
           </TabsContent>
-          <TabsContent value="alerts" className="space-y-4 mt-4 sm:mt-6">
+          <TabsContent value="alerts" className="space-y-4">
             <SmartAlerts />
           </TabsContent>
-          <TabsContent value="challenges" className="space-y-4 mt-4 sm:mt-6">
+          <TabsContent value="challenges" className="space-y-4">
             <FinancialChallenges />
           </TabsContent>
-          <TabsContent value="modules" className="space-y-4 mt-4 sm:mt-6">
+          <TabsContent value="modules" className="space-y-4">
             <FinancialModules />
           </TabsContent>
-          <TabsContent value="assistant" className="space-y-4 mt-4 sm:mt-6">
+          <TabsContent value="assistant" className="space-y-4">
             <FinancialAssistant />
           </TabsContent>
-          <TabsContent value="budgets" className="space-y-4 mt-4 sm:mt-6">
+          <TabsContent value="budgets" className="space-y-4">
             <BudgetList />
           </TabsContent>
         </Tabs>
@@ -157,4 +182,6 @@ export default function Education() {
     </div>
   );
 }
+
+// (removido o style para scrollbar horizontal desnecessário)
 
