@@ -17,6 +17,7 @@ import { Tables } from '@/integrations/supabase/types';
 import { GoalDetailsModal } from "./GoalDetailsModal";
 import { GoalDepositsHistory } from './GoalDepositsHistory'; // NOVO
 import { exportGoalsCsv } from './utils/exportGoalsCsv';
+import { ImportTransactionsCSV } from "@/components/transactions/ImportTransactionsCSV";
 
 type Goal = Tables<'financial_goals'>;
 
@@ -186,35 +187,38 @@ export function GoalList() {
         <h2 className="text-2xl font-bold font-display text-[--primary]">Metas Financeiras</h2>
         {/* Botões alinhados, gradiente igual ao de Novo Investimento */}
         <div className="flex gap-2 items-center">
-          <Input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar..."
-            className="h-9"
-          />
-          <select
-            className="rounded-md border border-input bg-background h-9 px-2 text-sm"
-            value={priorityFilter}
-            onChange={e => setPriorityFilter(e.target.value)}
-          >
-            <option value="all">Todas</option>
-            <option value="high">Alta</option>
-            <option value="medium">Média</option>
-            <option value="low">Baixa</option>
-          </select>
           <Button
             variant="outline"
             size="sm"
-            className="font-display flex gap-1 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
+            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
             onClick={() => exportGoalsCsv(goals)}
           >
-            <Download size={16} /> Exportar CSV
+            <Download size={16} />
+            Exportar CSV
           </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
+              >
+                <Import className="w-4 h-4" />
+                Importar CSV
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Importar metas em lote</DialogTitle>
+              </DialogHeader>
+              {/* (Reaproveitando componente de transações por simplicidade, você pode criar um específico depois) */}
+              <ImportTransactionsCSV onSuccess={fetchGoals} />
+            </DialogContent>
+          </Dialog>
           <Dialog open={showForm} onOpenChange={setShowForm}>
             <DialogTrigger asChild>
-              <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
-                <Plus className="w-4 h-4 mr-2" />
+              <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition flex gap-2 min-w-[190px]">
+                <Plus className="w-4 h-4" />
                 Nova Meta
               </Button>
             </DialogTrigger>

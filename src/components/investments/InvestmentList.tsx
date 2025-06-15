@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit2, Trash2, Plus, TrendingUp, TrendingDown, Lightbulb } from 'lucide-react';
+import { Edit2, Trash2, Plus, Download, Import } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
-import { InvestmentPortfolioSummary } from "./InvestmentPortfolioSummary";
+import { Tables } from '@/integrations/supabase/types';
+import { calculateTotalInvested, calculateTotalCurrentValue } from './utils/investmentCalculations';
 import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
+import { ImportTransactionsCSV } from "@/components/transactions/ImportTransactionsCSV";
 
-interface Investment {
-  id: string;
-  name: string;
-  type: string;
-  amount: number;
-  expected_return: number;
-  purchase_date: string;
-}
+type Investment = Tables<'investments'>;
 
 export function InvestmentList() {
   const [investments, setInvestments] = useState<Investment[]>([]);
+  const [filteredInvestments, setFilteredInvestments] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('all');
   const [editingInvestment, setEditingInvestment] = useState<Investment | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [showInvestForm, setShowInvestForm] = useState(false);
 
   const { toast } = useToast();
   const { user } = useAuth();
@@ -59,6 +59,25 @@ export function InvestmentList() {
     fetchInvestments();
   }, [user]);
 
+  useEffect(() => {
+    let filtered = investments;
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(i =>
+        i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        i.type.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by type
+    if (filterType !== 'all') {
+      filtered = filtered.filter(i => i.type === filterType);
+    }
+
+    setFilteredInvestments(filtered);
+  }, [investments, searchTerm, filterType]);
+
   const deleteInvestment = async (id: string) => {
     try {
       const { error } = await supabase
@@ -72,7 +91,7 @@ export function InvestmentList() {
         title: "Sucesso!",
         description: "Investimento excluído com sucesso"
       });
-      
+
       fetchInvestments();
     } catch (error) {
       console.error('Error deleting investment:', error);
@@ -84,263 +103,201 @@ export function InvestmentList() {
     }
   };
 
-  const getTypeLabel = (type: string) => {
-    const types = {
-      stocks: 'Ações',
-      bonds: 'Títulos',
-      crypto: 'Criptomoedas',
-      real_estate: 'Imóveis',
-      funds: 'Fundos',
-      savings: 'Poupança'
-    };
-    return types[type as keyof typeof types] || type;
-  };
-
-  const getTypeColor = (type: string) => {
-    const colors = {
-      stocks: 'primary',
-      bonds: 'secondary',
-      crypto: 'destructive',
-      real_estate: 'outline',
-      funds: 'secondary',
-      savings: 'primary'
-    };
-    return colors[type as keyof typeof colors] || 'default';
-  };
-
-  const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
-  const averageReturn = investments.length > 0 
-    ? investments.reduce((sum, inv) => sum + (inv.expected_return || 0), 0) / investments.length 
-    : 0;
-
-  const handleExportCsv = () => {
-    try {
-      exportInvestmentsCsv(
-        investments.map(inv => ({
-          name: inv.name,
-          type: getTypeLabel(inv.type),
-          amount: inv.amount,
-          expected_return: inv.expected_return,
-          purchase_date: inv.purchase_date
-        }))
-      );
-      toast({
-        title: "Exportação concluída",
-        description: "Os investimentos foram exportados para CSV.",
-      });
-    } catch (e) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao exportar",
-        description: "Não foi possível exportar os investimentos.",
-      });
-    }
-  };
-
   if (loading) {
     return <div>Carregando investimentos...</div>;
   }
 
-  // Paleta visual harmonizada conforme identidade (ajuste para combinar com estética e eliminar laranja em destaques/alertas!)
-  const getTypeStyles = (type: string) => {
-    const map: any = {
-      stocks:      { label: "Ações",       bg: "bg-[#003f5c]",   text: "text-white" },
-      bonds:       { label: "Títulos",     bg: "bg-[#2f9e44]",   text: "text-white" },
-      crypto:      { label: "Criptomoedas",bg: "bg-[#eaf6ee]",   text: "text-[#003f5c] dark:text-[#003f5c]" },
-      real_estate: { label: "Imóveis",     bg: "bg-[#f4f4f4] border border-[#003f5c]/20", text: "text-[#2f9e44]" },
-      funds:       { label: "Fundos",      bg: "bg-[#f4f4f4]",   text: "text-[#003f5c]" },
-      savings:     { label: "Poupança",    bg: "bg-white border border-[#2f9e44]/40", text: "text-[#2f9e44]" },
-    };
-    return map[type] || { label: type, bg: "bg-[#003f5c]", text: "text-white" };
-  };
-
-  // Cartões analíticos e informativos — novo gradiente/principal
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Botões de ação - Exportação CSV incluída */}
-      <div className="flex w-full justify-between mb-0 gap-2">
-        <div />
-        <div className="flex gap-2">
+    <div className="space-y-6">
+      {/* Toolbar / Botões / Top Actions Block */}
+      <div className="flex justify-between items-center flex-wrap gap-2 mb-4">
+        <h2 className="text-2xl font-bold font-display text-[--primary]">Investimentos</h2>
+        <div className="flex gap-2 items-center">
           <Button
             variant="outline"
-            onClick={handleExportCsv}
             size="sm"
-            className="font-display"
-            aria-label="Exportar investimentos para CSV"
+            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
+            onClick={exportInvestmentsCsv}
           >
+            <Download className="w-4 h-4" />
             Exportar CSV
           </Button>
-          {/* Já existe o botão de adicionar investimento */}
-          <Dialog open={showForm} onOpenChange={setShowForm}>
+          <Dialog>
             <DialogTrigger asChild>
-              <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
-                <Plus className="w-5 h-5 mr-2" /> Novo Investimento
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
+              >
+                <Import className="w-4 h-4" />
+                Importar CSV
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-[#f4f4f4] rounded-2xl">
+            <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle className="text-[#003f5c] font-display">Novo Investimento</DialogTitle>
+                <DialogTitle>Importar investimentos em lote</DialogTitle>
+              </DialogHeader>
+              {/* (Reaproveitando componente de transações por simplicidade, você pode criar um específico depois) */}
+              <ImportTransactionsCSV onSuccess={fetchInvestments} />
+            </DialogContent>
+          </Dialog>
+          <Dialog open={showInvestForm} onOpenChange={setShowInvestForm}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition flex gap-2 min-w-[190px]">
+                <Plus className="w-4 h-4" />
+                Novo Investimento
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Novo Investimento</DialogTitle>
               </DialogHeader>
               <InvestmentForm 
                 onSuccess={() => {
-                  setShowForm(false);
+                  setShowInvestForm(false);
                   fetchInvestments();
                 }}
-                onCancel={() => setShowForm(false)}
+                onCancel={() => setShowInvestForm(false)}
               />
             </DialogContent>
           </Dialog>
         </div>
       </div>
 
-      {/* Cards informativos harmonizados agora SEM degradê em Nº Investimentos */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-gradient-to-tr from-[#003f5c] to-[#2f9e44] shadow-[0_4px_32px_0_rgba(0,63,92,0.16)] border-none">
-          {/* Total Investido */}
-          <CardContent className="p-6 flex flex-col items-start gap-2">
-            <div className="text-sm text-white/90 font-medium flex items-center gap-2 font-display">
-              <TrendingUp className="w-5 h-5 text-[#f4f4f4]" /> Total Investido
+      {/* Filters */}
+      <Card className="bg-white border-[--primary]/10">
+        <CardHeader>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <CardTitle className="font-display text-[--primary]">Filtros</CardTitle>
+          </div>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <Input
+                placeholder="Buscar investimentos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full font-text"
+              />
             </div>
-            <div className="text-3xl font-extrabold text-white drop-shadow font-display">
-              R$ {totalInvested.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-[#eaf6ee] shadow-[0_4px_32px_0_rgba(0,63,92,0.11)] border-0">
-          {/* Nº Investimentos – sólido, sem degradê */}
-          <CardContent className="p-6 flex flex-col items-start gap-2">
-            <div className="text-sm text-[#003f5c] font-medium flex items-center gap-2 font-display">
-              <Plus className="w-5 h-5 text-[#2f9e44]" /> Nº Investimentos
-            </div>
-            <div className="text-3xl font-extrabold text-[#003f5c] drop-shadow font-display">{investments.length}</div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 shadow-[0_4px_32px_0_rgba(0,63,92,0.14)] border-0">
-          {/* Retorno Médio Esperado */}
-          <CardContent className="p-6 flex flex-col items-start gap-2">
-            <div className="text-sm text-white/90 font-medium flex items-center gap-2 font-display">
-              <TrendingUp className="w-5 h-5 text-white/80" /> Retorno Médio Esperado
-            </div>
-            <div className="text-3xl font-extrabold text-white font-display">
-              {averageReturn.toFixed(1)}%
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="w-full md:w-40 font-text border-[--primary]/30">
+                <SelectValue placeholder="Filtrar por tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os tipos</SelectItem>
+                <SelectItem value="stock">Ações</SelectItem>
+                <SelectItem value="reit">Fundos Imobiliários</SelectItem>
+                <SelectItem value="fixed_income">Renda Fixa</SelectItem>
+                <SelectItem value="crypto">Criptomoedas</SelectItem>
+                <SelectItem value="other">Outros</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardHeader>
 
-      {/* Lista de investimentos */}
-      <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-bold text-[#003f5c] font-display mb-2">Meus Investimentos</h2>
-        {investments.length === 0 ? (
-          <Card className="bg-[#f4f4f4] border-none shadow-[0_4px_32px_0_rgba(0,63,92,0.08)]">
-            <CardContent className="p-8 text-center">
-              <p className="text-[#003f5c] font-bold font-display">Nenhum investimento registrado</p>
-              <p className="text-sm text-[#2b2b2b] mt-2">
-                Registre seus investimentos e acompanhe sua carteira financeira!
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {investments.map((investment) => {
-              const cat = getTypeStyles(investment.type);
-              return (
-                <Card
+        <CardContent>
+          {filteredInvestments.length === 0 ? (
+            <div className="text-center py-8 font-text text-[--primary]">
+              <p className="text-muted-foreground">Nenhum investimento encontrado</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {filteredInvestments.map((investment) => (
+                <div
                   key={investment.id}
-                  // Mudança: sombra azul petróleo e remoção de qualquer detalhe laranja
-                  className={`group border-none hover:ring-2 hover:ring-[#003f5c]/30 transition-all shadow-[0_4px_24px_0_rgba(0,63,92,0.13)] bg-gradient-to-tr from-[#f4f4f4] via-white to-[#eaf6ee]`}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-[#eaf6ee] bg-white"
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg text-[#003f5c] font-display">{investment.name}</CardTitle>
-                        <div
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-bold shadow-sm mt-1
-                            ${cat.bg} ${cat.text} font-display`}
-                        >
-                          {cat.label}
-                        </div>
+                  <div className="flex-1">
+                    <div className="font-text">
+                      <span className="font-medium">{investment.name}</span>
+                      <span className="text-muted-foreground ml-2">
+                        - {investment.type}
+                      </span>
+                    </div>
+                    <div className="text-sm text-muted-foreground font-text">
+                      {format(new Date(investment.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {/* Display Investment Values */}
+                    <div className="text-right">
+                      <div className="text-sm text-muted-foreground font-text">Valor Investido</div>
+                      <div className="font-bold text-[--secondary] font-display">
+                        R$ {Number(investment.invested_amount).toFixed(2).replace('.', ',')}
                       </div>
-                      <div className="flex gap-1">
-                        <Dialog open={!!editingInvestment && editingInvestment.id === investment.id} onOpenChange={(open) => !open && setEditingInvestment(null)}>
-                          <DialogTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              aria-label="Editar investimento"
-                              onClick={() => setEditingInvestment(investment)}
-                              className="hover:bg-[#f8961e]/20 hover:text-[#f8961e]"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl bg-[#f4f4f4] rounded-2xl">
-                            <DialogHeader>
-                              <DialogTitle className="text-[#003f5c] font-display">Editar Investimento</DialogTitle>
-                            </DialogHeader>
-                            {editingInvestment && editingInvestment.id === investment.id && (
-                              <InvestmentForm 
-                                investment={editingInvestment}
-                                onSuccess={() => {
-                                  setEditingInvestment(null);
-                                  fetchInvestments();
-                                }}
-                                onCancel={() => setEditingInvestment(null)}
-                              />
-                            )}
-                          </DialogContent>
-                        </Dialog>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-muted-foreground font-text">Valor Atual</div>
+                      <div className="font-bold text-[--primary] font-display">
+                        R$ {Number(investment.current_amount).toFixed(2).replace('.', ',')}
+                      </div>
+                    </div>
+
+                    {/* Dialogs for editing */}
+                    <Dialog>
+                      <DialogTrigger asChild>
                         <Button
                           variant="ghost"
                           size="sm"
-                          aria-label="Excluir investimento"
-                          onClick={() => deleteInvestment(investment.id)}
-                          className="hover:bg-[#d62828]/20"
+                          className="text-[--primary] font-display"
+                          onClick={() => setEditingInvestment(investment)}
                         >
-                          <Trash2 className="w-4 h-4 text-[#d62828]" />
+                          <Edit2 className="w-4 h-4" />
                         </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-[#2b2b2b]">Valor Investido</span>
-                      <span className="font-bold text-[#003f5c]">
-                        R$ {investment.amount.toLocaleString("pt-BR", {minimumFractionDigits: 2})}
-                      </span>
-                    </div>
-                    {investment.expected_return && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-[#2b2b2b]">Retorno Esperado</span>
-                        <div className="flex items-center gap-1">
-                          {investment.expected_return > 0 ? (
-                            <TrendingUp className="w-4 h-4 text-[#2f9e44]" />
-                          ) : (
-                            <TrendingDown className="w-4 h-4 text-[#d62828]" />
-                          )}
-                          <span className={`font-bold ${
-                            investment.expected_return > 0 ? 'text-[#2f9e44]' : 'text-[#d62828]'
-                          }`}>
-                            {investment.expected_return}%
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-sm text-[#2b2b2b]">Data da Compra</span>
-                      <span className="text-sm text-[#2b2b2b] font-mono">
-                        {format(new Date(investment.purchase_date), "dd/MM/yyyy", { locale: ptBR })}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Editar Investimento</DialogTitle>
+                        </DialogHeader>
+                        {editingInvestment && (
+                          <InvestmentForm
+                            investment={editingInvestment}
+                            onSuccess={() => {
+                              setEditingInvestment(null);
+                              fetchInvestments();
+                            }}
+                            onCancel={() => setEditingInvestment(null)}
+                          />
+                        )}
+                      </DialogContent>
+                    </Dialog>
 
-      {/* Dicas & Alertas removidos daqui */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-[--error]"
+                      onClick={() => deleteInvestment(investment.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="bg-white shadow-card border border-[--primary]/10">
+          <CardContent className="p-4">
+            <div className="text-sm text-[--primary] font-text">Total Investido</div>
+            <div className="text-2xl font-bold text-[--secondary] font-display">
+              R$ {calculateTotalInvested(investments).toFixed(2).replace('.', ',')}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white shadow-card border border-[--primary]/10">
+          <CardContent className="p-4">
+            <div className="text-sm text-[--primary] font-text">Valor Total Atual</div>
+            <div className="text-2xl font-bold text-[--primary] font-display">
+              R$ {calculateTotalCurrentValue(investments).toFixed(2).replace('.', ',')}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
