@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   LayoutDashboard,
@@ -101,11 +100,11 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
 
   return (
     <>
-      {/* SidebarTrigger: visível só no mobile/tablet */}
-      <div className="md:hidden flex items-center">
+      {/* SidebarTrigger: destaque no mobile/tablet */}
+      <div className="md:hidden flex items-center z-30">
         <SidebarTrigger
-          className="ml-3 mt-2 mb-1"
-          // O aria-label melhora acessibilidade
+          className="ml-3 mt-2 mb-1 rounded-full bg-white shadow-lg border border-gray-200 hover:bg-blue-50 focus:bg-blue-100 transition-colors
+            w-12 h-12 flex items-center justify-center text-primary"
           aria-label="Abrir menu"
         />
       </div>
@@ -129,7 +128,6 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
                   </AvatarFallback>
                 )}
               </Avatar>
-              {/* Info centralizada e truncada no mobile */}
               <div className="flex flex-col items-center w-full gap-0.5">
                 <span className="font-display font-bold text-primary text-lg sm:text-xl truncate max-w-[140px] sm:max-w-[170px] block">{profile?.full_name || "Usuário"}</span>
                 <span className="text-xs sm:text-sm text-muted-foreground truncate max-w-[160px] sm:max-w-[200px]">{profile?.email}</span>
@@ -179,7 +177,8 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
             variant="ghost"
             size="default"
             onClick={signOut}
-            className="w-full flex items-center justify-start px-2"
+            // Corrige cor de fundo no mobile/tablet Drawer e melhora contraste
+            className="w-full flex items-center justify-start px-2 bg-primary/90 text-white hover:bg-primary focus:bg-primary border-t border-primary/10 rounded-none min-h-[48px] md:bg-transparent md:text-primary md:hover:bg-blue-50 md:focus:bg-blue-100 md:border-none md:rounded-xl"
           >
             <LogOut className="w-5 h-5 mr-2" />
             Sair
@@ -189,4 +188,3 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
     </>
   );
 }
-
