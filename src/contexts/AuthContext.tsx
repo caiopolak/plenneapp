@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { usePlenneSlogan } from "@/hooks/usePlenneSlogan";
 
 interface AuthContextType {
   user: User | null;
@@ -21,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { getRandomSlogan } = usePlenneSlogan();
 
   useEffect(() => {
     // Configurar listener de mudanças de autenticação
@@ -66,19 +67,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       toast({
         title: "Cadastro realizado!",
-        description: "Verifique seu email para confirmar a conta."
+        description: "Verifique seu email para confirmar a conta.",
+        variant: "success",
       });
     }
-
     return { error };
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       toast({
         variant: "destructive",
@@ -86,16 +83,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         description: error.message
       });
     } else {
+      // Toast de boas-vindas personalizado!
+      const user = supabase.auth.getUser ? (await supabase.auth.getUser()).data.user : undefined;
       toast({
-        title: "Login realizado!",
-        description: "Bem-vindo ao FinanciePRO!"
+        title: `Bem-vindo(a) ${user?.user_metadata?.full_name || user?.email || "Usuário"}!`,
+        description: getRandomSlogan(),
+        variant: "plenne",
       });
     }
-
     return { error };
   };
 
   const signOut = async () => {
+    const user = supabase.auth.getUser ? (await supabase.auth.getUser()).data.user : undefined;
+    const name = user?.user_metadata?.full_name || user?.email || "Usuário";
     const { error } = await supabase.auth.signOut();
     if (error) {
       toast({
@@ -103,9 +104,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Erro ao sair",
         description: error.message
       });
+    } else {
+      toast({
+        title: `Até logo, ${name}!`,
+        description: getRandomSlogan(),
+        variant: "plenne",
+      });
     }
   };
-
   const resetPassword = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`
