@@ -22,6 +22,7 @@ import {
   SidebarMenuButton,
   SidebarFooter,
   SidebarSeparator,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { LogoPlenne } from "./LogoPlenne";
 import { Button } from "@/components/ui/button";
@@ -99,81 +100,93 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
   ];
 
   return (
-    <Sidebar>
-      <SidebarContent className="w-full max-w-xs min-w-[200px] bg-white shadow-lg flex flex-col h-full p-0">
-        <SidebarGroup className="p-0">
-          {/* Avatar e info responsivos! */}
-          <div className="flex flex-col items-center gap-0 py-5 px-2 bg-gradient-to-r from-blue-50 to-white w-full
-            sm:py-7 sm:pt-8
-            ">
-            <Avatar className="w-16 h-16 sm:w-20 sm:h-20 ring-2 ring-primary/60 shadow-lg mb-2 sm:mb-3">
-              {profile?.avatar_url ? (
-                <AvatarImage src={profile.avatar_url} alt={profile.full_name || "Avatar"} />
-              ) : (
-                <AvatarFallback>
-                  {profile?.full_name
-                    ? profile.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
-                    : <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />}
-                </AvatarFallback>
-              )}
-            </Avatar>
-            {/* Info centralizada e truncada no mobile */}
-            <div className="flex flex-col items-center w-full gap-0.5">
-              <span className="font-display font-bold text-primary text-lg sm:text-xl truncate max-w-[140px] sm:max-w-[170px] block">{profile?.full_name || "Usuário"}</span>
-              <span className="text-xs sm:text-sm text-muted-foreground truncate max-w-[160px] sm:max-w-[200px]">{profile?.email}</span>
-              {profile?.phone && (
-                <span className="text-xs text-muted-foreground">{profile.phone}</span>
-              )}
-              {subscription?.plan && (
-                <span
-                  className={`mt-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${getPlanColor(subscription.plan)}`}
-                >
-                  {subscription.plan === "business"
-                    ? "Business"
-                    : subscription.plan === "pro"
-                    ? "Pro"
-                    : "Free"}
-                </span>
-              )}
-            </div>
-          </div>
-          {/* Logo e slogan responsivos */}
-          <div className="flex flex-col items-center gap-0 px-1 sm:px-3 py-3 sm:py-4 border-b border-primary/10 w-full">
-            <LogoPlenne className="mb-1 scale-90 sm:scale-100" />
-            <span className="text-xs italic text-primary/80 text-center px-1 sm:px-2 transition-all animate-fade-in font-medium max-w-[170px] sm:max-w-[196px]">
-              {slogan}
-            </span>
-          </div>
-          <SidebarSeparator className="mb-1" />
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.key}>
-                  <SidebarMenuButton
-                    isActive={activeTab === item.key}
-                    onClick={() => setActiveTab(item.key)}
+    <>
+      {/* SidebarTrigger: visível só no mobile/tablet */}
+      <div className="md:hidden flex items-center">
+        <SidebarTrigger
+          className="ml-3 mt-2 mb-1"
+          // O aria-label melhora acessibilidade
+          aria-label="Abrir menu"
+        />
+      </div>
+      {/* Sidebar (Drawer no mobile) */}
+      <Sidebar>
+        <SidebarContent className="w-full max-w-xs min-w-[200px] bg-white shadow-lg flex flex-col h-full p-0">
+          <SidebarGroup className="p-0">
+            {/* Avatar e info responsivos */}
+            <div
+              className="flex flex-col items-center gap-0 py-5 px-2 bg-gradient-to-r from-blue-50 to-white w-full
+              sm:py-7 sm:pt-8"
+            >
+              <Avatar className="w-16 h-16 sm:w-20 sm:h-20 ring-2 ring-primary/60 shadow-lg mb-2 sm:mb-3">
+                {profile?.avatar_url ? (
+                  <AvatarImage src={profile.avatar_url} alt={profile.full_name || "Avatar"} />
+                ) : (
+                  <AvatarFallback>
+                    {profile?.full_name
+                      ? profile.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+                      : <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              {/* Info centralizada e truncada no mobile */}
+              <div className="flex flex-col items-center w-full gap-0.5">
+                <span className="font-display font-bold text-primary text-lg sm:text-xl truncate max-w-[140px] sm:max-w-[170px] block">{profile?.full_name || "Usuário"}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground truncate max-w-[160px] sm:max-w-[200px]">{profile?.email}</span>
+                {profile?.phone && (
+                  <span className="text-xs text-muted-foreground">{profile.phone}</span>
+                )}
+                {subscription?.plan && (
+                  <span
+                    className={`mt-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${getPlanColor(subscription.plan)}`}
                   >
-                    <item.icon className="w-5 h-5 mr-2" />
-                    <span>{item.label}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <Button
-          variant="ghost"
-          size="default"
-          onClick={signOut}
-          className="w-full flex items-center justify-start px-2"
-        >
-          <LogOut className="w-5 h-5 mr-2" />
-          Sair
-        </Button>
-      </SidebarFooter>
-    </Sidebar>
+                    {subscription.plan === "business"
+                      ? "Business"
+                      : subscription.plan === "pro"
+                        ? "Pro"
+                        : "Free"}
+                  </span>
+                )}
+              </div>
+            </div>
+            {/* Logo e slogan responsivos */}
+            <div className="flex flex-col items-center gap-0 px-1 sm:px-3 py-3 sm:py-4 border-b border-primary/10 w-full">
+              <LogoPlenne className="mb-1 scale-90 sm:scale-100" />
+              <span className="text-xs italic text-primary/80 text-center px-1 sm:px-2 transition-all animate-fade-in font-medium max-w-[170px] sm:max-w-[196px]">
+                {slogan}
+              </span>
+            </div>
+            <SidebarSeparator className="mb-1" />
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {menuItems.map((item) => (
+                  <SidebarMenuItem key={item.key}>
+                    <SidebarMenuButton
+                      isActive={activeTab === item.key}
+                      onClick={() => setActiveTab(item.key)}
+                    >
+                      <item.icon className="w-5 h-5 mr-2" />
+                      <span>{item.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+          <Button
+            variant="ghost"
+            size="default"
+            onClick={signOut}
+            className="w-full flex items-center justify-start px-2"
+          >
+            <LogOut className="w-5 h-5 mr-2" />
+            Sair
+          </Button>
+        </SidebarFooter>
+      </Sidebar>
+    </>
   );
 }
 
