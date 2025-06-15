@@ -86,7 +86,6 @@ export function WorkspaceManager() {
     toast({ title: "Workspace editada com sucesso!" });
   }
 
-  // Correção: deleção confiável com loading, logs, e validação
   async function handleDeleteWorkspace(id: string | null) {
     if (!id) {
       toast({
@@ -100,24 +99,26 @@ export function WorkspaceManager() {
     setDeleting(true);
     console.log("-- Tentando deletar workspace --", id);
 
-    // Confirme se realmente deleto removendo .select()
-    const { error, count } = await supabase
+    // Corrigido: deletar e checar por erro apenas
+    const { error, data } = await supabase
       .from("workspaces")
-      .delete({ count: "exact" })
+      .delete()
       .eq("id", id);
 
-    if (error || count === 0) {
-      console.error("Erro ao deletar workspace:", error?.message);
+    console.log("-- Resultado do delete workspace --", { error, data });
+
+    if (error) {
+      console.error("Erro ao deletar workspace:", error.message || error);
       toast({
         variant: "destructive",
         title: "Erro ao excluir",
-        description: error?.message || "Não foi possível deletar o workspace.",
+        description: error.message || "Não foi possível deletar o workspace.",
       });
       setDeleting(false);
       return;
     }
 
-    // Sucesso
+    // Sucesso (se não houve erro)
     await reload();
     setDeleting(false);
     setDeleteTarget(null);
