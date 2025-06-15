@@ -141,17 +141,17 @@ export function GoalList() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Metas Financeiras</h2>
+        <h2 className="text-2xl font-bold font-display text-[--primary]">Metas Financeiras</h2>
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-[--secondary] hover:bg-[--primary] text-white font-display">
               <Plus className="w-4 h-4 mr-2" />
               Nova Meta
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Nova Meta Financeira</DialogTitle>
+              <DialogTitle className="font-display text-[--secondary]">Nova Meta Financeira</DialogTitle>
             </DialogHeader>
             <GoalForm 
               onSuccess={() => {
@@ -166,9 +166,9 @@ export function GoalList() {
 
       {goals.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground">Nenhuma meta criada ainda</p>
-            <p className="text-sm text-muted-foreground mt-2">
+          <CardContent className="p-8 text-center bg-[--background] rounded-lg">
+            <p className="text-muted-foreground font-text">Nenhuma meta criada ainda</p>
+            <p className="text-sm text-muted-foreground mt-2 font-text">
               Crie sua primeira meta financeira para começar a planejar seu futuro!
             </p>
           </CardContent>
@@ -182,17 +182,17 @@ export function GoalList() {
             const isCompleted = progress >= 100;
             
             return (
-              <Card key={goal.id} className={isCompleted ? 'border-green-500' : ''}>
+              <Card key={goal.id} className={`border-[--secondary]/70 ${isCompleted ? 'border-[--secondary]' : ''}`}>
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-lg">{goal.name}</CardTitle>
+                      <CardTitle className="text-lg font-display text-[--primary]">{goal.name}</CardTitle>
                       <div className="flex gap-2 mt-2">
-                        <Badge variant={getPriorityColor(goal.priority)}>
+                        <Badge variant={getPriorityColor(goal.priority)} className="font-display">
                           {getPriorityLabel(goal.priority)}
                         </Badge>
                         {isCompleted && (
-                          <Badge variant="default" className="bg-green-500">
+                          <Badge variant="default" className="bg-[--secondary] text-white font-display">
                             Concluída!
                           </Badge>
                         )}
@@ -202,6 +202,7 @@ export function GoalList() {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="font-display border-[--secondary] text-[--primary]"
                         onClick={() => {
                           setDetailsGoal(goal);
                           setShowDetailsModal(true);
@@ -214,6 +215,7 @@ export function GoalList() {
                           <Button 
                             variant="ghost" 
                             size="sm"
+                            className="text-[--primary]"
                             onClick={() => setEditingGoal(goal)}
                           >
                             <Edit2 className="w-4 h-4" />
@@ -221,7 +223,7 @@ export function GoalList() {
                         </DialogTrigger>
                         <DialogContent className="max-w-2xl">
                           <DialogHeader>
-                            <DialogTitle>Editar Meta</DialogTitle>
+                            <DialogTitle className="font-display text-[--primary]">Editar Meta</DialogTitle>
                           </DialogHeader>
                           {editingGoal && (
                             <GoalForm 
@@ -239,6 +241,7 @@ export function GoalList() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="text-[--error]"
                         onClick={() => deleteGoal(goal.id)}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -250,35 +253,35 @@ export function GoalList() {
                 <CardContent className="space-y-4">
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>Progresso</span>
-                      <span>{progress.toFixed(1)}%</span>
+                      <span className="font-text">Progresso</span>
+                      <span className="font-text">{progress.toFixed(1)}%</span>
                     </div>
-                    <Progress value={Math.min(progress, 100)} className="h-2" />
+                    <Progress value={Math.min(progress, 100)} className={`h-2 ${isCompleted ? "bg-[--primary]" : "bg-[--secondary]"}`} />
                   </div>
                   
                   <div className="flex justify-between">
                     <div>
-                      <div className="text-sm text-muted-foreground">Atual</div>
-                      <div className="font-bold text-green-600">
+                      <div className="text-sm text-muted-foreground font-text">Atual</div>
+                      <div className="font-bold text-[--secondary] font-display">
                         R$ {currentAmount.toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Meta</div>
-                      <div className="font-bold">
+                      <div className="text-sm text-muted-foreground font-text">Meta</div>
+                      <div className="font-bold text-[--primary] font-display">
                         R$ {targetAmount.toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Faltam</div>
-                      <div className="font-bold text-orange-600">
+                      <div className="text-sm text-muted-foreground font-text">Faltam</div>
+                      <div className="font-bold text-[--primary] font-display">
                         R$ {Math.max(0, targetAmount - currentAmount).toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                   </div>
                   
                   {goal.target_date && (
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground font-text">
                       Data limite: {format(new Date(goal.target_date), "dd/MM/yyyy", { locale: ptBR })}
                     </div>
                   )}
@@ -288,10 +291,10 @@ export function GoalList() {
                       <DialogTrigger asChild>
                         <Button 
                           variant="outline" 
-                          className="w-full"
+                          className="w-full font-display border-[--secondary] text-[--primary] hover:bg-[--secondary]/10"
                           onClick={() => setSelectedGoalId(goal.id)}
                         >
-                          <TrendingUp className="w-4 h-4 mr-2" />
+                          <TrendingUp className="w-4 h-4 mr-2 text-[--secondary]" />
                           Adicionar Valor
                         </Button>
                       </DialogTrigger>

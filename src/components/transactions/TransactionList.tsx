@@ -150,26 +150,26 @@ export function TransactionList() {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-[#2f9e44]/90 via-[#003f5c]/80 to-[#eaf6ee] shadow-card">
           <CardContent className="p-4">
-            <div className="text-sm text-muted-foreground">Receitas</div>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-sm text-[--primary] font-text">Receitas</div>
+            <div className="text-2xl font-bold text-[--secondary] font-display">
               R$ {totalIncome.toFixed(2).replace('.', ',')}
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-[#003f5c]/90 via-[#2f9e44]/60 to-[#eaf6ee] shadow-card">
           <CardContent className="p-4">
-            <div className="text-sm text-muted-foreground">Despesas</div>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-sm text-[--primary] font-text">Despesas</div>
+            <div className="text-2xl font-bold text-[--primary] font-display">
               R$ {totalExpense.toFixed(2).replace('.', ',')}
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-[#eaf6ee]/70 to-[#ffffff]/95 shadow-card">
           <CardContent className="p-4">
-            <div className="text-sm text-muted-foreground">Saldo</div>
-            <div className={`text-2xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <div className="text-sm text-[--primary] font-text">Saldo</div>
+            <div className={`text-2xl font-bold font-display ${balance >= 0 ? 'text-[--secondary]' : 'text-[--error]'}`}>
               R$ {balance.toFixed(2).replace('.', ',')}
             </div>
           </CardContent>
@@ -177,14 +177,15 @@ export function TransactionList() {
       </div>
 
       {/* Filters and Actions */}
-      <Card>
+      <Card className="bg-white border-[--primary]/10">
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle>Transações</CardTitle>
+            <CardTitle className="font-display text-[--primary]">Transações</CardTitle>
             <div className="flex gap-2">
+              {/* ... keep Dialog for add/import csv ... */}
               <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogTrigger asChild>
-                  <Button>
+                  <Button className="font-display bg-[--secondary] text-white hover:bg-[--primary]">
                     <Plus className="w-4 h-4 mr-2" />
                     Nova Transação
                   </Button>
@@ -204,7 +205,7 @@ export function TransactionList() {
               </Dialog>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
+                  <Button variant="outline" className="font-display border-[--primary] text-[--primary] hover:bg-[--primary]/5">
                     <Import className="w-4 h-4 mr-2" />
                     Importar CSV
                   </Button>
@@ -216,24 +217,24 @@ export function TransactionList() {
                   <ImportTransactionsCSV onSuccess={fetchTransactions} />
                 </DialogContent>
               </Dialog>
-              <Button variant="outline" onClick={exportTransactions}>
+              <Button variant="outline" className="font-display border-[--primary] text-[--primary] hover:bg-[--primary]/5" onClick={exportTransactions}>
                 <Download className="w-4 h-4 mr-2" />
                 Exportar
               </Button>
             </div>
           </div>
-          
+          {/* ... keep filters: search, selects ... */}
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <Input
                 placeholder="Buscar transações..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full"
+                className="w-full font-text"
               />
             </div>
             <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-full md:w-40">
+              <SelectTrigger className="w-full md:w-40 font-text border-[--primary]/30">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -243,7 +244,7 @@ export function TransactionList() {
               </SelectContent>
             </Select>
             <Select value={filterMonth} onValueChange={setFilterMonth}>
-              <SelectTrigger className="w-full md:w-40">
+              <SelectTrigger className="w-full md:w-40 font-text border-[--primary]/30">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -258,7 +259,7 @@ export function TransactionList() {
         
         <CardContent>
           {filteredTransactions.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8 font-text text-[--primary]">
               <p className="text-muted-foreground">Nenhuma transação encontrada</p>
             </div>
           ) : (
@@ -266,18 +267,25 @@ export function TransactionList() {
               {filteredTransactions.map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-[#eaf6ee] bg-white"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'}>
+                      <Badge
+                        variant={transaction.type === 'income' ? 'default' : 'secondary'}
+                        className={
+                          transaction.type === 'income'
+                            ? 'bg-[--secondary] text-white font-display'
+                            : 'bg-[--primary]/90 text-white font-display'
+                        }
+                      >
                         {transaction.type === 'income' ? 'Receita' : 'Despesa'}
                       </Badge>
                       {transaction.is_recurring && (
-                        <Badge variant="outline">Recorrente</Badge>
+                        <Badge variant="outline" className="font-text text-[--primary] border-[--primary]/30 bg-[--background]">Recorrente</Badge>
                       )}
                     </div>
-                    <div className="mt-1">
+                    <div className="mt-1 font-text">
                       <span className="font-medium">{transaction.category}</span>
                       {transaction.description && (
                         <span className="text-muted-foreground ml-2">
@@ -285,23 +293,25 @@ export function TransactionList() {
                         </span>
                       )}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground font-text">
                       {format(new Date(transaction.date), "dd/MM/yyyy", { locale: ptBR })}
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <span className={`text-lg font-bold ${
-                      transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                    <span className={`text-lg font-bold font-display ${
+                      transaction.type === 'income' ? 'text-[--secondary]' : 'text-[--primary]'
                     }`}>
                       {transaction.type === 'income' ? '+' : '-'}R$ {Number(transaction.amount).toFixed(2).replace('.', ',')}
                     </span>
                     
+                    {/* ... keep Dialogs for editing ... */}
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button 
                           variant="ghost" 
                           size="sm"
+                          className="text-[--primary] font-display"
                           onClick={() => setEditingTransaction(transaction)}
                         >
                           <Edit2 className="w-4 h-4" />
@@ -327,6 +337,7 @@ export function TransactionList() {
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="text-[--error]"
                       onClick={() => deleteTransaction(transaction.id)}
                     >
                       <Trash2 className="w-4 h-4" />

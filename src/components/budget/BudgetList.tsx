@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -132,47 +131,55 @@ export function BudgetList() {
     fetchBudgets();
   };
 
+  // >>>>>>>>> STYLES AND COLOR TWEAKS BELOW <<<<<<<<<
+
+  // Cards: gradient azul petróleo/verde esmeralda
+  // Remove any orange. Use only #2f9e44 (verde), #003f5c (azul), #eaf6ee/#f4f4f4 (gelo), #2b2b2b (grafite), #d62828 (erro)
+  // Font classes: titles/buttons use font-display (Poppins); text uses font-text (Inter).
+  // Alerts/info: azul petróleo or green, never orange.
+  // Gradients use bg-gradient-to-br from-[#003f5c] via-[#2f9e44] to-[#eaf6ee]
+
   return (
     <div className="w-full max-w-2xl mx-auto mt-2 animate-fade-in">
-      <Card className="bg-gradient-to-tl from-[#f4faf8] to-white border-0 shadow-lg p-1 mb-6">
+      <Card className="bg-gradient-to-br from-[#003f5c]/95 via-[#2f9e44]/90 to-[#eaf6ee] border-0 shadow-card p-1 mb-6">
         <CardHeader className="pb-1 flex-row items-center gap-2">
-          <Wallet className="h-8 w-8 text-secondary mb-2" />
+          <Wallet className="h-8 w-8 text-[--secondary] mb-2" />
           <div>
-            <CardTitle className="text-2xl font-display text-secondary flex items-center gap-2">
+            <CardTitle className="text-2xl font-display text-[--secondary] flex items-center gap-2">
               Orçamentos Mensais
-              <Info className="ml-2 w-5 h-5 text-primary" />
+              <Info className="ml-2 w-5 h-5 text-[--primary]" />
             </CardTitle>
-            <CardDescription className="text-base text-primary mt-1">
-              Defina, acompanhe e controle seus limites de gastos nas principais categorias do seu mês. Use o orçamento para manter sua saúde financeira <span className="font-bold text-attention">sempre sob controle</span>!
+            <CardDescription className="text-base text-[--primary] mt-1 font-text">
+              Defina, acompanhe e controle seus limites de gastos nas principais categorias do seu mês. Use o orçamento para manter sua saúde financeira <span className="font-bold text-[--secondary] font-highlight">sempre sob controle</span>!
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           {/* Barra/resumo topo */}
-          <div className="flex flex-wrap md:flex-nowrap gap-6 bg-[#e5f6ed] rounded-lg p-4 mb-6 border border-green-100">
+          <div className="flex flex-wrap md:flex-nowrap gap-6 bg-[#eaf6ee] rounded-lg p-4 mb-6 border border-[--secondary]/30 shadow-sm">
             <div className="flex-1 min-w-[120px] flex flex-col items-center">
-              <span className="text-sm text-muted-foreground">Total Orçado</span>
-              <span className="text-xl font-bold text-primary">
+              <span className="text-sm text-muted-foreground font-text">Total Orçado</span>
+              <span className="text-xl font-bold text-[--primary] font-display">
                 R$ {totalBudget.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </div>
-            <div className="flex-1 min-w-[120px] flex flex-col items-center border-l border-green-200 pl-3">
-              <span className="text-sm text-muted-foreground">Utilizado</span>
-              <span className="text-xl font-bold text-attention flex items-center">
-                <ArrowUp className="w-4 h-4 mr-1 text-attention" />R$ {totalUsed.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            <div className="flex-1 min-w-[120px] flex flex-col items-center border-l border-[--secondary]/40 pl-3">
+              <span className="text-sm text-muted-foreground font-text">Utilizado</span>
+              <span className="text-xl font-bold text-[--secondary] flex items-center font-display">
+                <ArrowUp className="w-4 h-4 mr-1 text-[--secondary]" />R$ {totalUsed.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </div>
-            <div className="flex-1 min-w-[120px] flex flex-col items-center border-l border-green-200 pl-3">
-              <span className="text-sm text-muted-foreground">Disponível</span>
-              <span className="text-xl font-bold text-secondary flex items-center">
-                <ArrowDown className="w-4 h-4 mr-1 text-secondary" />R$ {totalAvailable.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            <div className="flex-1 min-w-[120px] flex flex-col items-center border-l border-[--secondary]/40 pl-3">
+              <span className="text-sm text-muted-foreground font-text">Disponível</span>
+              <span className="text-xl font-bold text-[--primary] flex items-center font-display">
+                <ArrowDown className="w-4 h-4 mr-1 text-[--primary]" />R$ {totalAvailable.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </div>
           </div>
           {/* Filtros mês/ano */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <select
-              className="border rounded-md px-2 py-1 bg-white shadow-sm"
+              className="border rounded-md px-2 py-1 bg-white shadow-sm font-text"
               value={month}
               onChange={e => setMonth(Number(e.target.value))}
             >
@@ -183,7 +190,7 @@ export function BudgetList() {
               ))}
             </select>
             <select
-              className="border rounded-md px-2 py-1 bg-white shadow-sm"
+              className="border rounded-md px-2 py-1 bg-white shadow-sm font-text"
               value={year}
               onChange={e => setYear(Number(e.target.value))}
             >
@@ -192,7 +199,6 @@ export function BudgetList() {
               ))}
             </select>
           </div>
-          {/* Novo orçamento */}
           <form onSubmit={handleAddBudget} className="flex gap-2 mb-6 flex-wrap items-center">
             <Input
               list="budget-cats"
@@ -201,7 +207,7 @@ export function BudgetList() {
               placeholder="Categoria"
               required
               disabled={loading}
-              className="w-48"
+              className="w-48 font-text"
             />
             <datalist id="budget-cats">
               {defaultCategories.map((c) => <option key={c} value={c} />)}
@@ -215,12 +221,12 @@ export function BudgetList() {
               placeholder="Limite R$"
               required
               disabled={loading}
-              className="w-40"
+              className="w-40 font-text"
             />
             <Button
               type="submit"
               disabled={loading || !category || !limit}
-              className="gap-2"
+              className="gap-2 font-display bg-[--secondary] hover:bg-[--primary] text-white"
             >
               <PlusCircle className="w-5 h-5" /> Adicionar
             </Button>
@@ -228,24 +234,24 @@ export function BudgetList() {
           {/* Lista de cards orçamentários */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-1">
             {budgets.length === 0 && (
-              <div className="col-span-2 text-center bg-muted/80 p-6 rounded-lg border text-muted-foreground font-medium">
+              <div className="col-span-2 text-center bg-[--background]/80 p-6 rounded-lg border text-muted-foreground font-medium">
                 Nenhum limite cadastrado para este mês/ano.<br />
                 Que tal começar com um orçamento para Alimentação ou Contas?
               </div>
             )}
             {budgets.map(bgt => (
               <Card key={bgt.id} className={cn(
-                "p-0 border-green-200 group hover:shadow-xl hover:border-green-400 transition-all",
-                "relative overflow-visible"
+                "p-0 border-[--secondary]/50 group hover:shadow-xl hover:border-[--primary] transition-all",
+                "relative overflow-visible bg-white"
               )}>
                 <CardHeader className="flex flex-row items-center gap-2 py-3 px-4">
-                  <Badge className="bg-secondary/90 text-white text-base px-3 min-w-[110px]">{bgt.category}</Badge>
+                  <Badge className="bg-[--secondary] text-white text-base px-3 min-w-[110px] font-display">{bgt.category}</Badge>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2 py-3 px-4">
                   {editId === bgt.id ? (
                     <div className="flex gap-2 items-center">
                       <Input
-                        className="w-24"
+                        className="w-24 font-text"
                         type="number"
                         min="0"
                         step="0.01"
@@ -254,19 +260,19 @@ export function BudgetList() {
                         required
                         autoFocus
                       />
-                      <Button size="sm" onClick={() => handleEditBudget(bgt.id)} disabled={loading} className="bg-secondary text-white">Salvar</Button>
-                      <Button size="sm" variant="ghost" onClick={() => setEditId(null)} disabled={loading}>Cancelar</Button>
+                      <Button size="sm" onClick={() => handleEditBudget(bgt.id)} disabled={loading} className="bg-[--secondary] text-white font-display">Salvar</Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditId(null)} disabled={loading} className="font-text">Cancelar</Button>
                     </div>
                   ) : (
                     <>
-                      <span className="text-md flex-1 mb-2">{`Limite: `}
-                        <span className="font-bold text-primary">R$ {bgt.amount_limit.toFixed(2)}</span>
+                      <span className="text-md flex-1 mb-2 font-text">{`Limite: `}
+                        <span className="font-bold text-[--primary] font-display">R$ {bgt.amount_limit.toFixed(2)}</span>
                       </span>
                       <div className="flex gap-2 mt-1">
-                        <Button size="sm" variant="outline" onClick={() => { setEditId(bgt.id); setEditLimit(bgt.amount_limit.toString()); }} disabled={loading}>
+                        <Button size="sm" variant="outline" onClick={() => { setEditId(bgt.id); setEditLimit(bgt.amount_limit.toString()); }} disabled={loading} className="font-display">
                           Editar
                         </Button>
-                        <Button size="sm" variant="ghost" className="text-destructive hover:bg-red-100" onClick={() => handleDeleteBudget(bgt.id)} disabled={loading}>
+                        <Button size="sm" variant="ghost" className="text-[--error] hover:bg-red-100 font-text" onClick={() => handleDeleteBudget(bgt.id)} disabled={loading}>
                           Excluir
                         </Button>
                       </div>
@@ -274,8 +280,8 @@ export function BudgetList() {
                   )}
                 </CardContent>
                 {/* Dica visual */}
-                <div className="absolute -top-2 -right-2 bg-white rounded-full flex items-center border px-2 py-[2px] shadow text-[11px] text-green-700 border-green-300 group-hover:scale-110 transition">
-                  <Info className="w-3 h-3 mr-1 text-secondary" /> mês {bgt.month}/{bgt.year}
+                <div className="absolute -top-2 -right-2 bg-white rounded-full flex items-center border px-2 py-[2px] shadow text-[11px] text-[--secondary] border-[--secondary]/20 group-hover:scale-110 transition font-text">
+                  <Info className="w-3 h-3 mr-1 text-[--primary]" /> mês {bgt.month}/{bgt.year}
                 </div>
               </Card>
             ))}
