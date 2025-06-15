@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,16 @@ type Category = {
   id: string;
   name: string;
   type: string;
+};
+
+const DEFAULT_CATEGORIES: Record<string, string[]> = {
+  income: [
+    'Salário', 'Freelance', 'Investimentos', 'Venda', 'Outros'
+  ],
+  expense: [
+    'Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Educação', 
+    'Lazer', 'Compras', 'Contas', 'Outros'
+  ]
 };
 
 export function CategoryManager({ type, value, onChange }: { type: string; value?: string; onChange?: (cat: string) => void }) {
@@ -116,18 +127,40 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
           </DialogContent>
         </Dialog>
       </div>
+      {/* SELEÇÃO de categoria (agora inclui Padrões e Personalizadas separadas) */}
       <div className="flex flex-wrap gap-2 mt-2">
-        {categories.map(cat => (
-          <Button
-            key={cat.id}
-            variant={value === cat.name ? "default" : "outline"}
-            size="sm"
-            onClick={() => onChange?.(cat.name)}
-            className="rounded-full"
-          >
-            {cat.name}
-          </Button>
-        ))}
+        {DEFAULT_CATEGORIES[type].length > 0 &&
+          <>
+            <span className="w-full text-xs mt-1 mb-0 text-primary/80">Padrão</span>
+            {DEFAULT_CATEGORIES[type].map(cat => (
+              <Button
+                key={`default-${cat}`}
+                variant={value === cat ? "default" : "outline"}
+                size="sm"
+                onClick={() => onChange?.(cat)}
+                className="rounded-full"
+              >
+                {cat}
+              </Button>
+            ))}
+          </>
+        }
+        {categories.length > 0 &&
+          <>
+            <span className="w-full text-xs mt-1 mb-0 text-secondary/70">Personalizadas</span>
+            {categories.map(cat => (
+              <Button
+                key={cat.id}
+                variant={value === cat.name ? "default" : "outline"}
+                size="sm"
+                onClick={() => onChange?.(cat.name)}
+                className="rounded-full"
+              >
+                {cat.name}
+              </Button>
+            ))}
+          </>
+        }
       </div>
     </div>
   );

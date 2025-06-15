@@ -118,50 +118,7 @@ export default function FinancieApp() {
           <div className="flex min-h-screen w-full bg-gradient-to-br from-background to-neutral-light relative">
             <AppSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
             <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden relative">
-              {/* Botão para abrir o menu lateral no mobile */}
-              <div className="sm:hidden flex items-center sticky top-0 z-40 bg-surface/90 h-14 px-4 border-b border-primary/10">
-                <SidebarTrigger />
-                <div className="ml-4 flex-1 flex items-center gap-2">
-                  <span className="text-2xl font-bold text-primary pl-1">Plenne</span>
-                  {/* Apenas nome Plenne, sem caractere especial/logo antes */}
-                  <span className="slogan text-xs font-medium text-primary/80">Controle financeiro de verdade.</span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={signOut}
-                  className="text-primary hover:text-secondary hover:bg-secondary/10 rounded-full"
-                  aria-label="Sair"
-                >
-                  <LogOut className="w-5 h-5" />
-                </Button>
-              </div>
-              {/* Header desktop e notificações rápidas */}
-              <header className="hidden sm:flex flex-row justify-between items-center px-6 md:px-12 py-5 border-b border-primary/15 bg-surface/90 shadow-card gap-4 sticky top-0 z-30 backdrop-blur-lg">
-                <div className="flex items-center gap-4">
-                  <span className="text-3xl font-bold text-primary">Plenne</span>
-                  <span className="slogan hidden xs:inline">Você no controle do seu dinheiro, de verdade.</span>
-                </div>
-                <QuickNotifications onAddTransaction={() => setActiveTab("transactions")} />
-                <div className="flex items-center gap-6">
-                  <div className="text-right">
-                    <p className="text-base font-bold text-primary font-display">
-                      {profile?.full_name || "Usuário"}
-                    </p>
-                    <p className="text-xs text-graphite/60 font-text">{profile?.email}</p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={signOut}
-                    className="text-primary hover:text-secondary hover:bg-secondary/10 rounded-full"
-                    aria-label="Sair"
-                  >
-                    <LogOut className="w-5 h-5" />
-                  </Button>
-                </div>
-              </header>
-
+              {/* Remoção total do cabeçalho */}
               {/* Main Content */}
               <section className="flex-1 w-full px-2 sm:px-4 md:px-10 pt-6 pb-10 bg-gradient-to-br from-background/80 to-neutral-light/70 min-h-[calc(100vh-56px)] sm:min-h-[calc(100vh-80px)] transition-padding">
                 <div className="max-w-[1320px] mx-auto w-full">

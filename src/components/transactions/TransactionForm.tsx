@@ -46,10 +46,10 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
   const { toast } = useToast();
   const { user } = useAuth();
   const { current, workspaces } = useWorkspace();
-  const [workspaceId, setWorkspaceId] = useState(
-    transaction?.workspace_id ?? current?.id ?? ""
-  );
-  const [showCustomCat, setShowCustomCat] = useState(false);
+
+  // workspaceId sempre inicializado corretamente
+  const initialWorkspaceId = transaction?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "");
+  const [workspaceId, setWorkspaceId] = useState(initialWorkspaceId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
