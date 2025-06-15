@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -40,7 +41,9 @@ export function TransactionActionButtons({
             Importar CSV
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-lg">
+        <DialogContent
+          className="max-w-md w-full p-2 sm:p-4"
+        >
           <DialogHeader>
             <DialogTitle>Importar transações em lote</DialogTitle>
           </DialogHeader>
@@ -59,3 +62,4 @@ export function TransactionActionButtons({
     </div>
   );
 }
+
