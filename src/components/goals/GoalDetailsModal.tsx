@@ -7,6 +7,7 @@ import { ptBR } from "date-fns/locale";
 import { Tables } from "@/integrations/supabase/types";
 import { GoalDepositsHistory } from "./GoalDepositsHistory";
 import { supabase } from "@/integrations/supabase/client";
+import { GoalProgressChart } from "./GoalProgressChart";
 
 type Goal = Tables<'financial_goals'>;
 
@@ -91,9 +92,12 @@ export function GoalDetailsModal({ open, onOpenChange, goal, showDepositsHistory
           )}
 
           {showDepositsHistory && (
-            <div className="mt-4">
-              <GoalDepositsHistory goalId={goal.id} />
-            </div>
+            <>
+              <GoalProgressChart goalId={goal.id} targetAmount={targetAmount} />
+              <div className="mt-4">
+                <GoalDepositsHistory goalId={goal.id} />
+              </div>
+            </>
           )}
         </div>
       </DialogContent>

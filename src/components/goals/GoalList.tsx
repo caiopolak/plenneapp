@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Edit2, Trash2, Plus, TrendingUp } from 'lucide-react';
+import { Edit2, Trash2, Plus, TrendingUp, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +16,7 @@ import { GoalForm } from './GoalForm';
 import { Tables } from '@/integrations/supabase/types';
 import { GoalDetailsModal } from "./GoalDetailsModal";
 import { GoalDepositsHistory } from './GoalDepositsHistory'; // NOVO
+import { exportGoalsCsv } from './utils/exportGoalsCsv';
 
 type Goal = Tables<'financial_goals'>;
 
@@ -28,6 +29,8 @@ export function GoalList() {
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [detailsGoal, setDetailsGoal] = useState<Goal | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [search, setSearch] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
 
   const { toast } = useToast();
   const { user } = useAuth();
@@ -148,14 +151,65 @@ export function GoalList() {
     }
   };
 
+  // Notificação: meta próxima ou atingida
+  useEffect(() => {
+    goals.forEach(goal => {
+      const currentAmount = goal.current_amount || 0;
+      const targetAmount = goal.target_amount || 0;
+      const progress = targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0;
+      if (progress >= 100) {
+        toast({ title: "Parabéns!", description: `Meta "${goal.name}" foi atingida!` });
+      } else if (goal.target_date) {
+        const dias = Math.ceil((new Date(goal.target_date).getTime() - Date.now())/(1000*60*60*24));
+        if (dias <= 5 && dias >= 0) {
+          toast({ title: "Meta próxima do prazo", description: `Faltam ${dias} dias para "${goal.name}"!` });
+        }
+      }
+    });
+    // eslint-disable-next-line
+  }, [goals]);
+
+  // Filtros e busca:
+  const filteredGoals = goals.filter(g => {
+    const matchesPriority = priorityFilter === "all" || g.priority === priorityFilter;
+    const matchesSearch = !search || g.name.toLowerCase().includes(search.toLowerCase());
+    return matchesPriority && matchesSearch;
+  });
+
   if (loading) {
     return <div>Carregando metas...</div>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-2 flex-wrap">
         <h2 className="text-2xl font-bold font-display text-[--primary]">Metas Financeiras</h2>
+        <div className="flex gap-2 items-center">
+          <Input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Buscar..."
+            className="h-9"
+          />
+          <select
+            className="rounded-md border border-input bg-background h-9 px-2 text-sm"
+            value={priorityFilter}
+            onChange={e => setPriorityFilter(e.target.value)}
+          >
+            <option value="all">Todas</option>
+            <option value="high">Alta</option>
+            <option value="medium">Média</option>
+            <option value="low">Baixa</option>
+          </select>
+          <Button
+            variant="outline"
+            className="gap-1"
+            onClick={() => exportGoalsCsv(goals)}
+          >
+            <Download size={16} /> Exportar CSV
+          </Button>
+        </div>
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
             <Button className="bg-[--secondary] hover:bg-[--primary] text-white font-display">
@@ -178,7 +232,7 @@ export function GoalList() {
         </Dialog>
       </div>
 
-      {goals.length === 0 ? (
+      {filteredGoals.length === 0 ? (
         <Card className="bg-[#f4f4f4] border border-[--primary]/10">
           <CardContent className="p-8 text-center rounded-lg">
             <p className="text-muted-foreground font-text">Nenhuma meta criada ainda</p>
@@ -189,7 +243,7 @@ export function GoalList() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {goals.map((goal) => {
+          {filteredGoals.map((goal) => {
             const currentAmount = goal.current_amount || 0;
             const targetAmount = goal.target_amount || 0;
             const progress = targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0;
@@ -363,7 +417,6 @@ export function GoalList() {
           })}
         </div>
       )}
-      {/* Modal de detalhes agora mostra histórico também */}
       <GoalDetailsModal
         open={showDetailsModal}
         onOpenChange={(open) => {
@@ -371,7 +424,6 @@ export function GoalList() {
           if (!open) setDetailsGoal(null);
         }}
         goal={detailsGoal}
-        // Adiciona prop para indicar estender detalhes
         showDepositsHistory
       />
     </div>
