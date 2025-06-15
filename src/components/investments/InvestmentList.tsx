@@ -14,6 +14,7 @@ import { InvestmentPortfolioSummary } from "./InvestmentPortfolioSummary";
 import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
 import { ImportGoalsCSV } from "../goals/ImportGoalsCSV"; // Placeholder visual para CSV de investimentos
 import { InvestmentActionButtons } from "./InvestmentActionButtons";
+import { InvestmentCard } from "./InvestmentCard";
 
 interface Investment {
   id: string;
@@ -220,104 +221,20 @@ export function InvestmentList() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {investments.map((investment) => {
-              const cat = getTypeStyles(investment.type);
-              return (
-                <Card
-                  key={investment.id}
-                  // Mudança: sombra azul petróleo e remoção de qualquer detalhe laranja
-                  className={`group border-none hover:ring-2 hover:ring-[#003f5c]/30 transition-all shadow-[0_4px_24px_0_rgba(0,63,92,0.13)] bg-gradient-to-tr from-[#f4f4f4] via-white to-[#eaf6ee]`}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg text-[#003f5c] font-display">{investment.name}</CardTitle>
-                        <div
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-bold shadow-sm mt-1
-                            ${cat.bg} ${cat.text} font-display`}
-                        >
-                          {cat.label}
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <Dialog open={!!editingInvestment && editingInvestment.id === investment.id} onOpenChange={(open) => !open && setEditingInvestment(null)}>
-                          <DialogTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              aria-label="Editar investimento"
-                              onClick={() => setEditingInvestment(investment)}
-                              className="hover:bg-[#f8961e]/20 hover:text-[#f8961e]"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl bg-[#f4f4f4] rounded-2xl">
-                            <DialogHeader>
-                              <DialogTitle className="text-[#003f5c] font-display">Editar Investimento</DialogTitle>
-                            </DialogHeader>
-                            {editingInvestment && editingInvestment.id === investment.id && (
-                              <InvestmentForm 
-                                investment={editingInvestment}
-                                onSuccess={() => {
-                                  setEditingInvestment(null);
-                                  fetchInvestments();
-                                }}
-                                onCancel={() => setEditingInvestment(null)}
-                              />
-                            )}
-                          </DialogContent>
-                        </Dialog>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          aria-label="Excluir investimento"
-                          onClick={() => deleteInvestment(investment.id)}
-                          className="hover:bg-[#d62828]/20"
-                        >
-                          <Trash2 className="w-4 h-4 text-[#d62828]" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-[#2b2b2b]">Valor Investido</span>
-                      <span className="font-bold text-[#003f5c]">
-                        R$ {investment.amount.toLocaleString("pt-BR", {minimumFractionDigits: 2})}
-                      </span>
-                    </div>
-                    {investment.expected_return && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-[#2b2b2b]">Retorno Esperado</span>
-                        <div className="flex items-center gap-1">
-                          {investment.expected_return > 0 ? (
-                            <TrendingUp className="w-4 h-4 text-[#2f9e44]" />
-                          ) : (
-                            <TrendingDown className="w-4 h-4 text-[#d62828]" />
-                          )}
-                          <span className={`font-bold ${
-                            investment.expected_return > 0 ? 'text-[#2f9e44]' : 'text-[#d62828]'
-                          }`}>
-                            {investment.expected_return}%
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-sm text-[#2b2b2b]">Data da Compra</span>
-                      <span className="text-sm text-[#2b2b2b] font-mono">
-                        {format(new Date(investment.purchase_date), "dd/MM/yyyy", { locale: ptBR })}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {investments.map((investment) => (
+              <InvestmentCard
+                key={investment.id}
+                investment={investment}
+                cat={getTypeStyles(investment.type)}
+                editingInvestment={editingInvestment}
+                setEditingInvestment={setEditingInvestment}
+                deleteInvestment={deleteInvestment}
+                fetchInvestments={fetchInvestments}
+              />
+            ))}
           </div>
         )}
       </div>
-
       {/* Dicas & Alertas removidos daqui */}
     </div>
   );
