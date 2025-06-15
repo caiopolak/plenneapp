@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit2, Trash2, Plus, TrendingUp, TrendingDown, Lightbulb } from 'lucide-react';
+import { Edit2, Trash2, Plus, TrendingUp, TrendingDown, Lightbulb, Import } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
 import { InvestmentPortfolioSummary } from "./InvestmentPortfolioSummary";
 import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
+import { ImportGoalsCSV } from "../goals/ImportGoalsCSV"; // Placeholder visual para CSV de investimentos
 
 interface Investment {
   id: string;
@@ -165,11 +166,53 @@ export function InvestmentList() {
             variant="outline"
             onClick={handleExportCsv}
             size="sm"
-            className="font-display"
+            className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
             aria-label="Exportar investimentos para CSV"
           >
-            Exportar CSV
+            <Lightbulb className="hidden" />{/* visual pad: para manter alinhamento */}
+            <TrendingUp className="hidden" />
+            <TrendingDown className="hidden" />
+            <Trash2 className="hidden" />
+            <Import className="hidden" />
+            <Plus className="hidden" />
+            <Edit2 className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            <Badge className="hidden" />
+            {/* Fim pad */}
+            <span className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" />
+              Exportar CSV
+            </span>
           </Button>
+          {/* Botão Importar CSV, mesmo estilo */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
+                aria-label="Importar investimentos de CSV"
+              >
+                <Import className="w-4 h-4" />
+                Importar CSV
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Importar investimentos em lote (CSV)</DialogTitle>
+              </DialogHeader>
+              <ImportGoalsCSV onSuccess={fetchInvestments} />
+            </DialogContent>
+          </Dialog>
           {/* Já existe o botão de adicionar investimento */}
           <Dialog open={showForm} onOpenChange={setShowForm}>
             <DialogTrigger asChild>
