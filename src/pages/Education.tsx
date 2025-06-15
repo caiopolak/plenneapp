@@ -20,145 +20,67 @@ export default function Education() {
           </h1>
         </div>
         <Tabs defaultValue="tips" className="space-y-4">
-          {/* Grid responsiva para as abas ao estilo dos botões do dashboard */}
+          {/* TabList VISUAL igual ao DashboardTabs */}
           <TabsList
             className={`
+              mb-6 shadow-md bg-[#f7fafd]
+              grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6
+              rounded-xl px-1 py-[6px]
+              gap-2 sm:gap-3
               w-full
-              grid
-              grid-cols-2
-              sm:grid-cols-3
-              md:grid-cols-3
-              lg:grid-cols-6
-              gap-2
-              bg-[#f7fafd]
-              py-[5px] px-1
-              shadow-sm
-              rounded-xl
-              mb-2
+              min-w-0
+              transition-all
             `}
+            style={{ WebkitOverflowScrolling: "touch" }}
           >
             <TabsTrigger
               value="tips"
-              className={`
-                flex flex-col items-center justify-center
-                min-h-0 h-[41px] px-0 py-0
-                font-display text-[--primary]
-                data-[state=active]:bg-[#2f9e44] 
-                data-[state=active]:text-white
-                data-[state=active]:shadow-accent
-                rounded-lg
-                transition-all
-                text-sm font-semibold
-                gap-1
-                hover:bg-[#017f66]/90 hover:text-white
-                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-              `}
+              className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all h-12 justify-center"
+              style={{ fontSize: "1rem" }}
             >
-              <BookOpen className="w-4 h-4 mb-0" />
+              <BookOpen className="w-5 h-5" />
               Dicas
             </TabsTrigger>
             <TabsTrigger
               value="alerts"
-              className={`
-                flex flex-col items-center justify-center
-                min-h-0 h-[41px] px-0 py-0
-                font-display text-[--primary]
-                data-[state=active]:bg-[#2f9e44] 
-                data-[state=active]:text-white
-                data-[state=active]:shadow-accent
-                rounded-lg
-                transition-all
-                text-sm font-semibold
-                gap-1
-                hover:bg-[#017f66]/90 hover:text-white
-                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-              `}
+              className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all h-12 justify-center"
+              style={{ fontSize: "1rem" }}
             >
-              <Bell className="w-4 h-4 mb-0" />
+              <Bell className="w-5 h-5" />
               Alertas
             </TabsTrigger>
             <TabsTrigger
               value="challenges"
-              className={`
-                flex flex-col items-center justify-center
-                min-h-0 h-[41px] px-0 py-0
-                font-display text-[--primary]
-                data-[state=active]:bg-[#2f9e44] 
-                data-[state=active]:text-white
-                data-[state=active]:shadow-accent
-                rounded-lg
-                transition-all
-                text-sm font-semibold
-                gap-1
-                hover:bg-[#017f66]/90 hover:text-white
-                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-              `}
+              className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all h-12 justify-center"
+              style={{ fontSize: "1rem" }}
             >
-              <Trophy className="w-4 h-4 mb-0" />
+              <Trophy className="w-5 h-5" />
               Desafios
             </TabsTrigger>
             <TabsTrigger
               value="modules"
-              className={`
-                flex flex-col items-center justify-center
-                min-h-0 h-[41px] px-0 py-0
-                font-display text-[--primary]
-                data-[state=active]:bg-[#2f9e44] 
-                data-[state=active]:text-white
-                data-[state=active]:shadow-accent
-                rounded-lg
-                transition-all
-                text-sm font-semibold
-                gap-1
-                hover:bg-[#017f66]/90 hover:text-white
-                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-              `}
+              className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all h-12 justify-center"
+              style={{ fontSize: "1rem" }}
             >
-              <GraduationCap className="w-4 h-4 mb-0" />
+              <GraduationCap className="w-5 h-5" />
               Aulas
             </TabsTrigger>
             <TabsTrigger
               value="assistant"
-              className={`
-                flex flex-col items-center justify-center
-                min-h-0 h-[41px] px-0 py-0
-                font-display text-[--primary]
-                data-[state=active]:bg-[#2f9e44] 
-                data-[state=active]:text-white
-                data-[state=active]:shadow-accent
-                rounded-lg
-                transition-all
-                text-sm font-semibold
-                gap-1
-                hover:bg-[#017f66]/90 hover:text-white
-                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-              `}
+              className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all h-12 justify-center"
+              style={{ fontSize: "1rem" }}
             >
-              <Bot className="w-4 h-4 mb-0" />
+              <Bot className="w-5 h-5" />
               Assistente
             </TabsTrigger>
             <TabsTrigger
               value="budgets"
-              className={`
-                flex flex-col items-center justify-center
-                min-h-0 h-[41px] px-0 py-0
-                font-display text-[--primary]
-                data-[state=active]:bg-[#2f9e44] 
-                data-[state=active]:text-white
-                data-[state=active]:shadow-accent
-                rounded-lg
-                transition-all
-                text-sm font-semibold
-                gap-1
-                hover:bg-[#017f66]/90 hover:text-white
-                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-              `}
+              className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all h-12 justify-center"
+              style={{ fontSize: "1rem" }}
             >
-              <Wallet className="w-4 h-4 mb-0" />
-              Orçamentos
+              <Wallet className="w-5 h-5" /> Orçamentos
             </TabsTrigger>
           </TabsList>
-          {/* Conteúdos das abas */}
           <TabsContent value="tips" className="space-y-4">
             <FinancialTips />
           </TabsContent>
@@ -182,6 +104,3 @@ export default function Education() {
     </div>
   );
 }
-
-// (removido o style para scrollbar horizontal desnecessário)
-
