@@ -86,8 +86,6 @@ export function WorkspaceManager() {
     setDeleting(true);
     console.log("-- Tentando deletar workspace --", id);
     const { error } = await supabase.from("workspaces").delete().eq("id", id);
-    setDeleting(false);
-    setDeleteTarget(null);
     if (error) {
       console.error("Erro ao deletar workspace:", error.message);
       toast({
@@ -95,10 +93,16 @@ export function WorkspaceManager() {
         title: "Erro ao excluir",
         description: error.message || "Não foi possível deletar o workspace.",
       });
+      setDeleting(false);
       return;
     }
-    reload();
+
+    // Sucesso: aguardar o reload antes de fechar
+    await reload();
+    setDeleting(false);
+    setDeleteTarget(null);
     toast({ title: "Workspace removido com sucesso." });
+    console.log("-- Workspace deletado e lista recarregada --");
   }
 
   // Info esclarecedor
@@ -244,7 +248,7 @@ export function WorkspaceManager() {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel onClick={() => setDeleteTarget(null)} disabled={deleting}>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
                   className="bg-red-600 hover:bg-red-700"
                   onClick={() => handleDeleteWorkspace(deleteTarget)}
