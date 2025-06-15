@@ -6,7 +6,16 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { WorkspaceCard } from "./WorkspaceCard";
 
 export function WorkspaceManager() {
@@ -18,6 +27,7 @@ export function WorkspaceManager() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   function handleSelectWorkspace(id: string) {
     const w = workspaces.find((ws) => ws.id === id) || null;
@@ -62,7 +72,7 @@ export function WorkspaceManager() {
     reload();
   }
 
-  // Trocar função de deleção para evitar problemas
+  // Correção: deleção confiável com loading, logs, e validação
   async function handleDeleteWorkspace(id: string | null) {
     if (!id) {
       toast({
@@ -73,26 +83,39 @@ export function WorkspaceManager() {
       setDeleteTarget(null);
       return;
     }
-    await supabase.from("workspaces").delete().eq("id", id);
+    setDeleting(true);
+    console.log("-- Tentando deletar workspace --", id);
+    const { error } = await supabase.from("workspaces").delete().eq("id", id);
+    setDeleting(false);
     setDeleteTarget(null);
+    if (error) {
+      console.error("Erro ao deletar workspace:", error.message);
+      toast({
+        variant: "destructive",
+        title: "Erro ao excluir",
+        description: error.message || "Não foi possível deletar o workspace.",
+      });
+      return;
+    }
     reload();
     toast({ title: "Workspace removido com sucesso." });
   }
 
-  // Texto explicativo aprimorado
+  // Info esclarecedor
   const infoText = (
     <>
       <p className="font-semibold text-blue-800 mb-1">O que são Workspaces?</p>
       <p className="text-sm text-blue-700">
         <span className="block mb-1">
-          <b>Workspaces</b> são ambientes organizados para separar diferentes conjuntos de informações e finanças dentro do Plenne. 
+          <b>Workspaces</b> são ambientes organizados para separar diferentes conjuntos de informações e finanças dentro do Plenne.
         </span>
-        Você pode criar workspaces para uso pessoal, familiar ou profissional, mantendo contas, orçamentos e membros completamente independentes/apartados. 
-        <br /><br />
-        <b>Exemplo de uso:</b><br /> 
-        Crie um workspace da sua família e outro para o seu negócio, ou áreas diferentes do seu projeto.
-        <br /><br />
-        <b>Edição & exclusão:</b> Clique no ícone de lápis para editar o nome, ou no lixo para excluir. ATENÇÃO: só é possível excluir workspaces extras e todos os dados desse workspace serão apagados.
+        • Use um workspace para separar suas contas pessoais, familiares ou de trabalho.<br />
+        • Cada workspace tem membros, contas e dados independentes.<br />
+        <br />
+        <b>Edição & exclusão:</b> Clique no lápis para editar o nome ou no lixo para excluir.<br />
+        <span className="text-red-700 font-semibold">
+          Atenção: só é possível excluir workspaces extras e <b>todos os dados desse workspace serão apagados</b>.
+        </span>
       </p>
     </>
   );
@@ -109,8 +132,7 @@ export function WorkspaceManager() {
       {workspaces.length === 0 ? (
         <div className="text-center my-10">
           <p className="mb-6 text-muted-foreground">
-            Você ainda não possui nenhum workspace.
-            <br />
+            Você ainda não possui nenhum workspace.<br />
             Crie seu primeiro workspace para começar a organizar suas finanças!
           </p>
           {creating ? (
@@ -216,7 +238,7 @@ export function WorkspaceManager() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Excluir workspace?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  ⚠️ Tem certeza que deseja remover este workspace? 
+                  ⚠️ Tem certeza que deseja remover este workspace?
                   <br />
                   Esta ação <b>não poderá ser desfeita</b> e todos os dados relacionados serão apagados permanentemente.<br />
                 </AlertDialogDescription>
@@ -226,8 +248,9 @@ export function WorkspaceManager() {
                 <AlertDialogAction
                   className="bg-red-600 hover:bg-red-700"
                   onClick={() => handleDeleteWorkspace(deleteTarget)}
+                  disabled={deleting}
                 >
-                  Excluir
+                  {deleting ? "Excluindo..." : "Excluir"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
