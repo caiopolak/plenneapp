@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, AlertTriangle, Info, CheckCircle, X, TrendingUp, DollarSign } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSmartAlerts } from "@/hooks/useSmartAlerts";
 import { supabase } from '@/integrations/supabase/client';
+import { SmartAlertCard } from "./SmartAlertCard";
 
 interface SmartAlert {
   id: string;
@@ -142,65 +141,12 @@ export function SmartAlerts() {
       ) : (
         <div className="space-y-4">
           {filteredAlerts.map((alert) => (
-            <Card 
-              key={alert.id} 
-              className={`border-l-4 ${getAlertColor(alert.priority)} ${!alert.is_read ? 'shadow-md' : ''}`}
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${
-                      alert.priority === 'high' ? 'bg-red-100 text-red-600' :
-                      alert.priority === 'medium' ? 'bg-yellow-100 text-yellow-600' :
-                      'bg-blue-100 text-blue-600'
-                    }`}>
-                      {getAlertIcon(alert.alert_type)}
-                    </div>
-                    <div>
-                      <CardTitle className={`text-lg ${!alert.is_read ? 'font-bold' : 'font-normal'} text-[#003f5c]`}>
-                        {alert.title}
-                      </CardTitle>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs">
-                          {getTypeLabel(alert.alert_type)}
-                        </Badge>
-                        <div className={`w-2 h-2 rounded-full ${getPriorityColor(alert.priority)}`} />
-                        <span className="text-xs text-[#2b2b2b]/50">
-                          {format(new Date(alert.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-1">
-                    {!alert.is_read && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => markAsRead(alert.id)}
-                        title="Marcar como lido"
-                      >
-                        <CheckCircle className="w-4 h-4" />
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteAlert(alert.id)}
-                      title="Remover alerta"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <p className={`text-[#2b2b2b] ${!alert.is_read ? 'font-medium' : ''}`}>
-                  {alert.message}
-                </p>
-              </CardContent>
-            </Card>
+            <SmartAlertCard
+              key={alert.id}
+              alert={alert}
+              onMarkAsRead={markAsRead}
+              onDelete={deleteAlert}
+            />
           ))}
         </div>
       )}
