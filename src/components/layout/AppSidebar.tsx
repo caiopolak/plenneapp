@@ -16,7 +16,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -33,9 +32,24 @@ interface AppSidebarProps {
   setActiveTab: (tab: string) => void;
 }
 
+// Slogans para sortear ao recarregar a página
+const SLOGANS = [
+  "Controle financeiro de verdade.",
+  "Sua vida financeira, plena.",
+  "Transforme seus sonhos em conquistas.",
+  "Planeje, realize, viva melhor.",
+  "Disciplina hoje, plenitude amanhã.",
+  "Acompanhe. Evolua. Conquiste.",
+];
+
 export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
   const { signOut } = useAuth();
-  const { profile } = useProfile();
+  const { profile, subscription } = useProfile();
+
+  // Sorteia slogan uma vez por recarga
+  const [slogan] = React.useState(() => {
+    return SLOGANS[Math.floor(Math.random() * SLOGANS.length)];
+  });
 
   // Menu items config
   const menuItems = [
@@ -71,34 +85,49 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
     },
   ];
 
+  // Centralização e exibição de perfil + informações relevantes
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          {/* Avatar + Nome do usuário */}
-          <div className="flex flex-col items-center py-6 gap-2 bg-gradient-to-r from-primary/10 to-secondary/10">
-            <Avatar className="w-16 h-16 ring-2 ring-primary/60 shadow-lg">
+          <div className="flex flex-col items-center gap-3 pt-8 pb-6 bg-gradient-to-r from-primary/10 to-secondary/10">
+            <Avatar className="w-20 h-20 ring-2 ring-primary/60 shadow-lg mb-2">
               {profile?.avatar_url ? (
                 <AvatarImage src={profile.avatar_url} alt={profile.full_name || "Avatar"} />
               ) : (
                 <AvatarFallback>
                   {profile?.full_name
                     ? profile.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
-                    : <UserIcon className="w-7 h-7 text-muted-foreground" />}
+                    : <UserIcon className="w-10 h-10 text-muted-foreground" />}
                 </AvatarFallback>
               )}
             </Avatar>
-            <div className="text-center">
-              <span className="font-display font-bold text-primary text-lg truncate max-w-[122px] block">{profile?.full_name || "Usuário"}</span>
-              <span className="text-xs text-muted-foreground">{profile?.email}</span>
+            <div className="flex flex-col items-center w-full">
+              <span className="font-display font-bold text-primary text-xl truncate max-w-[144px] block">{profile?.full_name || "Usuário"}</span>
+              <span className="text-sm text-muted-foreground truncate max-w-[180px]">{profile?.email}</span>
+              {subscription?.plan && (
+                <span
+                  className={`mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                    subscription.plan === "business"
+                      ? "bg-green-100 text-green-700"
+                      : subscription.plan === "pro"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {subscription.plan === "business"
+                    ? "Business"
+                    : subscription.plan === "pro"
+                    ? "Pro"
+                    : "Free"}
+                </span>
+              )}
             </div>
           </div>
-          <div className="flex items-center gap-2 px-3 py-3">
-            {/* Nome apenas "Plenne" (sem logo) */}
-            <span className="text-2xl font-bold text-primary pl-0">Plenne</span>
-            <span className="slogan text-xs font-medium text-primary/80">
-              Controle financeiro de verdade.
-            </span>
+          {/* Logo + nome Plenne (com degradê) e slogan rotativo centralizado */}
+          <div className="flex flex-col items-center gap-0 px-3 py-3 border-b border-primary/10">
+            <LogoPlenne className="mb-1" />
+            <span className="text-xs italic text-primary/80 text-center px-2 transition-all animate-fade-in font-medium max-w-[196px]">{slogan}</span>
           </div>
           <SidebarSeparator className="mb-1" />
           <SidebarGroupContent>
@@ -132,3 +161,4 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
     </Sidebar>
   );
 }
+
