@@ -26,10 +26,15 @@ export function WorkspaceManager() {
   // Criar novo workspace
   async function handleCreateWorkspace() {
     if (!newName.trim() || !user) return;
-    // owner_id deve ser preenchido para passar nas policies RLS
     const res = await supabase
       .from("workspaces")
-      .insert([{ name: newName.trim(), type: "personal", owner_id: user.id }])
+      .insert([
+        {
+          name: newName.trim(),
+          type: "personal", // ou family/business depois
+          owner_id: user.id,
+        },
+      ])
       .select()
       .single();
     if (!res.error) {
@@ -38,7 +43,11 @@ export function WorkspaceManager() {
       reload();
       toast({ title: "Workspace criada com sucesso!" });
     } else {
-      toast({ variant: "destructive", title: "Erro", description: "Não foi possível criar o workspace." });
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: res.error.message || "Não foi possível criar o workspace.",
+      });
     }
   }
 
@@ -56,60 +65,156 @@ export function WorkspaceManager() {
 
   return (
     <div className="max-w-xl mx-auto py-12 px-4">
-      <h1 className="text-3xl font-extrabold font-display brand-gradient-text mb-6 text-center">Workspaces</h1>
-      <ul className="space-y-4 mb-6">
-        {workspaces.map((ws) => (
-          <li
-            key={ws.id}
-            className={`rounded-lg p-4 flex items-center gap-4 border transition ${current?.id === ws.id ? "border-primary/60 bg-primary/5 shadow" : "border-muted bg-background"}`}
-          >
+      <h1 className="text-3xl font-extrabold font-display brand-gradient-text mb-6 text-center">
+        Workspaces
+      </h1>
+      {/* Se não há workspaces, instrui a criar */}
+      {workspaces.length === 0 ? (
+        <div className="text-center my-10">
+          <p className="mb-6 text-muted-foreground">
+            Você ainda não possui nenhum workspace.
+            <br />
+            Crie seu primeiro workspace para começar a organizar suas finanças!
+          </p>
+          {creating ? (
+            <div className="flex justify-center gap-2">
+              <Input
+                autoFocus
+                placeholder="Nome do novo workspace"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="max-w-[200px]"
+              />
+              <Button
+                variant="secondary"
+                onClick={handleCreateWorkspace}
+                disabled={!newName.trim()}
+              >
+                Criar
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setCreating(false);
+                  setNewName("");
+                }}
+              >
+                Cancelar
+              </Button>
+            </div>
+          ) : (
             <Button
-              variant={current?.id === ws.id ? "secondary" : "ghost"}
-              className="w-8 h-8 rounded-full mr-2"
-              onClick={() => handleSelectWorkspace(ws.id)}
-              aria-label="Selecionar workspace"
+              variant="outline"
+              size="sm"
+              onClick={() => setCreating(true)}
+              className="flex gap-2 mx-auto"
             >
-              <Check className="w-4 h-4" />
+              <Plus className="w-4 h-4" /> Adicionar workspace
             </Button>
-            {editingId === ws.id ? (
-              <>
-                <Input
-                  autoFocus
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="max-w-[180px]"
-                />
-                <Button size="sm" className="ml-2" onClick={() => handleEditWorkspace(ws.id)}>Salvar</Button>
-                <Button size="sm" variant="destructive" className="ml-2" onClick={() => setEditingId(null)}>Cancelar</Button>
-              </>
-            ) : (
-              <>
-                <span className="flex-1 font-medium text-primary text-lg">{ws.name}</span>
-                <Button size="icon" variant="ghost" onClick={() => { setEditingId(ws.id); setEditName(ws.name); }} className="shrink-0">
-                  <Pencil className="w-4 h-4" />
-                </Button>
-                {/* Excluir só para admin/dono futuramente */}
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-      {creating ? (
-        <div className="flex gap-2">
-          <Input
-            autoFocus
-            placeholder="Nome do novo workspace"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            className="max-w-[200px]"
-          />
-          <Button variant="secondary" onClick={handleCreateWorkspace}>Criar</Button>
-          <Button variant="ghost" onClick={() => { setCreating(false); setNewName(""); }}>Cancelar</Button>
+          )}
         </div>
       ) : (
-        <Button variant="outline" size="sm" onClick={() => setCreating(true)} className="flex gap-2">
-          <Plus className="w-4 h-4" /> Adicionar workspace
-        </Button>
+        <>
+          <ul className="space-y-4 mb-6">
+            {workspaces.map((ws) => (
+              <li
+                key={ws.id}
+                className={`rounded-lg p-4 flex items-center gap-4 border transition ${
+                  current?.id === ws.id
+                    ? "border-primary/60 bg-primary/5 shadow"
+                    : "border-muted bg-background"
+                }`}
+              >
+                <Button
+                  variant={current?.id === ws.id ? "secondary" : "ghost"}
+                  className="w-8 h-8 rounded-full mr-2"
+                  onClick={() => handleSelectWorkspace(ws.id)}
+                  aria-label="Selecionar workspace"
+                >
+                  <Check className="w-4 h-4" />
+                </Button>
+                {editingId === ws.id ? (
+                  <>
+                    <Input
+                      autoFocus
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      className="max-w-[180px]"
+                    />
+                    <Button
+                      size="sm"
+                      className="ml-2"
+                      onClick={() => handleEditWorkspace(ws.id)}
+                    >
+                      Salvar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="ml-2"
+                      onClick={() => setEditingId(null)}
+                    >
+                      Cancelar
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex-1 font-medium text-primary text-lg">
+                      {ws.name}
+                    </span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        setEditingId(ws.id);
+                        setEditName(ws.name);
+                      }}
+                      className="shrink-0"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+          {creating ? (
+            <div className="flex gap-2">
+              <Input
+                autoFocus
+                placeholder="Nome do novo workspace"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="max-w-[200px]"
+              />
+              <Button
+                variant="secondary"
+                onClick={handleCreateWorkspace}
+                disabled={!newName.trim()}
+              >
+                Criar
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setCreating(false);
+                  setNewName("");
+                }}
+              >
+                Cancelar
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCreating(true)}
+              className="flex gap-2"
+            >
+              <Plus className="w-4 h-4" /> Adicionar workspace
+            </Button>
+          )}
+        </>
       )}
     </div>
   );
