@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FinancialTips } from "@/components/education/FinancialTips";
@@ -22,29 +21,77 @@ export default function Education() {
         </div>
         <Tabs defaultValue="tips" className="space-y-4">
           <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm rounded-lg">
-            <TabsTrigger value="tips" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
+            <TabsTrigger
+              value="tips"
+              className="flex items-center gap-2 
+                data-[state=active]:bg-[#017F66] data-[state=active]:text-white
+                text-xs px-1 py-0.5
+                md:text-sm md:px-3 md:py-1.5
+                lg:text-base lg:px-3
+                truncate"
+            >
               <BookOpen className="w-4 h-4" />
               Dicas
             </TabsTrigger>
-            <TabsTrigger value="alerts" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
+            <TabsTrigger
+              value="alerts"
+              className="flex items-center gap-2 
+                data-[state=active]:bg-[#017F66] data-[state=active]:text-white
+                text-xs px-1 py-0.5
+                md:text-sm md:px-3 md:py-1.5
+                lg:text-base lg:px-3
+                truncate"
+            >
               <Bell className="w-4 h-4" />
               Alertas
             </TabsTrigger>
-            <TabsTrigger value="challenges" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
+            <TabsTrigger
+              value="challenges"
+              className="flex items-center gap-2 
+                data-[state=active]:bg-[#017F66] data-[state=active]:text-white
+                text-xs px-1 py-0.5
+                md:text-sm md:px-3 md:py-1.5
+                lg:text-base lg:px-3
+                truncate"
+            >
               <Trophy className="w-4 h-4" />
               Desafios
             </TabsTrigger>
-            <TabsTrigger value="modules" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
+            <TabsTrigger
+              value="modules"
+              className="flex items-center gap-2 
+                data-[state=active]:bg-[#017F66] data-[state=active]:text-white
+                text-xs px-1 py-0.5
+                md:text-sm md:px-3 md:py-1.5
+                lg:text-base lg:px-3
+                truncate"
+            >
               <GraduationCap className="w-4 h-4" />
               Aulas
             </TabsTrigger>
-            <TabsTrigger value="assistant" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
+            <TabsTrigger
+              value="assistant"
+              className="flex items-center gap-2 
+                data-[state=active]:bg-[#017F66] data-[state=active]:text-white
+                text-xs px-1 py-0.5
+                md:text-sm md:px-3 md:py-1.5
+                lg:text-base lg:px-3
+                truncate"
+            >
               <Bot className="w-4 h-4" />
               Assistente
             </TabsTrigger>
-            {/* ABA NOVA: Orçamentos */}
-            <TabsTrigger value="budgets" className="flex items-center gap-2 data-[state=active]:bg-[#2f9e44] data-[state=active]:text-white">
-              <Wallet className="w-4 h-4" /> Orçamentos
+            <TabsTrigger
+              value="budgets"
+              className="flex items-center gap-2 
+                data-[state=active]:bg-[#2f9e44] data-[state=active]:text-white
+                text-xs px-1 py-0.5
+                md:text-sm md:px-3 md:py-1.5
+                lg:text-base lg:px-3
+                truncate"
+            >
+              <Wallet className="w-4 h-4" />
+              Orçamentos
             </TabsTrigger>
           </TabsList>
           <TabsContent value="tips" className="space-y-4">
@@ -62,7 +109,6 @@ export default function Education() {
           <TabsContent value="assistant" className="space-y-4">
             <FinancialAssistant />
           </TabsContent>
-          {/* NOVO: Orçamentos */}
           <TabsContent value="budgets" className="space-y-4">
             <BudgetList />
           </TabsContent>
