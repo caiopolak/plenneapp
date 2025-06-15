@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { WorkspaceCard } from "./WorkspaceCard";
 
 export function WorkspaceManager() {
   const { workspaces, current, setCurrent, reload } = useWorkspace();
@@ -51,37 +51,59 @@ export function WorkspaceManager() {
     }
   }
 
-  async function handleEditWorkspace(id: string) {
-    if (!editName.trim()) return;
+  async function handleEditWorkspace(id: string, value: string) {
+    if (!value.trim()) return;
     await supabase
       .from("workspaces")
-      .update({ name: editName.trim() })
+      .update({ name: value.trim() })
       .eq("id", id);
     setEditingId(null);
     setEditName("");
     reload();
   }
 
-  async function handleDeleteWorkspace(id: string) {
+  // Trocar função de deleção para evitar problemas
+  async function handleDeleteWorkspace(id: string | null) {
+    if (!id) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Workspace não selecionado ou já removido.",
+      });
+      setDeleteTarget(null);
+      return;
+    }
     await supabase.from("workspaces").delete().eq("id", id);
     setDeleteTarget(null);
     reload();
     toast({ title: "Workspace removido com sucesso." });
   }
 
-  return (
-    <div className="max-w-xl mx-auto py-12 px-4">
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-2">
-        <Info className="text-blue-500 mt-1" />
-        <div>
-          <p className="font-semibold text-blue-800 mb-1">O que são Workspaces?</p>
-          <p className="text-sm text-blue-700">
-            Os workspaces permitem organizar suas finanças familiares, profissionais ou pessoais em diferentes ambientes. Você pode criar vários workspaces para separar suas contas, gerenciar membros e compartilhar informações de forma segura e independente. Adicione, edite ou remova workspaces de acordo com suas necessidades.
-          </p>
-        </div>
-      </div>
+  // Texto explicativo aprimorado
+  const infoText = (
+    <>
+      <p className="font-semibold text-blue-800 mb-1">O que são Workspaces?</p>
+      <p className="text-sm text-blue-700">
+        <span className="block mb-1">
+          <b>Workspaces</b> são ambientes organizados para separar diferentes conjuntos de informações e finanças dentro do Plenne. 
+        </span>
+        Você pode criar workspaces para uso pessoal, familiar ou profissional, mantendo contas, orçamentos e membros completamente independentes/apartados. 
+        <br /><br />
+        <b>Exemplo de uso:</b><br /> 
+        Crie um workspace da sua família e outro para o seu negócio, ou áreas diferentes do seu projeto.
+        <br /><br />
+        <b>Edição & exclusão:</b> Clique no ícone de lápis para editar o nome, ou no lixo para excluir. ATENÇÃO: só é possível excluir workspaces extras e todos os dados desse workspace serão apagados.
+      </p>
+    </>
+  );
 
-      <h1 className="text-3xl font-extrabold font-display brand-gradient-text mb-6 text-center">
+  return (
+    <div className="max-w-xl mx-auto py-10 px-2 md:px-4">
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-2 shadow">
+        <Info className="text-blue-500 mt-1 shrink-0" />
+        <div>{infoText}</div>
+      </div>
+      <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text mb-5 text-center">
         Workspaces
       </h1>
       {workspaces.length === 0 ? (
@@ -130,77 +152,25 @@ export function WorkspaceManager() {
         </div>
       ) : (
         <>
-          <ul className="space-y-4 mb-6">
+          <ul className="space-y-4 mb-7">
             {workspaces.map((ws) => (
-              <li
-                key={ws.id}
-                className={`rounded-xl p-4 flex items-center gap-4 border shadow transition relative bg-gradient-to-r from-blue-100/70 via-white to-green-100/80 ${
-                  current?.id === ws.id
-                    ? "border-primary/70 bg-gradient-to-r from-blue-200 to-green-100 shadow-lg"
-                    : "border-muted"
-                }`}
-              >
-                <Button
-                  variant={current?.id === ws.id ? "secondary" : "ghost"}
-                  className="w-8 h-8 rounded-full mr-2"
-                  onClick={() => handleSelectWorkspace(ws.id)}
-                  aria-label="Selecionar workspace"
-                >
-                  <Check className="w-4 h-4" />
-                </Button>
-                {editingId === ws.id ? (
-                  <>
-                    <Input
-                      autoFocus
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      className="max-w-[180px]"
-                    />
-                    <Button
-                      size="sm"
-                      className="ml-2"
-                      onClick={() => handleEditWorkspace(ws.id)}
-                    >
-                      Salvar
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="ml-2"
-                      onClick={() => setEditingId(null)}
-                    >
-                      Cancelar
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <span className="flex-1 font-medium text-primary text-lg truncate" title={ws.name}>
-                      {ws.name}
-                    </span>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => {
-                        setEditingId(ws.id);
-                        setEditName(ws.name);
-                      }}
-                      className="shrink-0"
-                      aria-label="Editar workspace"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="shrink-0"
-                      aria-label="Excluir workspace"
-                      onClick={() => setDeleteTarget(ws.id)}
-                      disabled={workspaces.length === 1}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-500" />
-                    </Button>
-                  </>
-                )}
+              <li key={ws.id}>
+                <WorkspaceCard
+                  name={ws.name}
+                  selected={current?.id === ws.id}
+                  onSelect={() => handleSelectWorkspace(ws.id)}
+                  onEdit={() =>
+                    editingId === ws.id
+                      ? setEditingId(null)
+                      : (setEditingId(ws.id), setEditName(ws.name))
+                  }
+                  onDelete={() => setDeleteTarget(ws.id)}
+                  onSaveEdit={(value: string) => handleEditWorkspace(ws.id, value)}
+                  editing={editingId === ws.id}
+                  editName={editName}
+                  setEditName={setEditName}
+                  disableDelete={workspaces.length === 1}
+                />
               </li>
             ))}
           </ul>
@@ -240,27 +210,30 @@ export function WorkspaceManager() {
               <Plus className="w-4 h-4" /> Adicionar workspace
             </Button>
           )}
+          {/* Confirmação de exclusão */}
+          <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir workspace?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  ⚠️ Tem certeza que deseja remover este workspace? 
+                  <br />
+                  Esta ação <b>não poderá ser desfeita</b> e todos os dados relacionados serão apagados permanentemente.<br />
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-600 hover:bg-red-700"
+                  onClick={() => handleDeleteWorkspace(deleteTarget)}
+                >
+                  Excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </>
       )}
-
-      {/* Confirmação de exclusão */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir workspace?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja remover este workspace? Esta ação <b>não poderá ser desfeita</b> e todos os dados relacionados serão apagados permanentemente.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700"
-              onClick={() => handleDeleteWorkspace(deleteTarget!)}
-            >Excluir</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
