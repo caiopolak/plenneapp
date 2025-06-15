@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FinancialSummary } from "@/components/dashboard/FinancialSummary";
@@ -9,48 +8,41 @@ import { cn } from "@/lib/utils";
 export function AnalyticsOverview() {
   return (
     <section
-      className={cn(
-        "w-full",
-        "grid",
-        "gap-8",
-        "grid-cols-1",
-        "lg:grid-cols-3",
-        "items-stretch"
-      )}
+      className="w-full grid gap-8 grid-cols-1 lg:grid-cols-3 items-stretch"
     >
       {/* Card Resumo financeiro */}
-      <Card className="flex flex-col h-full shadow-2xl rounded-2xl border-0 bg-gradient-to-br from-primary to-secondary/80 overflow-hidden hover:scale-[1.018] transition-transform duration-250">
-        <CardHeader className="bg-white/70 backdrop-blur-md pb-4">
-          <CardTitle className="text-primary tracking-wide text-lg font-extrabold font-display">Resumo Financeiro</CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col justify-between">
+      <div className="flex flex-col h-full shadow-2xl rounded-2xl border-0 bg-gradient-to-br from-[--background] to-[--surface] overflow-hidden hover:scale-[1.018] transition-transform duration-250">
+        <div className="bg-white/85 backdrop-blur-md pb-4 px-6 pt-6 rounded-t-2xl">
+          <span className="text-[--primary] tracking-wide text-lg font-extrabold font-display">Resumo Financeiro</span>
+        </div>
+        <div className="flex-1 flex flex-col justify-between px-6 py-4">
           <FinancialSummary />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Card Metas */}
-      <Card className="flex flex-col h-full shadow-lg rounded-2xl border-0 bg-gradient-to-br from-attention/10 via-yellow-50 to-white/90 overflow-hidden hover:scale-[1.014] transition-transform duration-250">
-        <CardHeader className="pb-3 bg-white/60 backdrop-blur-md">
-          <CardTitle className="text-attention font-bold flex items-center gap-2 font-display">
+      <div className="flex flex-col h-full shadow-lg rounded-2xl border-0 bg-white overflow-hidden hover:scale-[1.014] transition-transform duration-250">
+        <div className="pb-3 bg-white/85 backdrop-blur-md px-6 pt-5">
+          <span className="text-[--secondary] font-bold flex items-center gap-2 font-display">
             <span>🎯</span> Metas & Desafios
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col justify-between overflow-x-auto sm:overflow-visible">
+          </span>
+        </div>
+        <div className="flex-1 flex flex-col justify-between overflow-x-auto sm:overflow-visible px-6 py-3">
           <GoalList />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Card Investimentos */}
-      <Card className="flex flex-col h-full shadow-lg rounded-2xl border-0 bg-gradient-to-br from-secondary/10 via-blue-50 to-white/90 overflow-hidden hover:scale-[1.012] transition-transform duration-250">
-        <CardHeader className="pb-3 bg-white/60 backdrop-blur-md">
-          <CardTitle className="text-secondary font-bold flex items-center gap-2 font-display">
+      <div className="flex flex-col h-full shadow-lg rounded-2xl border-0 bg-white overflow-hidden hover:scale-[1.012] transition-transform duration-250">
+        <div className="pb-3 bg-white/85 backdrop-blur-md px-6 pt-5">
+          <span className="text-[--primary] font-bold flex items-center gap-2 font-display">
             <span>💸</span> Investimentos
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col justify-between overflow-x-auto sm:overflow-visible">
+          </span>
+        </div>
+        <div className="flex-1 flex flex-col justify-between overflow-x-auto sm:overflow-visible px-6 py-3">
           <InvestmentList />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </section>
   );
 }
