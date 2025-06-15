@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
 import { InvestmentPortfolioSummary } from "./InvestmentPortfolioSummary";
+import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
 
 interface Investment {
   id: string;
@@ -112,6 +113,30 @@ export function InvestmentList() {
     ? investments.reduce((sum, inv) => sum + (inv.expected_return || 0), 0) / investments.length 
     : 0;
 
+  const handleExportCsv = () => {
+    try {
+      exportInvestmentsCsv(
+        investments.map(inv => ({
+          name: inv.name,
+          type: getTypeLabel(inv.type),
+          amount: inv.amount,
+          expected_return: inv.expected_return,
+          purchase_date: inv.purchase_date
+        }))
+      );
+      toast({
+        title: "Exportação concluída",
+        description: "Os investimentos foram exportados para CSV.",
+      });
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao exportar",
+        description: "Não foi possível exportar os investimentos.",
+      });
+    }
+  };
+
   if (loading) {
     return <div>Carregando investimentos...</div>;
   }
@@ -132,29 +157,42 @@ export function InvestmentList() {
   // Cartões analíticos e informativos — novo gradiente/principal
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Botão/Modal principal: Adicionar Investimento */}
-      <div className="flex w-full justify-end mb-0">
-        <Dialog open={showForm} onOpenChange={setShowForm}>
-          <DialogTrigger asChild>
-            <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
-              <Plus className="w-5 h-5 mr-2" /> Novo Investimento
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl bg-[#f4f4f4] rounded-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-[#003f5c] font-display">Novo Investimento</DialogTitle>
-            </DialogHeader>
-            <InvestmentForm 
-              onSuccess={() => {
-                setShowForm(false);
-                fetchInvestments();
-              }}
-              onCancel={() => setShowForm(false)}
-            />
-          </DialogContent>
-        </Dialog>
+      {/* Botões de ação - Exportação CSV incluída */}
+      <div className="flex w-full justify-between mb-0 gap-2">
+        <div />
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleExportCsv}
+            size="sm"
+            className="font-display"
+            aria-label="Exportar investimentos para CSV"
+          >
+            Exportar CSV
+          </Button>
+          {/* Já existe o botão de adicionar investimento */}
+          <Dialog open={showForm} onOpenChange={setShowForm}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
+                <Plus className="w-5 h-5 mr-2" /> Novo Investimento
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl bg-[#f4f4f4] rounded-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-[#003f5c] font-display">Novo Investimento</DialogTitle>
+              </DialogHeader>
+              <InvestmentForm 
+                onSuccess={() => {
+                  setShowForm(false);
+                  fetchInvestments();
+                }}
+                onCancel={() => setShowForm(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
-      
+
       {/* Cards informativos harmonizados agora SEM degradê em Nº Investimentos */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-gradient-to-tr from-[#003f5c] to-[#2f9e44] shadow-[0_4px_32px_0_rgba(0,63,92,0.16)] border-none">
