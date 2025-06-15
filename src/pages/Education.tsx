@@ -7,7 +7,6 @@ import { FinancialChallenges } from "@/components/education/FinancialChallenges"
 import { FinancialModules } from "@/components/education/FinancialModules";
 import { FinancialAssistant } from "@/components/education/FinancialAssistant";
 import { BookOpen, Bell, Trophy, GraduationCap, Bot, Wallet } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { BudgetList } from "@/components/budget/BudgetList";
 
 export default function Education() {
@@ -16,139 +15,170 @@ export default function Education() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-6 flex items-center gap-3 sm:gap-4">
           <BookOpen className="w-7 h-7 text-[--primary] sm:w-8 sm:h-8" />
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#003f5c]">Educação & Saúde Financeira</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#003f5c]">
+            Educação & Saúde Financeira
+          </h1>
         </div>
         <Tabs defaultValue="tips" className="space-y-4">
+          {/* Custom layout for the navigation (TabsList) */}
           <TabsList
             className={`
-              grid 
-              grid-cols-2
+              grid
+              grid-cols-1
               gap-2
               bg-white
               shadow-md
               rounded-lg
-              p-2
-              sm:grid-cols-6
-              sm:gap-1
-              sm:p-2
+              px-2 py-3
               w-full
+              sm:grid-cols-3 sm:gap-2 sm:px-4 sm:py-2
+              md:grid-cols-6 md:gap-2
+              md:px-2 md:py-2
               transition-all
             `}
           >
-            <TabsTrigger
-              value="tips"
-              className="
-                flex items-center gap-1 justify-center
-                rounded-md
-                px-1 py-2
-                text-xs sm:text-sm
-                font-semibold
-                data-[state=active]:bg-[#017F66]
-                data-[state=active]:text-white
-                data-[state=inactive]:bg-[#f4f4f4]
-                data-[state=inactive]:text-[#003f5c]
-                transition-all
-                h-9
-              "
-            >
-              <BookOpen className="w-4 h-4 shrink-0" />
-              Dicas
-            </TabsTrigger>
-            <TabsTrigger
-              value="alerts"
-              className="
-                flex items-center gap-1 justify-center
-                rounded-md
-                px-1 py-2
-                text-xs sm:text-sm
-                font-semibold
-                data-[state=active]:bg-[#017F66]
-                data-[state=active]:text-white
-                data-[state=inactive]:bg-[#f4f4f4]
-                data-[state=inactive]:text-[#003f5c]
-                transition-all
-                h-9
-              "
-            >
-              <Bell className="w-4 h-4 shrink-0" />
-              Alertas
-            </TabsTrigger>
-            <TabsTrigger
-              value="challenges"
-              className="
-                flex items-center gap-1 justify-center
-                rounded-md
-                px-1 py-2
-                text-xs sm:text-sm
-                font-semibold
-                data-[state=active]:bg-[#017F66]
-                data-[state=active]:text-white
-                data-[state=inactive]:bg-[#f4f4f4]
-                data-[state=inactive]:text-[#003f5c]
-                transition-all
-                h-9
-              "
-            >
-              <Trophy className="w-4 h-4 shrink-0" />
-              Desafios
-            </TabsTrigger>
-            <TabsTrigger
-              value="modules"
-              className="
-                flex items-center gap-1 justify-center
-                rounded-md
-                px-1 py-2
-                text-xs sm:text-sm
-                font-semibold
-                data-[state=active]:bg-[#017F66]
-                data-[state=active]:text-white
-                data-[state=inactive]:bg-[#f4f4f4]
-                data-[state=inactive]:text-[#003f5c]
-                transition-all
-                h-9
-              "
-            >
-              <GraduationCap className="w-4 h-4 shrink-0" />
-              Aulas
-            </TabsTrigger>
-            <TabsTrigger
-              value="assistant"
-              className="
-                flex items-center gap-1 justify-center
-                rounded-md
-                px-1 py-2
-                text-xs sm:text-sm
-                font-semibold
-                data-[state=active]:bg-[#017F66]
-                data-[state=active]:text-white
-                data-[state=inactive]:bg-[#f4f4f4]
-                data-[state=inactive]:text-[#003f5c]
-                transition-all
-                h-9
-              "
-            >
-              <Bot className="w-4 h-4 shrink-0" />
-              Assistente
-            </TabsTrigger>
-            <TabsTrigger
-              value="budgets"
-              className="
-                flex items-center gap-1 justify-center
-                rounded-md
-                px-1 py-2
-                text-xs sm:text-sm
-                font-semibold
-                data-[state=active]:bg-[#2f9e44]
-                data-[state=active]:text-white
-                data-[state=inactive]:bg-[#f4f4f4]
-                data-[state=inactive]:text-[#003f5c]
-                transition-all
-                h-9
-              "
-            >
-              <Wallet className="w-4 h-4 shrink-0" /> Orçamentos
-            </TabsTrigger>
+            {/* 1a Linha de botões para mobile */}
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6 w-full">
+              <TabsTrigger
+                value="tips"
+                className="
+                  flex items-center gap-1 justify-center
+                  rounded-md
+                  px-1.5 py-2
+                  text-xs sm:text-sm
+                  font-semibold
+                  bg-[#f4f4f4]
+                  data-[state=active]:bg-[#017F66]
+                  data-[state=active]:text-white
+                  data-[state=inactive]:bg-[#f4f4f4]
+                  data-[state=inactive]:text-[#003f5c]
+                  transition-all
+                  h-10
+                  min-w-0
+                  max-w-full
+                  w-full
+                "
+              >
+                <BookOpen className="w-4 h-4 shrink-0" />
+                Dicas
+              </TabsTrigger>
+              <TabsTrigger
+                value="alerts"
+                className="
+                  flex items-center gap-1 justify-center
+                  rounded-md
+                  px-1.5 py-2
+                  text-xs sm:text-sm
+                  font-semibold
+                  bg-[#f4f4f4]
+                  data-[state=active]:bg-[#017F66]
+                  data-[state=active]:text-white
+                  data-[state=inactive]:bg-[#f4f4f4]
+                  data-[state=inactive]:text-[#003f5c]
+                  transition-all
+                  h-10
+                  min-w-0
+                  max-w-full
+                  w-full
+                "
+              >
+                <Bell className="w-4 h-4 shrink-0" />
+                Alertas
+              </TabsTrigger>
+              <TabsTrigger
+                value="challenges"
+                className="
+                  flex items-center gap-1 justify-center
+                  rounded-md
+                  px-1.5 py-2
+                  text-xs sm:text-sm
+                  font-semibold
+                  bg-[#f4f4f4]
+                  data-[state=active]:bg-[#017F66]
+                  data-[state=active]:text-white
+                  data-[state=inactive]:bg-[#f4f4f4]
+                  data-[state=inactive]:text-[#003f5c]
+                  transition-all
+                  h-10
+                  min-w-0
+                  max-w-full
+                  w-full
+                "
+              >
+                <Trophy className="w-4 h-4 shrink-0" />
+                Desafios
+              </TabsTrigger>
+              <TabsTrigger
+                value="modules"
+                className="
+                  flex items-center gap-1 justify-center
+                  rounded-md
+                  px-1.5 py-2
+                  text-xs sm:text-sm
+                  font-semibold
+                  bg-[#f4f4f4]
+                  data-[state=active]:bg-[#017F66]
+                  data-[state=active]:text-white
+                  data-[state=inactive]:bg-[#f4f4f4]
+                  data-[state=inactive]:text-[#003f5c]
+                  transition-all
+                  h-10
+                  min-w-0
+                  max-w-full
+                  w-full
+                "
+              >
+                <GraduationCap className="w-4 h-4 shrink-0" />
+                Aulas
+              </TabsTrigger>
+              <TabsTrigger
+                value="assistant"
+                className="
+                  flex items-center gap-1 justify-center
+                  rounded-md
+                  px-1.5 py-2
+                  text-xs sm:text-sm
+                  font-semibold
+                  bg-[#f4f4f4]
+                  data-[state=active]:bg-[#017F66]
+                  data-[state=active]:text-white
+                  data-[state=inactive]:bg-[#f4f4f4]
+                  data-[state=inactive]:text-[#003f5c]
+                  transition-all
+                  h-10
+                  min-w-0
+                  max-w-full
+                  w-full
+                "
+              >
+                <Bot className="w-4 h-4 shrink-0" />
+                Assistente
+              </TabsTrigger>
+              <TabsTrigger
+                value="budgets"
+                className="
+                  flex items-center gap-1 justify-center
+                  rounded-md
+                  px-1.5 py-2
+                  text-xs sm:text-sm
+                  font-semibold
+                  bg-[#f4f4f4]
+                  data-[state=active]:bg-[#2f9e44]
+                  data-[state=active]:text-white
+                  data-[state=inactive]:bg-[#f4f4f4]
+                  data-[state=inactive]:text-[#003f5c]
+                  transition-all
+                  h-10
+                  min-w-0
+                  max-w-full
+                  w-full
+                "
+              >
+                <Wallet className="w-4 h-4 shrink-0" /> Orçamentos
+              </TabsTrigger>
+            </div>
           </TabsList>
+          {/* Conteúdo das abas */}
           <TabsContent value="tips" className="space-y-4">
             <FinancialTips />
           </TabsContent>
