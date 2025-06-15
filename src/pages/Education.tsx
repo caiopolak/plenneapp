@@ -7,7 +7,6 @@ import { FinancialChallenges } from "@/components/education/FinancialChallenges"
 import { FinancialModules } from "@/components/education/FinancialModules";
 import { FinancialAssistant } from "@/components/education/FinancialAssistant";
 import { BookOpen, Bell, Trophy, GraduationCap, Bot, Wallet } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { BudgetList } from "@/components/budget/BudgetList";
 
 export default function Education() {
@@ -21,70 +20,109 @@ export default function Education() {
           </h1>
         </div>
         <Tabs defaultValue="tips" className="space-y-4">
-
-          {/* TabsList responsivo, com rolagem horizontal e destaque visual*/}
+          {/* Menus/tabs empilhados em mobile, linha em desktop, cores neutras */}
           <TabsList
-            className="flex w-full overflow-x-auto no-scrollbar snap-x snap-mandatory bg-white shadow-sm rounded-lg border border-[#017F66]/30 px-1 sm:grid sm:grid-cols-6 sm:px-0"
-            style={{ WebkitOverflowScrolling: "touch" }}
+            className="
+              grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-2
+              rounded-xl bg-white/80 shadow-sm border border-[#e8e8e8]
+              px-2 py-2
+              "
           >
             <TabsTrigger
               value="tips"
-              className="flex items-center gap-2 min-w-[120px] px-3 py-2 rounded-xl font-semibold text-base snap-center
-                text-[#017F66] data-[state=active]:bg-[--primary] data-[state=active]:text-white
-                data-[state=active]:shadow-[0_4px_20px_0_rgba(1,127,102,0.16)]
-                border-2 border-transparent data-[state=active]:border-[#F5B942] transition-colors duration-200"
+              className="
+                flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-base
+                text-[#017F66] bg-white
+                border border-[#e8e8e8]
+                hover:border-[#017F66] hover:bg-[#f5f5f5]
+                data-[state=active]:border-[--primary] data-[state=active]:bg-[#e5faf4]
+                data-[state=active]:text-[--primary]
+                transition-colors duration-200
+                w-full
+              "
             >
               <BookOpen className="w-4 h-4" />
               Dicas
             </TabsTrigger>
             <TabsTrigger
               value="alerts"
-              className="flex items-center gap-2 min-w-[120px] px-3 py-2 rounded-xl font-semibold text-base snap-center
-                text-[#F5B942] data-[state=active]:bg-[#F5B942] data-[state=active]:text-white
-                data-[state=active]:shadow-[0_4px_20px_0_rgba(245,185,66,0.11)]
-                border-2 border-transparent data-[state=active]:border-[#017F66] transition-colors duration-200"
+              className="
+                flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-base
+                text-[#F5B942] bg-white
+                border border-[#e8e8e8]
+                hover:border-[#F5B942] hover:bg-[#fbf6ea]
+                data-[state=active]:border-[#F5B942] data-[state=active]:bg-[#fef5dd]
+                data-[state=active]:text-[#8a6b0f]
+                transition-colors duration-200
+                w-full
+              "
             >
               <Bell className="w-4 h-4" />
               Alertas
             </TabsTrigger>
             <TabsTrigger
               value="challenges"
-              className="flex items-center gap-2 min-w-[120px] px-3 py-2 rounded-xl font-semibold text-base snap-center
-                text-[#0057FF] data-[state=active]:bg-[#0057FF] data-[state=active]:text-white
-                data-[state=active]:shadow-[0_4px_20px_0_rgba(0,87,255,0.10)]
-                border-2 border-transparent data-[state=active]:border-[#F5B942] transition-colors duration-200"
+              className="
+                flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-base
+                text-[#0057FF] bg-white
+                border border-[#e8e8e8]
+                hover:border-[#0057FF] hover:bg-[#eef4ff]
+                data-[state=active]:border-[#0057FF] data-[state=active]:bg-[#e5efff]
+                data-[state=active]:text-[#0057FF]
+                transition-colors duration-200
+                w-full
+              "
             >
               <Trophy className="w-4 h-4" />
               Desafios
             </TabsTrigger>
             <TabsTrigger
               value="modules"
-              className="flex items-center gap-2 min-w-[120px] px-3 py-2 rounded-xl font-semibold text-base snap-center
-                text-[#F5B942] data-[state=active]:bg-[#017F66] data-[state=active]:text-white
-                data-[state=active]:shadow-[0_4px_20px_0_rgba(1,127,102,0.13)]
-                border-2 border-transparent data-[state=active]:border-[#F5B942] transition-colors duration-200"
+              className="
+                flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-base
+                text-[#017F66] bg-white
+                border border-[#e8e8e8]
+                hover:border-[#017F66] hover:bg-[#f5f5f5]
+                data-[state=active]:border-[#017F66] data-[state=active]:bg-[#e5faf4]
+                data-[state=active]:text-[--primary]
+                transition-colors duration-200
+                w-full
+              "
             >
               <GraduationCap className="w-4 h-4" />
               Aulas
             </TabsTrigger>
             <TabsTrigger
               value="assistant"
-              className="flex items-center gap-2 min-w-[120px] px-3 py-2 rounded-xl font-semibold text-base snap-center
-                text-[#017F66] data-[state=active]:bg-[#F5B942] data-[state=active]:text-[#003f5c]
-                data-[state=active]:shadow-[0_4px_16px_0_rgba(245,185,66,0.14)]
-                border-2 border-transparent data-[state=active]:border-[#0057FF] transition-colors duration-200"
+              className="
+                flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-base
+                text-[#003f5c] bg-white
+                border border-[#e8e8e8]
+                hover:border-[#003f5c] hover:bg-[#efefef]
+                data-[state=active]:border-[#003f5c] data-[state=active]:bg-[#e4eafd]
+                data-[state=active]:text-[#003f5c]
+                transition-colors duration-200
+                w-full
+              "
             >
               <Bot className="w-4 h-4" />
               Assistente
             </TabsTrigger>
             <TabsTrigger
               value="budgets"
-              className="flex items-center gap-2 min-w-[140px] px-3 py-2 rounded-xl font-semibold text-base snap-center
-                text-[#2f9e44] data-[state=active]:bg-[#2f9e44] data-[state=active]:text-white
-                data-[state=active]:shadow-[0_4px_24px_0_rgba(47,158,68,0.13)]
-                border-2 border-transparent data-[state=active]:border-[#F5B942] transition-colors duration-200"
+              className="
+                flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-base
+                text-[#2f9e44] bg-white
+                border border-[#e8e8e8]
+                hover:border-[#2f9e44] hover:bg-[#edfaef]
+                data-[state=active]:border-[#2f9e44] data-[state=active]:bg-[#e3f7e7]
+                data-[state=active]:text-[#2f9e44]
+                transition-colors duration-200
+                w-full
+              "
             >
-              <Wallet className="w-4 h-4" /> Orçamentos
+              <Wallet className="w-4 h-4" />
+              Orçamentos
             </TabsTrigger>
           </TabsList>
 
@@ -108,19 +146,6 @@ export default function Education() {
           </TabsContent>
         </Tabs>
       </div>
-      <style>
-        {`
-          /* Esconde scrollbar em mobile, mas mantém acessibilidade */
-          .no-scrollbar::-webkit-scrollbar {
-            display: none;
-          }
-          .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
-        `}
-      </style>
     </div>
   );
 }
-
