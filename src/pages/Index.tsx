@@ -90,12 +90,14 @@ const Index = () => {
       </header>
 
       {/* MODAIS PARA FORMULÁRIOS */}
+      {/* Fazemos os modais usarem o estado showTransactionForm, showGoalForm, showInvestmentForm */}
       {showTransactionForm && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-xl max-w-md w-full shadow-xl mx-4 p-5 relative">
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
               onClick={() => setShowTransactionForm(false)}
+              aria-label="Fechar"
             >
               ×
             </button>
@@ -111,6 +113,7 @@ const Index = () => {
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
               onClick={() => setShowGoalForm(false)}
+              aria-label="Fechar"
             >
               ×
             </button>
@@ -125,6 +128,7 @@ const Index = () => {
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
               onClick={() => setShowInvestmentForm(false)}
+              aria-label="Fechar"
             >
               ×
             </button>
@@ -134,7 +138,7 @@ const Index = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Olá, Usuário! 👋</h2>
@@ -274,7 +278,7 @@ const Index = () => {
                 onImportSuccess={() => {}}
                 showForm={showTransactionForm}
                 setShowForm={setShowTransactionForm}
-                onCreateClick={handleCreateTransaction}
+                onCreateClick={() => setShowTransactionForm(true)}
               />
             </div>
             <Card>
@@ -372,7 +376,7 @@ const Index = () => {
               <InvestmentActionButtons
                 investments={investments}
                 onImportSuccess={() => {}}
-                onCreateClick={handleCreateInvestment}
+                onCreateClick={() => setShowInvestmentForm(true)}
                 showForm={showInvestmentForm}
                 setShowForm={setShowInvestmentForm}
               />

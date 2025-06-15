@@ -21,6 +21,7 @@ export function InvestmentActionButtons({
   setShowForm: (b: boolean) => void;
 }) {
   const { toast } = useToast();
+  const buttonGradient = "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700";
 
   const handleExportCsv = () => {
     try {
@@ -52,7 +53,7 @@ export function InvestmentActionButtons({
         variant="outline"
         onClick={handleExportCsv}
         size="sm"
-        className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
+        className="font-display flex gap-2 border border-[--primary]/20 shadow min-w-[170px] w-full sm:w-auto"
         aria-label="Exportar investimentos para CSV"
       >
         <Download className="w-4 h-4" />
@@ -63,7 +64,7 @@ export function InvestmentActionButtons({
           <Button
             variant="outline"
             size="sm"
-            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
+            className="font-display flex gap-2 border border-[--primary]/20 shadow min-w-[170px] w-full sm:w-auto"
             aria-label="Importar investimentos de CSV"
           >
             <Import className="w-4 h-4" />
@@ -77,17 +78,13 @@ export function InvestmentActionButtons({
           <ImportGoalsCSV onSuccess={onImportSuccess} />
         </DialogContent>
       </Dialog>
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
-          >
-            <Plus className="w-4 h-4 mr-2" /> Novo Investimento
-          </Button>
-        </DialogTrigger>
-      </Dialog>
+      <Button
+        size="sm"
+        className={`${buttonGradient} font-display flex gap-2 min-w-[170px] w-full sm:w-auto`}
+        onClick={onCreateClick}
+      >
+        <Plus className="w-4 h-4 mr-2" /> Novo Investimento
+      </Button>
     </div>
   );
 }

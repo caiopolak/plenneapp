@@ -100,10 +100,10 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
 
   return (
     <Sidebar>
-      <SidebarContent>
+      <SidebarContent className="w-full max-w-xs min-w-[200px] bg-white shadow-lg flex flex-col h-full">
         <SidebarGroup>
-          {/* Avatar centralizado */}
-          <div className="flex flex-col items-center gap-0 pt-7 pb-3 bg-gradient-to-r from-primary/10 to-secondary/10">
+          {/* Avatar em layout responsivo */}
+          <div className="flex flex-col items-center gap-0 pt-7 pb-3 bg-gradient-to-r from-blue-50 to-white w-full">
             <Avatar className="w-20 h-20 ring-2 ring-primary/60 shadow-lg mb-3">
               {profile?.avatar_url ? (
                 <AvatarImage src={profile.avatar_url} alt={profile.full_name || "Avatar"} />
@@ -135,8 +135,8 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
               )}
             </div>
           </div>
-          {/* Logo Plenne (com degradê, slogan rotativo e novo ícone $) */}
-          <div className="flex flex-col items-center gap-0 px-3 py-4 border-b border-primary/10">
+          {/* Logo e slogan */}
+          <div className="flex flex-col items-center gap-0 px-3 py-4 border-b border-primary/10 w-full">
             <LogoPlenne className="mb-1" />
             <span className="text-xs italic text-primary/80 text-center px-2 transition-all animate-fade-in font-medium max-w-[196px]">{slogan}</span>
           </div>
