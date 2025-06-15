@@ -155,7 +155,7 @@ export function InvestmentList() {
         </Dialog>
       </div>
       
-      {/* Cards informativos harmonizados (cores ajustadas, sem laranja) */}
+      {/* Cards informativos harmonizados em degradê contínuo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-gradient-to-tr from-[#003f5c] to-[#2f9e44] shadow-[0_4px_32px_0_rgba(0,63,92,0.16)] border-none">
           {/* Total Investido */}
@@ -168,7 +168,7 @@ export function InvestmentList() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#f4f4f4] shadow-[0_4px_32px_0_rgba(0,63,92,0.09)] border-0">
+        <Card className="bg-gradient-to-tr from-[#2f9e44] via-[#eaf6ee] to-[#003f5c]/80 shadow-[0_4px_32px_0_rgba(47,158,68,0.12)] border-0">
           {/* Nº Investimentos */}
           <CardContent className="p-6 flex flex-col items-start gap-2">
             <div className="text-sm text-[#003f5c] font-medium flex items-center gap-2 font-display">
