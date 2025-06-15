@@ -97,7 +97,7 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">Gerenciar</Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="z-[100] bg-white rounded-xl shadow-lg border border-[--primary]/10 max-w-lg">
             <DialogHeader>
               <DialogTitle>Gerenciar categorias ({type === "income" ? "Receita" : "Despesa"})</DialogTitle>
             </DialogHeader>
