@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSmartAlerts } from "@/hooks/useSmartAlerts";
+import { supabase } from '@/integrations/supabase/client';
 
 interface SmartAlert {
   id: string;
@@ -22,22 +23,23 @@ interface SmartAlert {
 export function SmartAlerts() {
   const alerts = useSmartAlerts();
   const [filter, setFilter] = useState<string>('all');
-  const [loading, setLoading] = useState(false); // hook já lida com loading via array vazio/cheio
   const { toast } = useToast();
   const { user } = useAuth();
 
-  // Ações do usuário seguem as mesmas (marcar como lido/remover)
-  const markAsRead = (alertId: string) => {
-    setAlerts(prev => prev.map(alert => 
-      alert.id === alertId ? { ...alert, is_read: true } : alert
-    ));
+  const markAsRead = async (alertId: string) => {
+    if (!user) return;
+    await supabase.from("financial_alerts").update({ is_read: true }).eq("id", alertId).eq("user_id", user.id);
+    toast({ title: "Alerta marcado como lido." });
+    // Poderíamos implementar um refetch nos hooks, mas como é um caso menos frequente, o próprio supabase listener pode cuidar disso.
   };
-  const deleteAlert = (alertId: string) => {
-    setAlerts(prev => prev.filter(alert => alert.id !== alertId));
+  const deleteAlert = async (alertId: string) => {
+    if (!user) return;
+    await supabase.from("financial_alerts").delete().eq("id", alertId).eq("user_id", user.id);
     toast({
       title: "Alerta removido",
       description: "O alerta foi removido com sucesso"
     });
+    // idem acima; refetch idealmente seria disparado por listener ou pelo hook caso necessário
   };
 
   const getAlertIcon = (type: string) => {
@@ -88,10 +90,6 @@ export function SmartAlerts() {
   });
 
   const unreadCount = alerts.filter(alert => !alert.is_read).length;
-
-  if (loading) {
-    return <div>Carregando alertas...</div>;
-  }
 
   return (
     <div className="space-y-6">

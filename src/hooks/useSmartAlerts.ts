@@ -15,7 +15,23 @@ export interface SmartAlert {
   created_at: string;
 }
 
-// Gera alertas automáticos a partir dos dados do usuário.
+function castToSmartAlert(alert: any): SmartAlert {
+  // Força os tipos literais válidos
+  const allowedTypes = ['spending', 'goal', 'investment', 'tip', 'challenge'] as const;
+  const allowedPriorities = ['low', 'medium', 'high'] as const;
+  let type: SmartAlert['alert_type'] = allowedTypes.includes(alert.alert_type) ? alert.alert_type : 'tip';
+  let priority: SmartAlert['priority'] = allowedPriorities.includes(alert.priority) ? alert.priority : 'medium';
+  return {
+    id: alert.id,
+    title: alert.title,
+    message: alert.message,
+    alert_type: type,
+    priority: priority,
+    is_read: Boolean(alert.is_read),
+    created_at: alert.created_at,
+  };
+}
+
 export function useSmartAlerts() {
   const [alerts, setAlerts] = useState<SmartAlert[]>([]);
   const { user } = useAuth();
@@ -93,9 +109,12 @@ export function useSmartAlerts() {
       });
 
       // Merge: dados do banco (manual) + automáticos
+      // Forçar cast dos tipos do banco
+      const supabaseAlerts: SmartAlert[] = (userAlerts || []).map(castToSmartAlert);
+
       setAlerts([
         ...customAlerts,
-        ...(userAlerts || []),
+        ...supabaseAlerts,
       ]);
     }
 

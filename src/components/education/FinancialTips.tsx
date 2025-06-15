@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useAutomaticTips } from "@/hooks/useAutomaticTips";
 
 export function FinancialTips() {
-  const tips = useAutomaticTips();
+  const { tips, refetch, setTips } = useAutomaticTips();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [newTip, setNewTip] = useState<{ title: string; content: string; category: string; difficulty_level: string }>({
@@ -53,9 +53,9 @@ export function FinancialTips() {
     if (!error) {
       toast({ title: "Dica adicionada com sucesso!" });
       setNewTip({ title: '', content: '', category: 'budgeting', difficulty_level: 'beginner' });
-      // re-fetch
       setSelectedCategory('all');
       setSelectedLevel('all');
+      refetch(); // recarrega dicas automáticas+manuais
     } else {
       toast({ title: "Erro ao adicionar dica", description: error.message, variant: "destructive" });
     }
@@ -221,14 +221,14 @@ export function FinancialTips() {
                     {getDifficultyLabel(tip.difficulty_level)}
                   </Badge>
                   {/* Botão remover apenas se for o criador */}
-                  {user?.id === tip.creator_id && (
+                  {user?.id && tip.creator_id && user.id === tip.creator_id && (
                     <Button
                       variant="ghost"
                       size="sm"
                       className="text-red-600 hover:text-red-800"
                       onClick={async () => {
                         await supabase.from("financial_tips").delete().eq("id", tip.id);
-                        setTips(tips => tips.filter(t => t.id !== tip.id));
+                        refetch(); // recarrega dicas do supabase
                         toast({ title: "Dica removida." });
                       }}
                     >
