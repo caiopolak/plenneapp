@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell } from 'lucide-react';
+import { Bell, AlertTriangle, TrendingUp, DollarSign, Info, CheckCircle } from 'lucide-react'; // <-- add missing imports
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSmartAlerts } from "@/hooks/useSmartAlerts";
