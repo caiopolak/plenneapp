@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   LayoutDashboard,
@@ -173,12 +174,12 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter>
+        {/* Sidebar footer ALWAYS with bg and border */}
+        <SidebarFooter className="bg-white border-t border-gray-200 p-0">
           <Button
             variant="ghost"
             size="default"
             onClick={signOut}
-            // Neutro: cor clara com borda normal para todos os dispositivos
             className="w-full flex items-center justify-start px-2 min-h-[48px] 
               bg-[#f4f4f4] text-graphite border border-gray-300 rounded-none
               hover:bg-gray-200 hover:text-graphite
