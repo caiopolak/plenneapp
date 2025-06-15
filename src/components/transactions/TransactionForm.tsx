@@ -148,15 +148,31 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
   };
 
   return (
-    <div className={cn("w-full", isMobile && "px-2")}>
-      <Card className="border-0 shadow-none">
-        <CardHeader className="px-2 sm:px-6">
-          <CardTitle className="text-lg sm:text-xl">
+    <div className={cn(
+      "w-full",
+      isMobile ? "px-3 py-4" : "px-0 py-0" // padding confortável mobile
+    )}>
+      <Card className={cn(
+        "border-0 shadow-none bg-white",
+        isMobile ? "rounded-none" : "rounded-xl"
+      )}>
+        <CardHeader className={cn(
+          isMobile ? "px-0 pt-0 pb-3" : "px-2 sm:px-6"
+        )}>
+          <CardTitle className={cn(
+            "text-lg sm:text-xl",
+            isMobile && "text-base"
+          )}>
             {transaction ? 'Editar Transação' : 'Nova Transação'}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-2 sm:px-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className={cn(
+          isMobile ? "px-0" : "px-2 sm:px-6"
+        )}>
+          <form onSubmit={handleSubmit} className={cn(
+            "space-y-4",
+            isMobile && "pb-2"
+          )}>
             <WorkspaceSelect
               value={workspaceId}
               onChange={setWorkspaceId}
@@ -164,14 +180,20 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
               disabled={workspaces.length <= 1}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className={cn(
+              "grid gap-4",
+              isMobile ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
+            )}>
               <div className="space-y-2">
                 <Label htmlFor="type" className="text-sm font-medium">Tipo</Label>
                 <Select value={type} onValueChange={setType}>
-                  <SelectTrigger className="h-10">
+                  <SelectTrigger className={cn(
+                    "h-12",
+                    isMobile && "text-base"
+                  )}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[1000] bg-white">
                     <SelectItem value="income">Receita</SelectItem>
                     <SelectItem value="expense">Despesa</SelectItem>
                   </SelectContent>
@@ -188,7 +210,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0,00"
                   required
-                  className="h-10"
+                  className={cn("h-12", isMobile && "text-base")}
                 />
               </div>
             </div>
@@ -208,13 +230,13 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-left font-normal h-10"
+                    className={cn("w-full justify-start text-left font-normal h-12", isMobile && "text-base")}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : "Selecione uma data"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 z-[300]" align="start">
+                <PopoverContent className="w-auto p-0 z-[2000] bg-white" align="start">
                   <Calendar
                     mode="single"
                     selected={date}
@@ -233,34 +255,40 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Descrição opcional..."
-                className="min-h-[80px] resize-none"
+                className={cn("min-h-[80px] resize-none", isMobile && "text-base")}
               />
             </div>
 
             {/* Recorrências avançadas */}
             <div className="space-y-3">
-              <div className="flex gap-2 items-center">
+              <div className={cn(
+                "flex gap-3 items-center min-h-[48px]",
+                isMobile && "pl-2"
+              )}>
                 <Switch
                   id="recurring"
                   checked={isRecurring}
                   onCheckedChange={setIsRecurring}
+                  className={isMobile ? "scale-110" : ""}
                 />
-                <Label htmlFor="recurring" className="text-sm font-medium">Transação recorrente</Label>
+                <Label htmlFor="recurring" className={cn("text-sm font-medium", isMobile && "text-base")}>
+                  Transação recorrente
+                </Label>
               </div>
               {isRecurring && (
                 <div className="space-y-3 pl-4 border-l-2 border-gray-200">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">Padrão de recorrência</Label>
+                    <Label className={cn("text-sm font-medium", isMobile && "text-base")}>Padrão de recorrência</Label>
                     <Select
                       value={transaction?.recurrence_pattern || ""}
                       onValueChange={(v) => {
                         if (transaction) transaction.recurrence_pattern = v;
                       }}
                     >
-                      <SelectTrigger className="h-10">
+                      <SelectTrigger className={cn("h-10", isMobile && "text-base")}>
                         <SelectValue placeholder="Selecione o padrão" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white z-[2000]">
                         <SelectItem value="monthly">Mensal</SelectItem>
                         <SelectItem value="weekly">Semanal</SelectItem>
                         <SelectItem value="yearly">Anual</SelectItem>
@@ -269,27 +297,39 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">Data de término</Label>
+                    <Label className={cn("text-sm font-medium", isMobile && "text-base")}>Data de término</Label>
                     <Input
                       type="date"
                       value={transaction?.recurrence_end_date || ""}
                       onChange={e => {
                         if (transaction) transaction.recurrence_end_date = e.target.value;
                       }}
-                      className="h-10"
+                      className={cn("h-10", isMobile && "text-base")}
                     />
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="flex flex-col-reverse sm:flex-row gap-2 pt-4">
+            <div className={cn(
+              "flex flex-col-reverse sm:flex-row gap-2 pt-4",
+              isMobile && "space-y-2 sm:space-y-0"
+            )}>
               {onCancel && (
-                <Button type="button" variant="outline" onClick={onCancel} className="h-10">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                  className={cn("h-12", isMobile && "text-base")}
+                >
                   Cancelar
                 </Button>
               )}
-              <Button type="submit" disabled={loading} className="flex-1 h-10">
+              <Button
+                type="submit"
+                disabled={loading}
+                className={cn("flex-1 h-12", isMobile && "text-base")}
+              >
                 {loading ? 'Salvando...' : (transaction ? 'Atualizar' : 'Adicionar')}
               </Button>
             </div>
