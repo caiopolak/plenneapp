@@ -1,10 +1,12 @@
+
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TransactionList } from "@/components/transactions/TransactionList";
 import { GoalList } from "@/components/goals/GoalList";
 import { InvestmentList } from "@/components/investments/InvestmentList";
-import { BarChart3, Target, TrendingUp, Wallet } from "lucide-react";
-import { BudgetList } from "@/components/budget/BudgetList"; // NOVO
+import { BarChart3, Target, TrendingUp } from "lucide-react";
+// Removendo import do orçamento
+// import { BudgetList } from "@/components/budget/BudgetList"; // REMOVIDO
 
 export function DashboardTabs() {
   const [tab, setTab] = useState("transactions");
@@ -32,19 +34,26 @@ export function DashboardTabs() {
     <div>
       {/* Removido o botão 'Exportar Resumo CSV' aqui */}
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="mb-6 shadow-md bg-white grid grid-cols-4">
-          <TabsTrigger value="transactions" className="flex gap-2 items-center">
+        <TabsList className="mb-6 shadow-md bg-[#f7fafd] grid grid-cols-3 rounded-xl px-1 py-[6px]">
+          <TabsTrigger 
+            value="transactions" 
+            className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all"
+          >
             <BarChart3 className="w-5 h-5" /> Transações
           </TabsTrigger>
-          <TabsTrigger value="goals" className="flex gap-2 items-center">
+          <TabsTrigger 
+            value="goals" 
+            className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all"
+          >
             <Target className="w-5 h-5" /> Metas
           </TabsTrigger>
-          <TabsTrigger value="investments" className="flex gap-2 items-center">
+          <TabsTrigger 
+            value="investments" 
+            className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all"
+          >
             <TrendingUp className="w-5 h-5" /> Investimentos
           </TabsTrigger>
-          <TabsTrigger value="budgets" className="flex gap-2 items-center">
-            <Wallet className="w-5 h-5" /> Orçamentos
-          </TabsTrigger>
+          {/* REMOVIDO: Orçamentos */}
         </TabsList>
         <TabsContent value="transactions" className="animate-fade-in">
           <TransactionList />
@@ -55,10 +64,9 @@ export function DashboardTabs() {
         <TabsContent value="investments" className="animate-fade-in">
           <InvestmentList />
         </TabsContent>
-        <TabsContent value="budgets" className="animate-fade-in">
-          <BudgetList />
-        </TabsContent>
+        {/* REMOVIDO: <TabsContent value="budgets"> */}
       </Tabs>
     </div>
   );
 }
+

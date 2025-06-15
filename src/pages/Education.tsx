@@ -6,8 +6,9 @@ import { SmartAlerts } from "@/components/education/SmartAlerts";
 import { FinancialChallenges } from "@/components/education/FinancialChallenges";
 import { FinancialModules } from "@/components/education/FinancialModules";
 import { FinancialAssistant } from "@/components/education/FinancialAssistant";
-import { BookOpen, Bell, Trophy, GraduationCap, Bot } from "lucide-react";
+import { BookOpen, Bell, Trophy, GraduationCap, Bot, Wallet } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { BudgetList } from "@/components/budget/BudgetList"; // Adicionado aqui
 
 export default function Education() {
   return (
@@ -20,7 +21,7 @@ export default function Education() {
           </h1>
         </div>
         <Tabs defaultValue="tips" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm rounded-lg">
+          <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm rounded-lg">
             <TabsTrigger value="tips" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
               <BookOpen className="w-4 h-4" />
               Dicas
@@ -41,6 +42,10 @@ export default function Education() {
               <Bot className="w-4 h-4" />
               Assistente
             </TabsTrigger>
+            {/* ABA NOVA: Orçamentos */}
+            <TabsTrigger value="budgets" className="flex items-center gap-2 data-[state=active]:bg-[#2f9e44] data-[state=active]:text-white">
+              <Wallet className="w-4 h-4" /> Orçamentos
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="tips" className="space-y-4">
             <FinancialTips />
@@ -56,6 +61,10 @@ export default function Education() {
           </TabsContent>
           <TabsContent value="assistant" className="space-y-4">
             <FinancialAssistant />
+          </TabsContent>
+          {/* NOVO: Orçamentos */}
+          <TabsContent value="budgets" className="space-y-4">
+            <BudgetList />
           </TabsContent>
         </Tabs>
       </div>
