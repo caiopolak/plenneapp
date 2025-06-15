@@ -10,16 +10,14 @@ export function TransactionActionButtons({
   onImportSuccess,
   showForm,
   setShowForm,
-  onCreateClick
 }: {
   onExport: () => void;
   onImportSuccess: () => void;
   showForm: boolean;
   setShowForm: (b: boolean) => void;
-  onCreateClick: () => void;
 }) {
-  // Cor do card de investimentos: from-blue-500 to-blue-600 (~bg-gradient-to-r from-blue-500 to-blue-600 text-white)
-  const buttonGradient = "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700";
+  // Gradiente igual ao card de Retorno Médio Esperado em investimentos:
+  const buttonGradient = "bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 text-white hover:from-[#003f5c] hover:to-[#2f9e44]";
 
   return (
     <div className="flex gap-2 flex-wrap w-full">
@@ -53,7 +51,7 @@ export function TransactionActionButtons({
       <Button
         size="sm"
         className={`${buttonGradient} font-display flex gap-2 min-w-[170px] w-full sm:w-auto`}
-        onClick={onCreateClick}
+        onClick={() => setShowForm(true)}
       >
         <Plus className="w-4 h-4 mr-2" />
         Nova Transação

@@ -28,7 +28,8 @@ export function GoalActionButtons({
   setShowForm: (b: boolean) => void;
 }) {
   const { toast } = useToast();
-  const buttonGradient = "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700";
+  const buttonGradient =
+    "bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 text-white hover:from-[#003f5c] hover:to-[#2f9e44]";
 
   const handleExport = () => {
     exportGoalsCsv(goals);
