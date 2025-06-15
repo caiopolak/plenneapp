@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FinancialTips } from "@/components/education/FinancialTips";
@@ -55,7 +54,7 @@ export default function Education() {
           </h1>
         </div>
         <Tabs defaultValue="tips" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm rounded-lg">
+          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm rounded-lg">
             <TabsTrigger value="tips" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
               <BookOpen className="w-4 h-4" />
               Dicas
@@ -67,10 +66,6 @@ export default function Education() {
             <TabsTrigger value="challenges" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
               <Trophy className="w-4 h-4" />
               Desafios
-            </TabsTrigger>
-            <TabsTrigger value="budget" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
-              <DollarSign className="w-4 h-4" />
-              Orçamento
             </TabsTrigger>
             <TabsTrigger value="whatsapp" className="flex items-center gap-2 data-[state=active]:bg-[#017F66] data-[state=active]:text-white">
               <MessageCircle className="w-4 h-4" />
@@ -131,9 +126,6 @@ export default function Education() {
                 </Button>
               </CardContent>
             </Card>
-          </TabsContent>
-          <TabsContent value="budget">
-            <MonthlyBudget />
           </TabsContent>
           <TabsContent value="whatsapp">
             <WhatsAppIntegration />
