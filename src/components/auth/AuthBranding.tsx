@@ -1,14 +1,11 @@
 
 import React from "react";
-import { DollarSign } from "lucide-react";
-
+import { LogoPlenne } from "@/components/layout/LogoPlenne";
 export function AuthBranding() {
   return (
     <div className="flex flex-col items-center justify-center h-full w-full bg-gradient-to-br from-[--primary]/90 via-[--electric]/25 to-[--gold]/30 px-10 py-12 relative">
       <div className="absolute top-4 left-4">
-        <span className="inline-flex items-center gap-2 font-extrabold text-xl text-white drop-shadow-md font-poppins">
-          <DollarSign className="w-7 h-7 text-[--gold]" /> Plenne
-        </span>
+        <LogoPlenne className="scale-105" />
       </div>
       <div className="flex-1 flex items-center justify-center w-full z-10">
         <svg viewBox="0 0 172 130" fill="none" className="w-48 h-48">

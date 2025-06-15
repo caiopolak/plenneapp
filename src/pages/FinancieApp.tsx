@@ -27,6 +27,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TrendsChartCard } from "@/components/analytics/TrendsChartCard";
 import { ExpenseByCategoryChart } from "@/components/analytics/ExpenseByCategoryChart";
 import { supabase } from "@/integrations/supabase/client";
+import { WorkspaceManager } from "@/components/workspaces/WorkspaceManager";
 
 // Define types for chart data
 type MonthlyData = { month: string; income: number; expense: number };
@@ -182,6 +183,12 @@ export default function FinancieApp() {
                   {activeTab === "profile" && (
                     <div className="animate-fade-in">
                       <ProfilePage />
+                    </div>
+                  )}
+                  {/* NOVO GERENCIADOR DE WORKSPACES */}
+                  {activeTab === "workspaces" && (
+                    <div className="animate-fade-in">
+                      <WorkspaceManager />
                     </div>
                   )}
                 </div>
