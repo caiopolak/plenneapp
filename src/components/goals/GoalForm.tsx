@@ -38,7 +38,7 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
     goal?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "")
   );
 
-  // Garante que workspaceId esteja sempre preenchido
+  // Reset workspaceId se current mudar
   React.useEffect(() => {
     if (!workspaceId && current?.id) setWorkspaceId(current.id);
   }, [current?.id, workspaceId]);

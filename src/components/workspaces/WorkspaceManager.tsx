@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, Pencil, Trash2, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export function WorkspaceManager() {
   const { workspaces, current, setCurrent, reload } = useWorkspace();
@@ -12,6 +14,8 @@ export function WorkspaceManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
   const [editName, setEditName] = useState("");
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   // Trocar workspace ativo
   function handleSelectWorkspace(id: string) {
@@ -21,17 +25,20 @@ export function WorkspaceManager() {
 
   // Criar novo workspace
   async function handleCreateWorkspace() {
-    if (!newName.trim()) return;
-    // É permitido criar diretamente pelo cliente pois há RLS
+    if (!newName.trim() || !user) return;
+    // owner_id deve ser preenchido para passar nas policies RLS
     const res = await supabase
       .from("workspaces")
-      .insert([{ name: newName.trim(), type: "personal" }])
+      .insert([{ name: newName.trim(), type: "personal", owner_id: user.id }])
       .select()
       .single();
     if (!res.error) {
       setNewName("");
       setCreating(false);
       reload();
+      toast({ title: "Workspace criada com sucesso!" });
+    } else {
+      toast({ variant: "destructive", title: "Erro", description: "Não foi possível criar o workspace." });
     }
   }
 
@@ -81,7 +88,7 @@ export function WorkspaceManager() {
                 <Button size="icon" variant="ghost" onClick={() => { setEditingId(ws.id); setEditName(ws.name); }} className="shrink-0">
                   <Pencil className="w-4 h-4" />
                 </Button>
-                {/* É possível implementar exclusão segura só para admin/dono */}
+                {/* Excluir só para admin/dono futuramente */}
               </>
             )}
           </li>

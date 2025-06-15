@@ -47,6 +47,7 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
     investment?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "")
   );
 
+  // Reset workspaceId se current mudar
   React.useEffect(() => {
     if (!workspaceId && current?.id) setWorkspaceId(current.id);
   }, [current?.id, workspaceId]);

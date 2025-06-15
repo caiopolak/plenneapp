@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Edit2, Trash2, Plus } from "lucide-react";
+import { Edit2, Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
@@ -19,7 +19,7 @@ const DEFAULT_CATEGORIES: Record<string, string[]> = {
     'Salário', 'Freelance', 'Investimentos', 'Venda', 'Outros'
   ],
   expense: [
-    'Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Educação', 
+    'Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Educação',
     'Lazer', 'Compras', 'Contas', 'Outros'
   ]
 };
@@ -34,6 +34,7 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
   const [editId, setEditId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showCustom, setShowCustom] = useState(false);
 
   const fetchCategories = async () => {
     if (!user || !current) return;
@@ -78,8 +79,7 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
     else { fetchCategories(); toast({ title: "Categoria excluída!" }); }
   };
 
-  // Estado para indicar seleção personalizada vs padrão
-  // Aqui não é necessário campo extra: basta exibir as duas listas separadamente, user pode clicar qualquer
+  // Estado para alternar entre só padrão e mostrar customizadas
   return (
     <div>
       <div className="flex gap-2 items-end mb-1">
@@ -128,26 +128,33 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
           </DialogContent>
         </Dialog>
       </div>
-      {/* Selecionar categoria (bem separado Padrão X Personalizada, seleção única) */}
+      {/* Exibe padrão/Outros clean */}
       <div className="flex flex-wrap gap-2 mt-2">
-        {DEFAULT_CATEGORIES[type].length > 0 && (
-          <>
-            <span className="w-full text-xs mt-1 text-primary/70">Padrão</span>
-            {DEFAULT_CATEGORIES[type].map(cat => (
-              <Button
-                key={`default-${cat}`}
-                variant={value === cat ? "default" : "outline"}
-                size="sm"
-                onClick={() => onChange?.(cat)}
-                className="rounded-full"
-                type="button"
-              >
-                {cat}
-              </Button>
-            ))}
-          </>
-        )}
+        <span className="w-full text-xs mt-1 text-primary/70">Padrão</span>
+        {DEFAULT_CATEGORIES[type].filter((cat) => cat !== "Outros").map(cat => (
+          <Button
+            key={`default-${cat}`}
+            variant={value === cat ? "default" : "outline"}
+            size="sm"
+            onClick={() => onChange?.(cat)}
+            className="rounded-full"
+            type="button"
+          >
+            {cat}
+          </Button>
+        ))}
         {categories.length > 0 && (
+          <Button
+            variant={showCustom ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowCustom((s) => !s)}
+            className="rounded-full flex items-center"
+            type="button"
+          >
+            Outros {showCustom ? <ChevronUp className="ml-1 w-4 h-4" /> : <ChevronDown className="ml-1 w-4 h-4" />}
+          </Button>
+        )}
+        {showCustom && categories.length > 0 && (
           <>
             <span className="w-full text-xs mt-1 text-secondary/70">Personalizadas</span>
             {categories.map(cat => (

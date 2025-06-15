@@ -57,6 +57,11 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
     setCategory('');
   }, [type]);
 
+  // Reset workspaceId se current mudar
+  React.useEffect(() => {
+    if (!workspaceId && current?.id) setWorkspaceId(current.id);
+  }, [current?.id, workspaceId]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // valida workspaceId
@@ -281,5 +286,3 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
     </Card>
   );
 }
-
-// ... OBS: Este arquivo está ficando longo, se quiser que eu refatore para componentes menores depois, só pedir! ...
