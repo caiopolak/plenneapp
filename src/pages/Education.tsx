@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FinancialTips } from "@/components/education/FinancialTips";
@@ -18,6 +17,8 @@ export default function Education() {
           <BookOpen className="w-7 h-7 text-[--primary] sm:w-8 sm:h-8" />
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#003f5c]">Educação & Saúde Financeira</h1>
         </div>
+        {/* Espaço extra no topo para afastar as abas do header e evitar sobreposição */}
+        <div className="mt-8 sm:mt-10" />
         <Tabs defaultValue="tips" className="space-y-4">
           <TabsList
             className={`
