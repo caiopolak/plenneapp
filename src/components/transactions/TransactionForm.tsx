@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +18,7 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSelect } from "../common/WorkspaceSelect";
 import { CategoryManager } from "./CategoryManager";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 interface TransactionFormProps {
   onSuccess?: () => void;
