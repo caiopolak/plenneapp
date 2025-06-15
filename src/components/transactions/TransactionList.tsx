@@ -151,7 +151,14 @@ export function TransactionList() {
     <div className="space-y-6">
       {/* Nova Transação Modal */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent
+          className="max-w-xl w-full rounded-2xl p-4 md:p-6"
+          style={{
+            maxWidth: '96vw', // quase toda tela em mobile sem estourar horizontais
+            width: '100%',
+            margin: '0 auto'
+          }}
+        >
           <DialogHeader>
             <DialogTitle>Nova Transação</DialogTitle>
           </DialogHeader>

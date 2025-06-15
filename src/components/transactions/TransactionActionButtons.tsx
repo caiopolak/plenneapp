@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -17,7 +16,7 @@ export function TransactionActionButtons({
   setShowForm: (b: boolean) => void;
 }) {
   // Gradiente igual ao card de Retorno Médio Esperado em investimentos:
-  const buttonGradient = "bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 text-white hover:from-[#003f5c] hover:to-[#2f9e44]";
+  const buttonGradient = "bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 text-white hover:from-[#003f5c] hover:to-[#2f9e44] hover:text-white active:bg-[#003f5c] focus:bg-[#2f9e44]";
 
   return (
     <div className="flex gap-2 flex-wrap w-full">
@@ -50,8 +49,9 @@ export function TransactionActionButtons({
       </Dialog>
       <Button
         size="sm"
-        className={`${buttonGradient} font-display flex gap-2 min-w-[170px] w-full sm:w-auto`}
+        className={`${buttonGradient} font-display flex gap-2 min-w-[170px] w-full sm:w-auto transition-none`}
         onClick={() => setShowForm(true)}
+        style={{ transition: "none" }}
       >
         <Plus className="w-4 h-4 mr-2" />
         Nova Transação
