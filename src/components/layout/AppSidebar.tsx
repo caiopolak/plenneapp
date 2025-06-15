@@ -179,8 +179,8 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        {/* --- NOVO: logo + slogan acima do botão sair --- */}
-        <div className="flex flex-col items-center gap-0 px-1 sm:px-3 py-3 sm:py-4 border-t border-primary/10 w-full">
+        {/* Logo + slogan acima do botão sair, sempre com fundo branco */}
+        <div className="flex flex-col items-center gap-0 px-1 sm:px-3 py-3 sm:py-4 border-t border-primary/10 w-full bg-white">
           <LogoPlenne className="mb-1 scale-90 sm:scale-100" />
           <span className="text-xs italic text-primary/80 text-center px-1 sm:px-2 transition-all animate-fade-in font-medium max-w-[170px] sm:max-w-[196px]">
             {slogan}
