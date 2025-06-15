@@ -4,6 +4,7 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
 import { Plus, Pencil, Trash2, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
 
 export function WorkspaceManager() {
   const { workspaces, current, setCurrent, reload } = useWorkspace();
@@ -22,7 +23,7 @@ export function WorkspaceManager() {
   async function handleCreateWorkspace() {
     if (!newName.trim()) return;
     // É permitido criar diretamente pelo cliente pois há RLS
-    const res = await window.supabase
+    const res = await supabase
       .from("workspaces")
       .insert([{ name: newName.trim(), type: "personal" }])
       .select()
@@ -37,7 +38,7 @@ export function WorkspaceManager() {
   // Editar nome do workspace
   async function handleEditWorkspace(id: string) {
     if (!editName.trim()) return;
-    await window.supabase
+    await supabase
       .from("workspaces")
       .update({ name: editName.trim() })
       .eq("id", id);
