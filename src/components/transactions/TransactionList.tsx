@@ -181,11 +181,20 @@ export function TransactionList() {
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <CardTitle className="font-display text-[--primary]">Transações</CardTitle>
+            {/* Botões em linha estilo Investimentos */}
             <div className="flex gap-2">
-              {/* ... keep Dialog for add/import csv ... */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-display flex gap-1 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
+                onClick={exportTransactions}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Exportar CSV
+              </Button>
               <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogTrigger asChild>
-                  <Button className="font-display bg-[--secondary] text-white hover:bg-[--primary]">
+                  <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
                     <Plus className="w-4 h-4 mr-2" />
                     Nova Transação
                   </Button>
@@ -217,13 +226,9 @@ export function TransactionList() {
                   <ImportTransactionsCSV onSuccess={fetchTransactions} />
                 </DialogContent>
               </Dialog>
-              <Button variant="outline" className="font-display border-[--primary] text-[--primary] hover:bg-[--primary]/5" onClick={exportTransactions}>
-                <Download className="w-4 h-4 mr-2" />
-                Exportar
-              </Button>
             </div>
           </div>
-          {/* ... keep filters: search, selects ... */}
+          {/* Filters and Actions */}
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <Input
@@ -305,7 +310,7 @@ export function TransactionList() {
                       {transaction.type === 'income' ? '+' : '-'}R$ {Number(transaction.amount).toFixed(2).replace('.', ',')}
                     </span>
                     
-                    {/* ... keep Dialogs for editing ... */}
+                    {/* Dialogs for editing */}
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button 

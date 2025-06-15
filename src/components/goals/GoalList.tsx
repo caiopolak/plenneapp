@@ -184,6 +184,7 @@ export function GoalList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center gap-2 flex-wrap">
         <h2 className="text-2xl font-bold font-display text-[--primary]">Metas Financeiras</h2>
+        {/* Botões alinhados, gradiente igual ao de Novo Investimento */}
         <div className="flex gap-2 items-center">
           <Input
             type="text"
@@ -204,32 +205,33 @@ export function GoalList() {
           </select>
           <Button
             variant="outline"
-            className="gap-1"
+            size="sm"
+            className="font-display flex gap-1 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
             onClick={() => exportGoalsCsv(goals)}
           >
             <Download size={16} /> Exportar CSV
           </Button>
+          <Dialog open={showForm} onOpenChange={setShowForm}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
+                <Plus className="w-4 h-4 mr-2" />
+                Nova Meta
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="font-display text-[--secondary]">Nova Meta Financeira</DialogTitle>
+              </DialogHeader>
+              <GoalForm 
+                onSuccess={() => {
+                  setShowForm(false);
+                  fetchGoals();
+                }}
+                onCancel={() => setShowForm(false)}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
-        <Dialog open={showForm} onOpenChange={setShowForm}>
-          <DialogTrigger asChild>
-            <Button className="bg-[--secondary] hover:bg-[--primary] text-white font-display">
-              <Plus className="w-4 h-4 mr-2" />
-              Nova Meta
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="font-display text-[--secondary]">Nova Meta Financeira</DialogTitle>
-            </DialogHeader>
-            <GoalForm 
-              onSuccess={() => {
-                setShowForm(false);
-                fetchGoals();
-              }}
-              onCancel={() => setShowForm(false)}
-            />
-          </DialogContent>
-        </Dialog>
       </div>
 
       {filteredGoals.length === 0 ? (

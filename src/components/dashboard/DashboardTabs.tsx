@@ -26,16 +26,11 @@ export function DashboardTabs() {
     a.click();
   };
 
+  // Removido botão "Exportar Resumo CSV" pois funções individuais já existem nas abas
+
   return (
     <div>
-      <div className="flex justify-end mb-2">
-        <button
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[--secondary] text-white font-display shadow hover:bg-[--primary] transition"
-          onClick={handleExportResumo}
-        >
-          Exportar Resumo CSV
-        </button>
-      </div>
+      {/* Removido o botão 'Exportar Resumo CSV' aqui */}
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="mb-6 shadow-md bg-white grid grid-cols-4">
           <TabsTrigger value="transactions" className="flex gap-2 items-center">
