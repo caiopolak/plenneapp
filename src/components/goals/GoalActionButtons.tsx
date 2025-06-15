@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -38,16 +37,16 @@ export function GoalActionButtons({
   };
 
   return (
-    <div className="flex gap-2 items-center flex-wrap">
+    <div className="flex gap-2 items-center flex-wrap w-full">
       <Input
         type="text"
         value={search}
         onChange={onSearchChange}
         placeholder="Buscar..."
-        className="h-9"
+        className="h-9 w-full sm:w-auto"
       />
       <select
-        className="rounded-md border border-input bg-background h-9 px-2 text-sm"
+        className="rounded-md border border-input bg-background h-9 px-2 text-sm w-full sm:w-auto"
         value={priorityFilter}
         onChange={onPriorityChange}
       >
@@ -59,7 +58,7 @@ export function GoalActionButtons({
       <Button
         variant="outline"
         size="sm"
-        className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
+        className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
         onClick={handleExport}
       >
         <Download className="w-4 h-4" />
@@ -70,7 +69,7 @@ export function GoalActionButtons({
           <Button
             variant="outline"
             size="sm"
-            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
+            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
           >
             <Import className="w-4 h-4" />
             Importar CSV
@@ -85,7 +84,11 @@ export function GoalActionButtons({
       </Dialog>
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogTrigger asChild>
-          <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
+          <Button
+            variant="outline"
+            size="sm"
+            className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Nova Meta
           </Button>

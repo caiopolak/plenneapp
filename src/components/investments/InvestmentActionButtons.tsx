@@ -60,12 +60,12 @@ export function InvestmentActionButtons({
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 flex-wrap w-full">
       <Button
         variant="outline"
         onClick={handleExportCsv}
         size="sm"
-        className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
+        className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow w-full sm:w-auto"
         aria-label="Exportar investimentos para CSV"
       >
         <span className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export function InvestmentActionButtons({
           <Button
             variant="outline"
             size="sm"
-            className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
+            className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow w-full sm:w-auto"
             aria-label="Importar investimentos de CSV"
           >
             <Import className="w-4 h-4" />
@@ -94,8 +94,13 @@ export function InvestmentActionButtons({
       </Dialog>
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogTrigger asChild>
-          <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
-            <Plus className="w-5 h-5 mr-2" /> Novo Investimento
+          <Button
+            variant="outline"
+            size="sm"
+            className="min-w-[170px] font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow w-full sm:w-auto"
+            onClick={onCreateClick}
+          >
+            <Plus className="w-4 h-4 mr-2" /> Novo Investimento
           </Button>
         </DialogTrigger>
         {/* O formulário de investimento deve ser renderizado no componente pai */}

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,11 @@ import { cn } from '@/lib/utils';
 
 const Index = () => {
   const [showBalance, setShowBalance] = useState(true);
+
+  // Estados para modais de criação
+  const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  const [showInvestmentForm, setShowInvestmentForm] = useState(false);
 
   // Mock data - será substituído pelos dados do Supabase
   const monthlyData = [
@@ -59,9 +63,13 @@ const Index = () => {
                 FinanciePRO
               </h1>
             </div>
-            
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
+                onClick={() => setShowTransactionForm(true)}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Nova Transação
               </Button>
@@ -72,6 +80,51 @@ const Index = () => {
           </div>
         </div>
       </header>
+
+      {/* MODAIS PARA FORMULÁRIOS */}
+      {showTransactionForm && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-xl mx-4 p-5 relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+              onClick={() => setShowTransactionForm(false)}
+            >
+              ×
+            </button>
+            <h2 className="font-bold text-lg mb-2">Nova Transação</h2>
+            {/* Substituir pelo seu Formulário */}
+            <p className="text-sm text-gray-600">[Formulário de transação aqui]</p>
+          </div>
+        </div>
+      )}
+      {showGoalForm && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-xl mx-4 p-5 relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+              onClick={() => setShowGoalForm(false)}
+            >
+              ×
+            </button>
+            <h2 className="font-bold text-lg mb-2">Nova Meta</h2>
+            <p className="text-sm text-gray-600">[Formulário de meta aqui]</p>
+          </div>
+        </div>
+      )}
+      {showInvestmentForm && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-xl mx-4 p-5 relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+              onClick={() => setShowInvestmentForm(false)}
+            >
+              ×
+            </button>
+            <h2 className="font-bold text-lg mb-2">Novo Investimento</h2>
+            <p className="text-sm text-gray-600">[Formulário de investimento aqui]</p>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
@@ -206,9 +259,14 @@ const Index = () => {
 
           <TabsContent value="transactions" className="space-y-6">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
                 <CardTitle>Transações Recentes</CardTitle>
-                <Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
+                  onClick={() => setShowTransactionForm(true)}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Nova Transação
                 </Button>
@@ -249,9 +307,14 @@ const Index = () => {
 
           <TabsContent value="goals" className="space-y-6">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
                 <CardTitle>Suas Metas Financeiras</CardTitle>
-                <Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
+                  onClick={() => setShowGoalForm(true)}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Nova Meta
                 </Button>
@@ -289,9 +352,14 @@ const Index = () => {
 
           <TabsContent value="investments" className="space-y-6">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
                 <CardTitle>Portfólio de Investimentos</CardTitle>
-                <Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px] w-full sm:w-auto"
+                  onClick={() => setShowInvestmentForm(true)}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Novo Investimento
                 </Button>
