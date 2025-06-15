@@ -1,4 +1,4 @@
-# ✅ FinanciePRO - Funcionalidades Implementadas
+# ✅ Plenne - Funcionalidades Implementadas
 
 Aplicação 100% funcional e pronta para uso e testes! Todos os dados são persistidos via **Supabase** e incluem validações, tratamento de erros e feedback visual ao usuário.
 
@@ -79,7 +79,7 @@ Aplicação 100% funcional e pronta para uso e testes! Todos os dados são persi
 
 ## 🎨 Design System
 
-- Paleta de cores oficial do **FinanciePRO**  
+- Paleta de cores oficial do **Plenne**  
 - Componentes responsivos  
 - Interface moderna e intuitiva  
 - Badges e indicadores visuais  
@@ -92,4 +92,4 @@ Aplicação 100% funcional e pronta para uso e testes! Todos os dados são persi
 
 ---
 
-**© 2025 FinanciePRO** – Todos os direitos reservados.
+**© 2025 Plenne** – Todos os direitos reservados.
