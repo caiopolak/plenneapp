@@ -6,6 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { DollarSign, TrendingUp, Target, PiggyBank, Plus, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { TransactionActionButtons } from "@/components/transactions/TransactionActionButtons";
+import { GoalActionButtons } from "@/components/goals/GoalActionButtons";
+import { InvestmentActionButtons } from "@/components/investments/InvestmentActionButtons";
 
 const Index = () => {
   const [showBalance, setShowBalance] = useState(true);
