@@ -162,6 +162,28 @@ export function InvestmentList() {
   // Cartões analíticos e informativos — novo gradiente/principal
   return (
     <div className="space-y-8 animate-fade-in">
+      {/* Modal/dialog de Novo Investimento */}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent
+          className="max-w-xl w-full rounded-2xl p-4 md:p-6"
+          style={{
+            maxWidth: "96vw",
+            width: "100%",
+            margin: "0 auto",
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Novo Investimento</DialogTitle>
+          </DialogHeader>
+          <InvestmentForm
+            onSuccess={() => {
+              setShowForm(false);
+              fetchInvestments();
+            }}
+            onCancel={() => setShowForm(false)}
+          />
+        </DialogContent>
+      </Dialog>
       {/* Actions refatoradas */}
       <InvestmentsHeaderActions
         investments={investments}
