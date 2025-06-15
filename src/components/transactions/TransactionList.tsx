@@ -1,123 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit2, Trash2, Plus, Download, Import } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader as DlgHeader, DialogTitle as DlgTitle } from '@/components/ui/dialog';
 import { TransactionForm } from './TransactionForm';
-import { Tables } from '@/integrations/supabase/types';
 import { ImportTransactionsCSV } from "./ImportTransactionsCSV";
-import { TransactionActionButtons } from "./TransactionActionButtons";
+import { useToast } from '@/hooks/use-toast';
+import { useTransactions } from '@/hooks/useTransactions';
+import { TransactionSummaryCards } from './TransactionSummaryCards';
+import { TransactionListFilters } from './TransactionListFilters';
+import { TransactionRow } from './TransactionRow';
 
-type Transaction = Tables<'transactions'>;
+// type Transaction = ... já está explicitado no hook
 
 export function TransactionList() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { transactions, loading, fetchTransactions } = useTransactions();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterMonth, setFilterMonth] = useState('all');
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
 
   const { toast } = useToast();
-  const { user } = useAuth();
 
-  const fetchTransactions = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-      setTransactions(data || []);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao carregar transações"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [user]);
-
-  useEffect(() => {
+  // Filtros + memoização
+  const filteredTransactions = useMemo(() => {
     let filtered = transactions;
 
-    // Filter by search term
     if (searchTerm) {
-      filtered = filtered.filter(t => 
+      filtered = filtered.filter(t =>
         t.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         t.category.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
-    // Filter by type
     if (filterType !== 'all') {
       filtered = filtered.filter(t => t.type === filterType);
     }
-
-    // Filter by month
     if (filterMonth !== 'all') {
       const [year, month] = filterMonth.split('-');
       filtered = filtered.filter(t => {
         const transactionDate = new Date(t.date);
-        return transactionDate.getFullYear() === parseInt(year) && 
-               transactionDate.getMonth() === parseInt(month) - 1;
+        return transactionDate.getFullYear() === parseInt(year) &&
+          transactionDate.getMonth() === parseInt(month) - 1;
       });
     }
-
-    setFilteredTransactions(filtered);
+    return filtered;
   }, [transactions, searchTerm, filterType, filterMonth]);
 
-  const deleteTransaction = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('transactions')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Sucesso!",
-        description: "Transação excluída com sucesso"
-      });
-      
-      fetchTransactions();
-    } catch (error) {
-      console.error('Error deleting transaction:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao excluir transação"
-      });
-    }
-  };
+  // Cálculos de totais
+  const totalIncome = filteredTransactions
+    .filter(t => t.type === 'income')
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+  const totalExpense = filteredTransactions
+    .filter(t => t.type === 'expense')
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+  const balance = totalIncome - totalExpense;
 
   const exportTransactions = () => {
     const csvContent = [
       ['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor'],
       ...filteredTransactions.map(t => [
-        format(new Date(t.date), 'dd/MM/yyyy'),
+        new Date(t.date).toLocaleDateString('pt-BR'),
         t.type === 'income' ? 'Receita' : 'Despesa',
         t.category,
         t.description || '',
@@ -129,23 +70,36 @@ export function TransactionList() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `transacoes_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    a.download = `transacoes_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
   };
 
-  const totalIncome = filteredTransactions
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + Number(t.amount), 0);
+  const deleteTransaction = async (id: string) => {
+    try {
+      const { error } = await import("@/integrations/supabase/client").then(mod => 
+        mod.supabase
+          .from('transactions')
+          .delete()
+          .eq('id', id)
+      );
+      if (error) throw error;
+      toast({
+        title: "Sucesso!",
+        description: "Transação excluída com sucesso"
+      });
 
-  const totalExpense = filteredTransactions
-    .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + Number(t.amount), 0);
+      fetchTransactions();
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao excluir transação"
+      });
+    }
+  };
 
-  const balance = totalIncome - totalExpense;
-
-  if (loading) {
-    return <div>Carregando transações...</div>;
-  }
+  if (loading) return <div>Carregando transações...</div>;
 
   return (
     <div className="space-y-6">
@@ -153,15 +107,11 @@ export function TransactionList() {
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent
           className="max-w-xl w-full rounded-2xl p-4 md:p-6"
-          style={{
-            maxWidth: '96vw', // quase toda tela em mobile sem estourar horizontais
-            width: '100%',
-            margin: '0 auto'
-          }}
+          style={{ maxWidth: '96vw', width: '100%', margin: '0 auto' }}
         >
-          <DialogHeader>
-            <DialogTitle>Nova Transação</DialogTitle>
-          </DialogHeader>
+          <DlgHeader>
+            <DlgTitle>Nova Transação</DlgTitle>
+          </DlgHeader>
           <TransactionForm
             onSuccess={() => {
               setShowForm(false);
@@ -171,81 +121,28 @@ export function TransactionList() {
           />
         </DialogContent>
       </Dialog>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-white shadow-card border border-[--primary]/10">
-          <CardContent className="p-4">
-            <div className="text-sm text-[--primary] font-text">Receitas</div>
-            <div className="text-2xl font-bold text-[--secondary] font-display">
-              R$ {totalIncome.toFixed(2).replace('.', ',')}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-white shadow-card border border-[--primary]/10">
-          <CardContent className="p-4">
-            <div className="text-sm text-[--primary] font-text">Despesas</div>
-            <div className="text-2xl font-bold text-[--error] font-display">
-              R$ {totalExpense.toFixed(2).replace('.', ',')}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-[#eaf6ee]/80 shadow-card border border-[--primary]/10">
-          <CardContent className="p-4">
-            <div className="text-sm text-[--primary] font-text">Saldo</div>
-            <div className={`text-2xl font-bold font-display ${balance >= 0 ? 'text-[--secondary]' : 'text-[--error]'}`}>
-              R$ {balance.toFixed(2).replace('.', ',')}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters and Actions */}
+      {/* Resumo cards */}
+      <TransactionSummaryCards 
+        totalIncome={totalIncome}
+        totalExpense={totalExpense}
+        balance={balance}
+      />
+      {/* Filtros/actions */}
       <Card className="bg-white border-[--primary]/10">
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle className="font-display text-[--primary]">Transações</CardTitle>
-            <TransactionActionButtons
-              onExport={exportTransactions}
-              onImportSuccess={fetchTransactions}
-              showForm={showForm}
-              setShowForm={setShowForm}
-            />
-          </div>
-          {/* Filters and Actions */}
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Buscar transações..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full font-text"
-              />
-            </div>
-            <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-full md:w-40 font-text border-[--primary]/30">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os tipos</SelectItem>
-                <SelectItem value="income">Receitas</SelectItem>
-                <SelectItem value="expense">Despesas</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filterMonth} onValueChange={setFilterMonth}>
-              <SelectTrigger className="w-full md:w-40 font-text border-[--primary]/30">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os meses</SelectItem>
-                <SelectItem value="2024-12">Dezembro 2024</SelectItem>
-                <SelectItem value="2024-11">Novembro 2024</SelectItem>
-                <SelectItem value="2024-10">Outubro 2024</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <TransactionListFilters
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filterType={filterType}
+            setFilterType={setFilterType}
+            filterMonth={filterMonth}
+            setFilterMonth={setFilterMonth}
+            onExport={exportTransactions}
+            onImportSuccess={fetchTransactions}
+            showForm={showForm}
+            setShowForm={setShowForm}
+          />
         </CardHeader>
-        
         <CardContent>
           {filteredTransactions.length === 0 ? (
             <div className="text-center py-8 font-text text-[--primary]">
@@ -254,85 +151,15 @@ export function TransactionList() {
           ) : (
             <div className="space-y-2">
               {filteredTransactions.map((transaction) => (
-                <div
+                <TransactionRow
                   key={transaction.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-[#eaf6ee] bg-white"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant="default"
-                        className={
-                          transaction.type === 'income'
-                            ? 'bg-[--secondary] text-white font-display'
-                            : 'bg-[--error] text-white font-display'
-                        }
-                      >
-                        {transaction.type === 'income' ? 'Receita' : 'Despesa'}
-                      </Badge>
-                      {transaction.is_recurring && (
-                        <Badge variant="outline" className="font-text text-[--primary] border-[--primary]/30 bg-[#f4f4f4]">Recorrente</Badge>
-                      )}
-                    </div>
-                    <div className="mt-1 font-text">
-                      <span className="font-medium">{transaction.category}</span>
-                      {transaction.description && (
-                        <span className="text-muted-foreground ml-2">
-                          - {transaction.description}
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-sm text-muted-foreground font-text">
-                      {format(new Date(transaction.date), "dd/MM/yyyy", { locale: ptBR })}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <span className={`text-lg font-bold font-display ${
-                      transaction.type === 'income' ? 'text-[--secondary]' : 'text-[--error]'
-                    }`}>
-                      {transaction.type === 'income' ? '+' : '-'}R$ {Number(transaction.amount).toFixed(2).replace('.', ',')}
-                    </span>
-                    
-                    {/* Dialogs for editing */}
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="text-[--primary] font-display"
-                          onClick={() => setEditingTransaction(transaction)}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
-                        <DialogHeader>
-                          <DialogTitle>Editar Transação</DialogTitle>
-                        </DialogHeader>
-                        {editingTransaction && (
-                          <TransactionForm 
-                            transaction={editingTransaction}
-                            onSuccess={() => {
-                              setEditingTransaction(null);
-                              fetchTransactions();
-                            }}
-                            onCancel={() => setEditingTransaction(null)}
-                          />
-                        )}
-                      </DialogContent>
-                    </Dialog>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-[--error]"
-                      onClick={() => deleteTransaction(transaction.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                  transaction={transaction}
+                  onEdit={setEditingTransaction}
+                  isEditing={editingTransaction?.id === transaction.id}
+                  setEditingTransaction={setEditingTransaction}
+                  onDelete={deleteTransaction}
+                  refresh={fetchTransactions}
+                />
               ))}
             </div>
           )}
