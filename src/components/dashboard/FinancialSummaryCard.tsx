@@ -1,4 +1,3 @@
-
 import React from "react";
 
 interface FinancialSummaryCardProps {
@@ -9,15 +8,16 @@ interface FinancialSummaryCardProps {
   monthlyTransactions: number;
 }
 
-export function FinancialSummaryCard({
+export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
   balance,
   totalIncome,
   totalExpense,
   totalInvestments,
   monthlyTransactions,
-}: FinancialSummaryCardProps) {
+}) => {
   return (
     <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+      {/* Saldo */}
       <div className="bg-gradient-to-br from-[--primary] to-[--secondary]/60 rounded-xl px-5 py-4 flex flex-col items-center shadow hover:scale-[1.03] transition-transform border-[--primary]/10 border">
         <div className="flex items-center gap-2">
           {balance >= 0 ? (
@@ -37,6 +37,7 @@ export function FinancialSummaryCard({
         <div className="text-xs text-muted-foreground mt-1">{balance >= 0 ? 'Positivo' : 'Negativo'} este mês</div>
       </div>
 
+      {/* Receitas */}
       <div className="bg-white rounded-xl px-5 py-4 flex flex-col items-center shadow hover:scale-[1.03] transition-transform border-[--secondary]/10 border">
         <div className="flex items-center gap-2">
           <span className="bg-green-100 text-[--secondary] rounded-full p-2">R$</span>
@@ -50,6 +51,7 @@ export function FinancialSummaryCard({
         </div>
       </div>
 
+      {/* Despesas */}
       <div className="bg-white rounded-xl px-5 py-4 flex flex-col items-center shadow hover:scale-[1.03] transition-transform border-[--primary]/10 border">
         <div className="flex items-center gap-2">
           <span className="bg-red-100 text-[--error] rounded-full p-2">R$</span>
@@ -63,6 +65,7 @@ export function FinancialSummaryCard({
         </div>
       </div>
 
+      {/* Investido */}
       <div className="bg-white rounded-xl px-5 py-4 flex flex-col items-center shadow hover:scale-[1.03] transition-transform border-[--primary]/10 border">
         <div className="flex items-center gap-2">
           <span className="bg-blue-100 text-[--primary] rounded-full p-2">💰</span>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { GoalsProgressBar } from "./GoalsProgressBar";
 
@@ -8,13 +7,13 @@ interface GoalProgressCardProps {
   goalsProgress: number;
 }
 
-export function GoalProgressCard({
+export const GoalProgressCard: React.FC<GoalProgressCardProps> = ({
   completedGoals,
   totalGoals,
   goalsProgress,
-}: GoalProgressCardProps) {
+}) => {
   let stateLabel;
-  let stateClass =
+  const stateClass =
     "inline-block rounded px-3 py-1 text-xs font-bold";
 
   if (goalsProgress === 100 && totalGoals > 0) {
