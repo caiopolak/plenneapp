@@ -155,7 +155,7 @@ export function InvestmentList() {
         </Dialog>
       </div>
       
-      {/* Cards informativos harmonizados em degradê contínuo */}
+      {/* Cards informativos harmonizados agora SEM degradê em Nº Investimentos */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-gradient-to-tr from-[#003f5c] to-[#2f9e44] shadow-[0_4px_32px_0_rgba(0,63,92,0.16)] border-none">
           {/* Total Investido */}
@@ -168,8 +168,8 @@ export function InvestmentList() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-tr from-[#2f9e44] via-[#eaf6ee] to-[#003f5c]/80 shadow-[0_4px_32px_0_rgba(47,158,68,0.12)] border-0">
-          {/* Nº Investimentos */}
+        <Card className="bg-[#eaf6ee] shadow-[0_4px_32px_0_rgba(0,63,92,0.11)] border-0">
+          {/* Nº Investimentos – sólido, sem degradê */}
           <CardContent className="p-6 flex flex-col items-start gap-2">
             <div className="text-sm text-[#003f5c] font-medium flex items-center gap-2 font-display">
               <Plus className="w-5 h-5 text-[#2f9e44]" /> Nº Investimentos
@@ -207,7 +207,11 @@ export function InvestmentList() {
             {investments.map((investment) => {
               const cat = getTypeStyles(investment.type);
               return (
-                <Card key={investment.id} className={`group border-none hover:ring-2 hover:ring-[#003f5c]/30 transition-all shadow-[0_2px_16px_0_rgba(44,63,92,0.10),0_6px_32px_0_rgba(0,63,92,0.10)] bg-gradient-to-tr from-[#f4f4f4] via-white to-[#eaf6ee] shadow-accent`}>
+                <Card
+                  key={investment.id}
+                  // Mudança: sombra azul petróleo e remoção de qualquer detalhe laranja
+                  className={`group border-none hover:ring-2 hover:ring-[#003f5c]/30 transition-all shadow-[0_4px_24px_0_rgba(0,63,92,0.13)] bg-gradient-to-tr from-[#f4f4f4] via-white to-[#eaf6ee]`}
+                >
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start">
                       <div>
@@ -298,25 +302,7 @@ export function InvestmentList() {
         )}
       </div>
 
-      {/* Dicas & Alertas – AGORA cores ajustadas (sem laranja) */}
-      <div className="mt-10">
-        <Card className="bg-[#f4f4f4] border-0 shadow-[0_4px_32px_0_rgba(0,63,92,0.08)]">
-          <CardHeader className="flex flex-row gap-2 items-center">
-            {/* Ícone azul petróleo no lugar do laranja */}
-            <Lightbulb className="w-6 h-6 text-[#003f5c]" />
-            <CardTitle className="text-[#003f5c] text-lg font-bold font-display">Dicas de Investimento</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc pl-5 text-base text-[#2b2b2b] space-y-1 font-text">
-              <li>Priorize uma carteira diversificada: distribua entre renda fixa, variável e alternativas conforme seu perfil.</li>
-              <li>Acompanhe os resultados periodicamente e ajuste seu portfólio conforme objetivos e cenário econômico.</li>
-              <li>Mantenha parte do capital em liquidez para oportunidades e imprevistos.</li>
-              <li>Busque sempre conhecimento e atualização sobre produtos financeiros antes de investir.</li>
-              <li className="font-bold text-[#2f9e44]">Atenção a riscos: avalie cuidadosamente antes de grandes movimentações!</li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Dicas & Alertas removidos daqui */}
     </div>
   );
 }
