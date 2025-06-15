@@ -157,7 +157,7 @@ export function InvestmentList() {
       
       {/* Cards informativos harmonizados (cores ajustadas, sem laranja) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-gradient-to-tr from-[#003f5c] to-[#2f9e44] shadow-card border-none">
+        <Card className="bg-gradient-to-tr from-[#003f5c] to-[#2f9e44] shadow-[0_4px_32px_0_rgba(0,63,92,0.16)] border-none">
           {/* Total Investido */}
           <CardContent className="p-6 flex flex-col items-start gap-2">
             <div className="text-sm text-white/90 font-medium flex items-center gap-2 font-display">
@@ -168,7 +168,7 @@ export function InvestmentList() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#f4f4f4] shadow-card border-0">
+        <Card className="bg-[#f4f4f4] shadow-[0_4px_32px_0_rgba(0,63,92,0.09)] border-0">
           {/* Nº Investimentos */}
           <CardContent className="p-6 flex flex-col items-start gap-2">
             <div className="text-sm text-[#003f5c] font-medium flex items-center gap-2 font-display">
@@ -177,7 +177,7 @@ export function InvestmentList() {
             <div className="text-3xl font-extrabold text-[#003f5c] drop-shadow font-display">{investments.length}</div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 shadow-card border-0">
+        <Card className="bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 shadow-[0_4px_32px_0_rgba(0,63,92,0.14)] border-0">
           {/* Retorno Médio Esperado */}
           <CardContent className="p-6 flex flex-col items-start gap-2">
             <div className="text-sm text-white/90 font-medium flex items-center gap-2 font-display">
@@ -194,7 +194,7 @@ export function InvestmentList() {
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl font-bold text-[#003f5c] font-display mb-2">Meus Investimentos</h2>
         {investments.length === 0 ? (
-          <Card className="bg-[#f4f4f4] border-none">
+          <Card className="bg-[#f4f4f4] border-none shadow-[0_4px_32px_0_rgba(0,63,92,0.08)]">
             <CardContent className="p-8 text-center">
               <p className="text-[#003f5c] font-bold font-display">Nenhum investimento registrado</p>
               <p className="text-sm text-[#2b2b2b] mt-2">
@@ -207,7 +207,7 @@ export function InvestmentList() {
             {investments.map((investment) => {
               const cat = getTypeStyles(investment.type);
               return (
-                <Card key={investment.id} className={`group border-none hover:ring-2 hover:ring-[#f8961e]/50 transition-all bg-gradient-to-tr from-[#f4f4f4] via-white to-[#eaf6ee] shadow-accent`}>
+                <Card key={investment.id} className={`group border-none hover:ring-2 hover:ring-[#003f5c]/30 transition-all shadow-[0_2px_16px_0_rgba(44,63,92,0.10),0_6px_32px_0_rgba(0,63,92,0.10)] bg-gradient-to-tr from-[#f4f4f4] via-white to-[#eaf6ee] shadow-accent`}>
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start">
                       <div>
@@ -300,7 +300,7 @@ export function InvestmentList() {
 
       {/* Dicas & Alertas – AGORA cores ajustadas (sem laranja) */}
       <div className="mt-10">
-        <Card className="bg-[#f4f4f4] border-0">
+        <Card className="bg-[#f4f4f4] border-0 shadow-[0_4px_32px_0_rgba(0,63,92,0.08)]">
           <CardHeader className="flex flex-row gap-2 items-center">
             {/* Ícone azul petróleo no lugar do laranja */}
             <Lightbulb className="w-6 h-6 text-[#003f5c]" />
