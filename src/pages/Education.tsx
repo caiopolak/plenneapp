@@ -20,7 +20,7 @@ export default function Education() {
           </h1>
         </div>
         <Tabs defaultValue="tips" className="space-y-4">
-          {/* TabsList: Grid responsiva como Dashboard */}
+          {/* Grid responsiva para as abas ao estilo dos botões do dashboard */}
           <TabsList
             className={`
               w-full
@@ -31,95 +31,130 @@ export default function Education() {
               lg:grid-cols-6
               gap-2
               bg-[#f7fafd]
-              shadow-md
+              py-[5px] px-1
+              shadow-sm
               rounded-xl
-              px-1
-              py-[6px]
               mb-2
             `}
           >
             <TabsTrigger
               value="tips"
               className={`
-                flex gap-2 items-center font-display text-[--primary]
-                data-[state=active]:bg-[#eaf6ee]
-                data-[state=active]:text-[#003f5c]
-                rounded-lg transition-all
-                h-12 justify-center
-                text-base font-semibold
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
               `}
             >
-              <BookOpen className="w-5 h-5" />
+              <BookOpen className="w-4 h-4 mb-0" />
               Dicas
             </TabsTrigger>
             <TabsTrigger
               value="alerts"
               className={`
-                flex gap-2 items-center font-display text-[--primary]
-                data-[state=active]:bg-[#eaf6ee]
-                data-[state=active]:text-[#003f5c]
-                rounded-lg transition-all
-                h-12 justify-center
-                text-base font-semibold
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
               `}
             >
-              <Bell className="w-5 h-5" />
+              <Bell className="w-4 h-4 mb-0" />
               Alertas
             </TabsTrigger>
             <TabsTrigger
               value="challenges"
               className={`
-                flex gap-2 items-center font-display text-[--primary]
-                data-[state=active]:bg-[#eaf6ee]
-                data-[state=active]:text-[#003f5c]
-                rounded-lg transition-all
-                h-12 justify-center
-                text-base font-semibold
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
               `}
             >
-              <Trophy className="w-5 h-5" />
+              <Trophy className="w-4 h-4 mb-0" />
               Desafios
             </TabsTrigger>
             <TabsTrigger
               value="modules"
               className={`
-                flex gap-2 items-center font-display text-[--primary]
-                data-[state=active]:bg-[#eaf6ee]
-                data-[state=active]:text-[#003f5c]
-                rounded-lg transition-all
-                h-12 justify-center
-                text-base font-semibold
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
               `}
             >
-              <GraduationCap className="w-5 h-5" />
+              <GraduationCap className="w-4 h-4 mb-0" />
               Aulas
             </TabsTrigger>
             <TabsTrigger
               value="assistant"
               className={`
-                flex gap-2 items-center font-display text-[--primary]
-                data-[state=active]:bg-[#eaf6ee]
-                data-[state=active]:text-[#003f5c]
-                rounded-lg transition-all
-                h-12 justify-center
-                text-base font-semibold
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
               `}
             >
-              <Bot className="w-5 h-5" />
+              <Bot className="w-4 h-4 mb-0" />
               Assistente
             </TabsTrigger>
             <TabsTrigger
               value="budgets"
               className={`
-                flex gap-2 items-center font-display text-[--primary]
-                data-[state=active]:bg-[#eaf6ee]
-                data-[state=active]:text-[#003f5c]
-                rounded-lg transition-all
-                h-12 justify-center
-                text-base font-semibold
+                flex flex-col items-center justify-center
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
+                data-[state=active]:text-white
+                data-[state=active]:shadow-accent
+                rounded-lg
+                transition-all
+                text-sm font-semibold
+                gap-1
+                hover:bg-[#017f66]/90 hover:text-white
+                focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
               `}
             >
-              <Wallet className="w-5 h-5" />
+              <Wallet className="w-4 h-4 mb-0" />
               Orçamentos
             </TabsTrigger>
           </TabsList>
