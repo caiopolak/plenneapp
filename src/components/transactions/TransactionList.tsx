@@ -187,7 +187,6 @@ export function TransactionList() {
               onImportSuccess={fetchTransactions}
               showForm={showForm}
               setShowForm={setShowForm}
-              onCreateClick={() => setShowForm(true)}
             />
           </div>
           {/* Filters and Actions */}

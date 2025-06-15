@@ -278,7 +278,6 @@ const Index = () => {
                 onImportSuccess={() => {}}
                 showForm={showTransactionForm}
                 setShowForm={setShowTransactionForm}
-                onCreateClick={() => setShowTransactionForm(true)}
               />
             </div>
             <Card>
