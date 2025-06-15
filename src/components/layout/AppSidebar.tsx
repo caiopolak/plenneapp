@@ -178,16 +178,13 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
             variant="ghost"
             size="default"
             onClick={signOut}
-            // Botão degradê vermelho/preto, sem borda e com texto branco sempre
-            className="w-full flex items-center justify-start px-2 
-              min-h-[48px] 
-              bg-gradient-to-r from-red-700 via-red-900 to-black 
-              text-white
-              border-none
-              rounded-none 
-              md:bg-transparent md:text-primary md:hover:bg-blue-50 
-              md:focus:bg-blue-100 md:border-none md:rounded-xl
-              hover:brightness-110 focus:brightness-110 transition"
+            // Neutro: cor clara com borda normal para todos os dispositivos
+            className="w-full flex items-center justify-start px-2 min-h-[48px] 
+              bg-[#f4f4f4] text-graphite border border-gray-300 rounded-none
+              hover:bg-gray-200 hover:text-graphite
+              focus:bg-gray-200
+              md:bg-transparent md:text-primary md:border-none md:rounded-xl md:hover:bg-blue-50 md:focus:bg-blue-100
+              transition"
           >
             <LogOut className="w-5 h-5 mr-2" />
             Sair
