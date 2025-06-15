@@ -1,94 +1,111 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, TrendingUp, Shield, Brain, ChevronRight } from 'lucide-react';
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { useEffect, useState } from 'react';
 
 interface FinancialTip {
   id: string;
   title: string;
   content: string;
-  category: string;
-  difficulty_level: 'beginner' | 'intermediate' | 'advanced';
-  created_at: string;
+  category?: string | null;
+  difficulty_level?: string | null;
+  creator_id?: string | null;
+  is_public?: boolean | null;
+  created_at?: string | null;
 }
 
 export function FinancialTips() {
   const [tips, setTips] = useState<FinancialTip[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
-  const [loading, setLoading] = useState(true);
+  const [newTip, setNewTip] = useState<{ title: string; content: string; category: string; difficulty_level: string }>({
+    title: '',
+    content: '',
+    category: 'budgeting',
+    difficulty_level: 'beginner',
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Using mock data since the financial_tips table doesn't exist yet
-    const mockTips: FinancialTip[] = [
-      {
-        id: '1',
-        title: 'Regra dos 50/30/20',
-        content: 'Divida sua renda em: 50% necessidades, 30% desejos, 20% poupança/investimentos. É uma base simples para organizar suas finanças.',
-        category: 'budgeting',
-        difficulty_level: 'beginner',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: '2',
-        title: 'Fundo de Emergência',
-        content: 'Mantenha de 3 a 6 meses de gastos essenciais guardados em uma aplicação de alta liquidez. É sua proteção contra imprevistos.',
-        category: 'emergency_fund',
-        difficulty_level: 'beginner',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: '3',
-        title: 'Diversificação de Investimentos',
-        content: 'Não coloque todos os ovos na mesma cesta. Diversifique entre renda fixa, variável e diferentes setores da economia.',
-        category: 'investments',
-        difficulty_level: 'intermediate',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: '4',
-        title: 'Juros Compostos',
-        content: 'Einstein chamou de "8ª maravilha do mundo". Comece a investir cedo, mesmo pequenas quantias, e deixe o tempo trabalhar a seu favor.',
-        category: 'investments',
-        difficulty_level: 'intermediate',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: '5',
-        title: 'Análise de Fluxo de Caixa',
-        content: 'Acompanhe mensalmente suas entradas e saídas. Identifique padrões e oportunidades de otimização nos seus gastos.',
-        category: 'budgeting',
-        difficulty_level: 'advanced',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: '6',
-        title: 'Planejamento de Aposentadoria',
-        content: 'Comece a se planejar para a aposentadoria o quanto antes. Use a regra dos 4% para calcular quanto precisará acumular.',
-        category: 'investments',
-        difficulty_level: 'advanced',
-        created_at: new Date().toISOString()
+    let filter = '';
+    if (selectedCategory !== 'all') filter += `&category=eq.${selectedCategory}`;
+    if (selectedLevel !== 'all') filter += `&difficulty_level=eq.${selectedLevel}`;
+
+    const fetchTips = async () => {
+      setLoading(true);
+      let query = supabase
+        .from('financial_tips')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (selectedCategory !== 'all') {
+        query = query.eq('category', selectedCategory);
       }
-    ];
+      if (selectedLevel !== 'all') {
+        query = query.eq('difficulty_level', selectedLevel);
+      }
+      // filtra apenas públicos ou criados pelo usuário
+      if (user) {
+        query = query.or(
+          `is_public.eq.true,creator_id.eq.${user.id}`
+        );
+      } else {
+        query = query.eq('is_public', true);
+      }
+      const { data, error } = await query;
+      if (!error && data) {
+        setTips(data as FinancialTip[]);
+      } else {
+        setTips([]); // fallback vazio
+      }
+      setLoading(false);
+    };
 
-    // Filter tips based on selected category and level
-    let filteredTips = mockTips;
-    
-    if (selectedCategory !== 'all') {
-      filteredTips = filteredTips.filter(tip => tip.category === selectedCategory);
+    fetchTips();
+  }, [selectedCategory, selectedLevel, user]);
+
+  const handleAddTip = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast({ title: "Faça login para cadastrar dicas personalizadas.", variant: "destructive" });
+      return;
     }
-    
-    if (selectedLevel !== 'all') {
-      filteredTips = filteredTips.filter(tip => tip.difficulty_level === selectedLevel);
+    if (newTip.title.length < 3 || newTip.content.length < 10) {
+      toast({ title: "Título ou conteúdo muito curtos.", variant: "destructive" });
+      return;
     }
+    setSubmitting(true);
+    const { error } = await supabase.from('financial_tips').insert([{
+      creator_id: user.id,
+      title: newTip.title,
+      content: newTip.content,
+      category: newTip.category,
+      difficulty_level: newTip.difficulty_level,
+      is_public: true
+    }]);
+    if (!error) {
+      toast({ title: "Dica adicionada com sucesso!" });
+      setNewTip({ title: '', content: '', category: 'budgeting', difficulty_level: 'beginner' });
+      // re-fetch
+      setSelectedCategory('all');
+      setSelectedLevel('all');
+    } else {
+      toast({ title: "Erro ao adicionar dica", description: error.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
 
-    setTips(filteredTips);
-    setLoading(false);
-  }, [selectedCategory, selectedLevel]);
-
-  const getCategoryIcon = (category: string) => {
+  const getCategoryIcon = (category: string | null | undefined) => {
     switch (category) {
       case 'budgeting': return <BookOpen className="w-5 h-5" />;
       case 'investments': return <TrendingUp className="w-5 h-5" />;
@@ -97,7 +114,7 @@ export function FinancialTips() {
     }
   };
 
-  const getCategoryLabel = (category: string) => {
+  const getCategoryLabel = (category: string | null | undefined) => {
     switch (category) {
       case 'budgeting': return 'Orçamento';
       case 'investments': return 'Investimentos';
@@ -106,7 +123,7 @@ export function FinancialTips() {
     }
   };
 
-  const getDifficultyColor = (level: string) => {
+  const getDifficultyColor = (level: string | null | undefined) => {
     switch (level) {
       case 'beginner': return 'bg-green-500';
       case 'intermediate': return 'bg-yellow-500';
@@ -115,7 +132,7 @@ export function FinancialTips() {
     }
   };
 
-  const getDifficultyLabel = (level: string) => {
+  const getDifficultyLabel = (level: string | null | undefined) => {
     switch (level) {
       case 'beginner': return 'Iniciante';
       case 'intermediate': return 'Intermediário';
@@ -149,7 +166,6 @@ export function FinancialTips() {
           <h2 className="text-2xl font-bold text-[#003f5c]">Educação Financeira</h2>
           <p className="text-[#2b2b2b]/70">Aprenda com dicas práticas de especialistas</p>
         </div>
-        
         <div className="flex gap-2 flex-wrap">
           {categories.map((category) => (
             <Button
@@ -178,6 +194,47 @@ export function FinancialTips() {
         ))}
       </div>
 
+      {/* Formulário para adicionar nova dica */}
+      <form className="space-y-2 mb-4" onSubmit={handleAddTip}>
+        <div className="flex gap-2 flex-wrap">
+          <Input
+            className="flex-1"
+            placeholder="Título da dica"
+            value={newTip.title}
+            onChange={e => setNewTip(t => ({ ...t, title: e.target.value }))}
+            disabled={submitting}
+          />
+          <Input
+            className="flex-2"
+            placeholder="Conteúdo da dica"
+            value={newTip.content}
+            onChange={e => setNewTip(t => ({ ...t, content: e.target.value }))}
+            disabled={submitting}
+          />
+          <select
+            className="border rounded px-2 py-1"
+            value={newTip.category}
+            onChange={e => setNewTip(t => ({ ...t, category: e.target.value }))}
+            disabled={submitting}
+          >
+            <option value="budgeting">Orçamento</option>
+            <option value="investments">Investimentos</option>
+            <option value="emergency_fund">Reserva de Emergência</option>
+          </select>
+          <select
+            className="border rounded px-2 py-1"
+            value={newTip.difficulty_level}
+            onChange={e => setNewTip(t => ({ ...t, difficulty_level: e.target.value }))}
+            disabled={submitting}
+          >
+            <option value="beginner">Iniciante</option>
+            <option value="intermediate">Intermediário</option>
+            <option value="advanced">Avançado</option>
+          </select>
+          <Button type="submit" disabled={submitting || !user}>Adicionar</Button>
+        </div>
+      </form>
+
       {tips.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center">
@@ -200,20 +257,31 @@ export function FinancialTips() {
                       </Badge>
                     </div>
                   </div>
-                  <div className={`w-3 h-3 rounded-full ${getDifficultyColor(tip.difficulty_level)}`} 
-                       title={getDifficultyLabel(tip.difficulty_level)} />
+                  <div className={`w-3 h-3 rounded-full ${getDifficultyColor(tip.difficulty_level)}`}
+                    title={getDifficultyLabel(tip.difficulty_level)} />
                 </div>
               </CardHeader>
-              
               <CardContent>
                 <p className="text-[#2b2b2b] leading-relaxed mb-4">{tip.content}</p>
                 <div className="flex items-center justify-between">
                   <Badge variant="secondary" className="text-xs">
                     {getDifficultyLabel(tip.difficulty_level)}
                   </Badge>
-                  <Button variant="ghost" size="sm" className="text-[#2f9e44] hover:text-[#2f9e44]/80">
-                    Saiba mais <ChevronRight className="w-4 h-4 ml-1" />
-                  </Button>
+                  {/* Botão remover apenas se for o criador */}
+                  {user?.id === tip.creator_id && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600 hover:text-red-800"
+                      onClick={async () => {
+                        await supabase.from("financial_tips").delete().eq("id", tip.id);
+                        setTips(tips => tips.filter(t => t.id !== tip.id));
+                        toast({ title: "Dica removida." });
+                      }}
+                    >
+                      Remover
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

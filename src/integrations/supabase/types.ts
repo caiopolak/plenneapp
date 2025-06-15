@@ -60,6 +60,41 @@ export type Database = {
           },
         ]
       }
+      challenge_progress: {
+        Row: {
+          challenge_id: string | null
+          completed_at: string | null
+          id: string
+          started_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id?: string | null
+          completed_at?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string | null
+          completed_at?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_progress_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "financial_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       data_imports: {
         Row: {
           created_at: string | null
@@ -100,6 +135,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      financial_alerts: {
+        Row: {
+          alert_type: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          priority: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          alert_type?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          priority?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          alert_type?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          priority?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      financial_challenges: {
+        Row: {
+          created_at: string | null
+          creator_id: string
+          description: string | null
+          duration_days: number
+          id: string
+          status: string | null
+          target_amount: number | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id: string
+          description?: string | null
+          duration_days: number
+          id?: string
+          status?: string | null
+          target_amount?: number | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string
+          description?: string | null
+          duration_days?: number
+          id?: string
+          status?: string | null
+          target_amount?: number | null
+          title?: string
+        }
+        Relationships: []
       }
       financial_goals: {
         Row: {
@@ -150,6 +251,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      financial_tips: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string | null
+          creator_id: string
+          difficulty_level: string | null
+          id: string
+          is_public: boolean | null
+          title: string
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string | null
+          creator_id: string
+          difficulty_level?: string | null
+          id?: string
+          is_public?: boolean | null
+          title: string
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string | null
+          creator_id?: string
+          difficulty_level?: string | null
+          id?: string
+          is_public?: boolean | null
+          title?: string
+        }
+        Relationships: []
       }
       goal_deposits: {
         Row: {
@@ -232,6 +366,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      learning_modules: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          level: string | null
+          published: boolean | null
+          title: string
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          level?: string | null
+          published?: boolean | null
+          title: string
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          level?: string | null
+          published?: boolean | null
+          title?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -422,6 +589,41 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_module_progress: {
+        Row: {
+          completed_at: string | null
+          id: string
+          module_id: string | null
+          started_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          module_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          module_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_module_progress_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "learning_modules"
             referencedColumns: ["id"]
           },
         ]
