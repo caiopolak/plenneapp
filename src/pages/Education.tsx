@@ -25,40 +25,34 @@ export default function Education() {
             className={`
               w-full
               grid
-              grid-cols-3
-              md:grid-cols-6
+              grid-cols-2
+              sm:grid-cols-3
+              md:grid-cols-3
+              lg:grid-cols-6
               gap-2
               bg-[#f7fafd]
-              p-1
+              py-[5px] px-1
               shadow-sm
               rounded-xl
               mb-2
-              border
-              border-[#e6eaf0]
             `}
           >
             <TabsTrigger
               value="tips"
               className={`
                 flex flex-col items-center justify-center
-                h-12 px-0 py-0
-                font-display text-[#003f5c]
-                data-[state=active]:bg-[#2f9e44]
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
                 data-[state=active]:text-white
                 data-[state=active]:shadow-accent
                 rounded-lg
                 transition-all
-                text-xs sm:text-sm font-medium
+                text-sm font-semibold
                 gap-1
                 hover:bg-[#017f66]/90 hover:text-white
-                border-none
                 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-                shadow-[0_1px_4px_0_rgba(47,158,68,0.06)]
-                min-w-0
               `}
-              style={{
-                minWidth: 0
-              }}
             >
               <BookOpen className="w-4 h-4 mb-0" />
               Dicas
@@ -67,24 +61,18 @@ export default function Education() {
               value="alerts"
               className={`
                 flex flex-col items-center justify-center
-                h-12 px-0 py-0
-                font-display text-[#003f5c]
-                data-[state=active]:bg-[#2f9e44]
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
                 data-[state=active]:text-white
                 data-[state=active]:shadow-accent
                 rounded-lg
                 transition-all
-                text-xs sm:text-sm font-medium
+                text-sm font-semibold
                 gap-1
                 hover:bg-[#017f66]/90 hover:text-white
-                border-none
                 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-                shadow-[0_1px_4px_0_rgba(47,158,68,0.06)]
-                min-w-0
               `}
-              style={{
-                minWidth: 0
-              }}
             >
               <Bell className="w-4 h-4 mb-0" />
               Alertas
@@ -93,24 +81,18 @@ export default function Education() {
               value="challenges"
               className={`
                 flex flex-col items-center justify-center
-                h-12 px-0 py-0
-                font-display text-[#003f5c]
-                data-[state=active]:bg-[#2f9e44]
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
                 data-[state=active]:text-white
                 data-[state=active]:shadow-accent
                 rounded-lg
                 transition-all
-                text-xs sm:text-sm font-medium
+                text-sm font-semibold
                 gap-1
                 hover:bg-[#017f66]/90 hover:text-white
-                border-none
                 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-                shadow-[0_1px_4px_0_rgba(47,158,68,0.06)]
-                min-w-0
               `}
-              style={{
-                minWidth: 0
-              }}
             >
               <Trophy className="w-4 h-4 mb-0" />
               Desafios
@@ -119,24 +101,18 @@ export default function Education() {
               value="modules"
               className={`
                 flex flex-col items-center justify-center
-                h-12 px-0 py-0
-                font-display text-[#003f5c]
-                data-[state=active]:bg-[#2f9e44]
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
                 data-[state=active]:text-white
                 data-[state=active]:shadow-accent
                 rounded-lg
                 transition-all
-                text-xs sm:text-sm font-medium
+                text-sm font-semibold
                 gap-1
                 hover:bg-[#017f66]/90 hover:text-white
-                border-none
                 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-                shadow-[0_1px_4px_0_rgba(47,158,68,0.06)]
-                min-w-0
               `}
-              style={{
-                minWidth: 0
-              }}
             >
               <GraduationCap className="w-4 h-4 mb-0" />
               Aulas
@@ -145,24 +121,18 @@ export default function Education() {
               value="assistant"
               className={`
                 flex flex-col items-center justify-center
-                h-12 px-0 py-0
-                font-display text-[#003f5c]
-                data-[state=active]:bg-[#2f9e44]
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
                 data-[state=active]:text-white
                 data-[state=active]:shadow-accent
                 rounded-lg
                 transition-all
-                text-xs sm:text-sm font-medium
+                text-sm font-semibold
                 gap-1
                 hover:bg-[#017f66]/90 hover:text-white
-                border-none
                 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-                shadow-[0_1px_4px_0_rgba(47,158,68,0.06)]
-                min-w-0
               `}
-              style={{
-                minWidth: 0
-              }}
             >
               <Bot className="w-4 h-4 mb-0" />
               Assistente
@@ -171,24 +141,18 @@ export default function Education() {
               value="budgets"
               className={`
                 flex flex-col items-center justify-center
-                h-12 px-0 py-0
-                font-display text-[#003f5c]
-                data-[state=active]:bg-[#2f9e44]
+                min-h-0 h-[41px] px-0 py-0
+                font-display text-[--primary]
+                data-[state=active]:bg-[#2f9e44] 
                 data-[state=active]:text-white
                 data-[state=active]:shadow-accent
                 rounded-lg
                 transition-all
-                text-xs sm:text-sm font-medium
+                text-sm font-semibold
                 gap-1
                 hover:bg-[#017f66]/90 hover:text-white
-                border-none
                 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#017f66]
-                shadow-[0_1px_4px_0_rgba(47,158,68,0.06)]
-                min-w-0
               `}
-              style={{
-                minWidth: 0
-              }}
             >
               <Wallet className="w-4 h-4 mb-0" />
               Orçamentos
@@ -218,3 +182,6 @@ export default function Education() {
     </div>
   );
 }
+
+// (removido o style para scrollbar horizontal desnecessário)
+
