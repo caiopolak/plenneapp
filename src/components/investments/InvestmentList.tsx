@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,11 +13,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
 import { Tables } from '@/integrations/supabase/types';
+import { calculateTotalInvested, calculateTotalCurrentValue } from './utils/investmentCalculations';
 import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
 import { ImportTransactionsCSV } from "@/components/transactions/ImportTransactionsCSV";
-
-// --- Remove missing investmentCalculations import (and the file doesn't exist) ---
-// import { calculateTotalInvested, calculateTotalCurrentValue } from './utils/investmentCalculations';
 
 type Investment = Tables<'investments'>;
 
@@ -106,13 +103,6 @@ export function InvestmentList() {
     }
   };
 
-  // Helpers for total calculations (since investmentCalculations.ts is missing)
-  const calculateTotalInvested = (investmentsArr: Investment[]) =>
-    investmentsArr.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
-
-  const calculateTotalCurrentValue = (investmentsArr: Investment[]) =>
-    investmentsArr.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0); // Update logic if you add current values later
-
   if (loading) {
     return <div>Carregando investimentos...</div>;
   }
@@ -127,7 +117,7 @@ export function InvestmentList() {
             variant="outline"
             size="sm"
             className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
-            onClick={() => exportInvestmentsCsv(investments)}
+            onClick={exportInvestmentsCsv}
           >
             <Download className="w-4 h-4" />
             Exportar CSV
@@ -234,13 +224,13 @@ export function InvestmentList() {
                     <div className="text-right">
                       <div className="text-sm text-muted-foreground font-text">Valor Investido</div>
                       <div className="font-bold text-[--secondary] font-display">
-                        R$ {Number(investment.amount).toFixed(2).replace('.', ',')}
+                        R$ {Number(investment.invested_amount).toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-muted-foreground font-text">Valor Atual</div>
                       <div className="font-bold text-[--primary] font-display">
-                        R$ {Number(investment.amount).toFixed(2).replace('.', ',')}
+                        R$ {Number(investment.current_amount).toFixed(2).replace('.', ',')}
                       </div>
                     </div>
 
