@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -20,8 +21,9 @@ import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { QuickNotifications } from "@/components/dashboard/QuickNotifications";
-import { FinancialTipsCard } from "@/components/dashboard/FinancialTipsCard";
-import { FinancialAlertsList } from "@/components/dashboard/FinancialAlertsList";
+// FIXED imports below — use default import, not named
+import FinancialTipsCard from "@/components/dashboard/FinancialTipsCard";
+import FinancialAlertsList from "@/components/dashboard/FinancialAlertsList";
 import ProfilePage from "./ProfilePage";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TrendsChartCard } from "@/components/analytics/TrendsChartCard";
