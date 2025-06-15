@@ -132,10 +132,7 @@ export default function FinancieApp() {
                       <div className="mt-0">
                         <DashboardTabs />
                       </div>
-                      {/* Depois seção de gráficos */}
-                      <div className="mt-8">
-                        <FinancialCharts />
-                      </div>
+                      {/* --- REMOVIDO: Seção de gráficos do dashboard --- */}
                     </div>
                   )}
                   {/* As demais abas como Analytics/Education etc permanecem */}
