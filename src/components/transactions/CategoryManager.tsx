@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,6 +78,8 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
     else { fetchCategories(); toast({ title: "Categoria excluída!" }); }
   };
 
+  // Estado para indicar seleção personalizada vs padrão
+  // Aqui não é necessário campo extra: basta exibir as duas listas separadamente, user pode clicar qualquer
   return (
     <div>
       <div className="flex gap-2 items-end mb-1">
@@ -127,11 +128,11 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
           </DialogContent>
         </Dialog>
       </div>
-      {/* SELEÇÃO de categoria (agora inclui Padrões e Personalizadas separadas) */}
+      {/* Selecionar categoria (bem separado Padrão X Personalizada, seleção única) */}
       <div className="flex flex-wrap gap-2 mt-2">
-        {DEFAULT_CATEGORIES[type].length > 0 &&
+        {DEFAULT_CATEGORIES[type].length > 0 && (
           <>
-            <span className="w-full text-xs mt-1 mb-0 text-primary/80">Padrão</span>
+            <span className="w-full text-xs mt-1 text-primary/70">Padrão</span>
             {DEFAULT_CATEGORIES[type].map(cat => (
               <Button
                 key={`default-${cat}`}
@@ -139,15 +140,16 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
                 size="sm"
                 onClick={() => onChange?.(cat)}
                 className="rounded-full"
+                type="button"
               >
                 {cat}
               </Button>
             ))}
           </>
-        }
-        {categories.length > 0 &&
+        )}
+        {categories.length > 0 && (
           <>
-            <span className="w-full text-xs mt-1 mb-0 text-secondary/70">Personalizadas</span>
+            <span className="w-full text-xs mt-1 text-secondary/70">Personalizadas</span>
             {categories.map(cat => (
               <Button
                 key={cat.id}
@@ -155,12 +157,13 @@ export function CategoryManager({ type, value, onChange }: { type: string; value
                 size="sm"
                 onClick={() => onChange?.(cat.name)}
                 className="rounded-full"
+                type="button"
               >
                 {cat.name}
               </Button>
             ))}
           </>
-        }
+        )}
       </div>
     </div>
   );

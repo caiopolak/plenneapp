@@ -44,8 +44,12 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
   const { user } = useAuth();
   const { current, workspaces } = useWorkspace();
   const [workspaceId, setWorkspaceId] = useState(
-    investment?.workspace_id ?? current?.id ?? ""
+    investment?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "")
   );
+
+  React.useEffect(() => {
+    if (!workspaceId && current?.id) setWorkspaceId(current.id);
+  }, [current?.id, workspaceId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

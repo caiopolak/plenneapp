@@ -35,8 +35,13 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
   const { user } = useAuth();
   const { current, workspaces } = useWorkspace();
   const [workspaceId, setWorkspaceId] = useState(
-    goal?.workspace_id ?? current?.id ?? ""
+    goal?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "")
   );
+
+  // Garante que workspaceId esteja sempre preenchido
+  React.useEffect(() => {
+    if (!workspaceId && current?.id) setWorkspaceId(current.id);
+  }, [current?.id, workspaceId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -85,11 +85,11 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
     },
   ];
 
-  // Centralização e exibição de perfil + informações relevantes
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
+          {/* Centralizado: Avatar + nome/email/assinatura */}
           <div className="flex flex-col items-center gap-3 pt-8 pb-6 bg-gradient-to-r from-primary/10 to-secondary/10">
             <Avatar className="w-20 h-20 ring-2 ring-primary/60 shadow-lg mb-2">
               {profile?.avatar_url ? (
@@ -103,8 +103,11 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
               )}
             </Avatar>
             <div className="flex flex-col items-center w-full">
-              <span className="font-display font-bold text-primary text-xl truncate max-w-[144px] block">{profile?.full_name || "Usuário"}</span>
-              <span className="text-sm text-muted-foreground truncate max-w-[180px]">{profile?.email}</span>
+              <span className="font-display font-bold text-primary text-xl truncate max-w-[170px] block">{profile?.full_name || "Usuário"}</span>
+              <span className="text-sm text-muted-foreground truncate max-w-[200px]">{profile?.email}</span>
+              {profile?.phone && (
+                <span className="text-xs text-muted-foreground mt-0.5">{profile.phone}</span>
+              )}
               {subscription?.plan && (
                 <span
                   className={`mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -124,8 +127,8 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
               )}
             </div>
           </div>
-          {/* Logo + nome Plenne (com degradê) e slogan rotativo centralizado */}
-          <div className="flex flex-col items-center gap-0 px-3 py-3 border-b border-primary/10">
+          {/* Logo Plenne (com degradê, slogan rotativo e novo ícone folha) */}
+          <div className="flex flex-col items-center gap-0 px-3 py-4 border-b border-primary/10">
             <LogoPlenne className="mb-1" />
             <span className="text-xs italic text-primary/80 text-center px-2 transition-all animate-fade-in font-medium max-w-[196px]">{slogan}</span>
           </div>

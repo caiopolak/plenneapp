@@ -48,13 +48,27 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
   const { current, workspaces } = useWorkspace();
 
   // workspaceId sempre inicializado corretamente
-  const initialWorkspaceId = transaction?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "");
-  const [workspaceId, setWorkspaceId] = useState(initialWorkspaceId);
+  const [workspaceId, setWorkspaceId] = useState(
+    transaction?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "")
+  );
+
+  // Resetar categoria ao mudar tipo
+  React.useEffect(() => {
+    setCategory('');
+  }, [type]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!amount || !category || !user || !workspaceId) {
+    // valida workspaceId
+    if (!workspaceId) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Nenhuma workspace selecionada."
+      });
+      return;
+    }
+    if (!amount || !category || !user) {
       toast({
         variant: "destructive",
         title: "Erro",
@@ -62,7 +76,6 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
       });
       return;
     }
-
     setLoading(true);
 
     try {
@@ -228,8 +241,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
                 <Select
                   value={transaction?.recurrence_pattern || ""}
                   onValueChange={(v) => {
-                    // eslint-disable-next-line
-                    transaction ? (transaction.recurrence_pattern = v) : null;
+                    if (transaction) transaction.recurrence_pattern = v;
                   }}
                 >
                   <SelectTrigger>
@@ -269,3 +281,5 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
     </Card>
   );
 }
+
+// ... OBS: Este arquivo está ficando longo, se quiser que eu refatore para componentes menores depois, só pedir! ...
