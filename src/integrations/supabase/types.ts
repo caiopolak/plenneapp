@@ -107,6 +107,7 @@ export type Database = {
           current_amount: number | null
           id: string
           name: string
+          note: string | null
           priority: string | null
           target_amount: number
           target_date: string | null
@@ -119,6 +120,7 @@ export type Database = {
           current_amount?: number | null
           id?: string
           name: string
+          note?: string | null
           priority?: string | null
           target_amount: number
           target_date?: string | null
@@ -131,6 +133,7 @@ export type Database = {
           current_amount?: number | null
           id?: string
           name?: string
+          note?: string | null
           priority?: string | null
           target_amount?: number
           target_date?: string | null
@@ -144,6 +147,41 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goal_deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          goal_id: string
+          id: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          goal_id: string
+          id?: string
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          goal_id?: string
+          id?: string
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goal_deposits_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "financial_goals"
             referencedColumns: ["id"]
           },
         ]

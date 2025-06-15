@@ -1,11 +1,12 @@
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Tables } from "@/integrations/supabase/types";
+import { GoalDepositsHistory } from "./GoalDepositsHistory";
+import { supabase } from "@/integrations/supabase/client";
 
 type Goal = Tables<'financial_goals'>;
 
@@ -13,6 +14,7 @@ interface GoalDetailsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   goal: Goal | null;
+  showDepositsHistory?: boolean; // NOVO: mostrar histórico
 }
 
 const getPriorityLabel = (priority: string | null) => {
@@ -24,7 +26,7 @@ const getPriorityLabel = (priority: string | null) => {
   }
 };
 
-export function GoalDetailsModal({ open, onOpenChange, goal }: GoalDetailsModalProps) {
+export function GoalDetailsModal({ open, onOpenChange, goal, showDepositsHistory }: GoalDetailsModalProps) {
   if (!goal) return null;
   const currentAmount = goal.current_amount || 0;
   const targetAmount = goal.target_amount || 0;
@@ -82,6 +84,17 @@ export function GoalDetailsModal({ open, onOpenChange, goal }: GoalDetailsModalP
           <div className="text-xs text-muted-foreground">
             Última atualização: {goal.updated_at ? format(new Date(goal.updated_at), "dd/MM/yyyy", { locale: ptBR }) : "--"}
           </div>
+          {goal.note && (
+            <div className="text-xs text-muted-foreground italic my-2">
+              <span className="font-medium">Observações:</span> {goal.note}
+            </div>
+          )}
+
+          {showDepositsHistory && (
+            <div className="mt-4">
+              <GoalDepositsHistory goalId={goal.id} />
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

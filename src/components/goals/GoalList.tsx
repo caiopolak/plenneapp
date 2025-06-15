@@ -15,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { GoalForm } from './GoalForm';
 import { Tables } from '@/integrations/supabase/types';
 import { GoalDetailsModal } from "./GoalDetailsModal";
+import { GoalDepositsHistory } from './GoalDepositsHistory'; // NOVO
 
 type Goal = Tables<'financial_goals'>;
 
@@ -84,25 +85,38 @@ export function GoalList() {
     }
   };
 
+  // Adiciona valor na meta E gera registro no histórico (goal_deposits)
   const addAmountToGoal = async (goalId: string, amount: number) => {
     try {
       const goal = goals.find(g => g.id === goalId);
       if (!goal) return;
 
       const newCurrentAmount = (goal.current_amount || 0) + amount;
-      
-      const { error } = await supabase
+
+      // Atualiza goal
+      const { error: updateError } = await supabase
         .from('financial_goals')
         .update({ current_amount: newCurrentAmount })
         .eq('id', goalId);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // Salva depósito no histórico
+      const { error: depositError } = await supabase
+        .from('goal_deposits')
+        .insert([{
+          goal_id: goalId,
+          user_id: user.id,
+          amount: amount,
+          note: null // pode ser expandido depois
+        }]);
+      if (depositError) throw depositError;
 
       toast({
         title: "Sucesso!",
         description: `R$ ${amount.toFixed(2)} adicionado à meta`
       });
-      
+
       setAddingAmount('');
       setSelectedGoalId(null);
       fetchGoals();
@@ -285,6 +299,13 @@ export function GoalList() {
                       Data limite: {format(new Date(goal.target_date), "dd/MM/yyyy", { locale: ptBR })}
                     </div>
                   )}
+
+                  {/* EXIBIR OBSERVAÇÃO, se existir */}
+                  {goal.note && (
+                    <div className="text-xs text-muted-foreground italic mt-2">
+                      <span className="font-medium">Observações:</span> {goal.note}
+                    </div>
+                  )}
                   
                   {!isCompleted && (
                     <Dialog>
@@ -342,6 +363,7 @@ export function GoalList() {
           })}
         </div>
       )}
+      {/* Modal de detalhes agora mostra histórico também */}
       <GoalDetailsModal
         open={showDetailsModal}
         onOpenChange={(open) => {
@@ -349,6 +371,8 @@ export function GoalList() {
           if (!open) setDetailsGoal(null);
         }}
         goal={detailsGoal}
+        // Adiciona prop para indicar estender detalhes
+        showDepositsHistory
       />
     </div>
   );

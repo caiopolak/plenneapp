@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSelect } from "../common/WorkspaceSelect";
+import { Textarea } from "@/components/ui/textarea";
 
 interface GoalFormProps {
   onSuccess?: () => void;
@@ -30,6 +31,7 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
   );
   const [priority, setPriority] = useState(goal?.priority || 'medium');
   const [loading, setLoading] = useState(false);
+  const [note, setNote] = useState(goal?.note || '');
   
   const { toast } = useToast();
   const { user } = useAuth();
@@ -65,7 +67,8 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
         target_amount: parseFloat(targetAmount),
         current_amount: parseFloat(currentAmount) || 0,
         target_date: targetDate ? format(targetDate, 'yyyy-MM-dd') : null,
-        priority
+        priority,
+        note: note || null
       };
 
       if (goal) {
@@ -103,6 +106,7 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
         setTargetDate(undefined);
         setPriority('medium');
         setWorkspaceId(current?.id ?? "");
+        setNote('');
       }
 
     } catch (error) {
@@ -207,6 +211,17 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          {/* NOVO: campo de observações */}
+          <div>
+            <Label htmlFor="note">Observações (opcional)</Label>
+            <Textarea
+              id="note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Escreva anotações extras sobre esta meta (ex: motivo, dicas, motivação...)"
+            />
           </div>
 
           <div className="flex gap-2">
