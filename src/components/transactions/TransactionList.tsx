@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { TransactionForm } from './TransactionForm';
 import { Tables } from '@/integrations/supabase/types';
 import { ImportTransactionsCSV } from "./ImportTransactionsCSV";
+import { TransactionActionButtons } from "./TransactionActionButtons";
 
 type Transaction = Tables<'transactions'>;
 
@@ -181,56 +182,13 @@ export function TransactionList() {
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <CardTitle className="font-display text-[--primary]">Transações</CardTitle>
-            {/* Botões Exportar/Importar lado a lado com a mesma estética */}
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
-                onClick={exportTransactions}
-              >
-                <Download className="w-4 h-4" />
-                Exportar CSV
-              </Button>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="font-display flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow min-w-[170px]"
-                  >
-                    <Import className="w-4 h-4" />
-                    Importar CSV
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-lg">
-                  <DialogHeader>
-                    <DialogTitle>Importar transações em lote</DialogTitle>
-                  </DialogHeader>
-                  <ImportTransactionsCSV onSuccess={fetchTransactions} />
-                </DialogContent>
-              </Dialog>
-              <Dialog open={showForm} onOpenChange={setShowForm}>
-                <DialogTrigger asChild>
-                  <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nova Transação
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Nova Transação</DialogTitle>
-                  </DialogHeader>
-                  <TransactionForm 
-                    onSuccess={() => {
-                      setShowForm(false);
-                      fetchTransactions();
-                    }}
-                    onCancel={() => setShowForm(false)}
-                  />
-                </DialogContent>
-              </Dialog>
-            </div>
+            <TransactionActionButtons
+              onExport={exportTransactions}
+              onImportSuccess={fetchTransactions}
+              showForm={showForm}
+              setShowForm={setShowForm}
+              onCreateClick={() => setShowForm(true)}
+            />
           </div>
           {/* Filters and Actions */}
           <div className="flex flex-col md:flex-row gap-4">

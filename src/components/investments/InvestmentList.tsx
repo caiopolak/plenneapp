@@ -13,6 +13,7 @@ import { InvestmentForm } from './InvestmentForm';
 import { InvestmentPortfolioSummary } from "./InvestmentPortfolioSummary";
 import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
 import { ImportGoalsCSV } from "../goals/ImportGoalsCSV"; // Placeholder visual para CSV de investimentos
+import { InvestmentActionButtons } from "./InvestmentActionButtons";
 
 interface Investment {
   id: string;
@@ -158,82 +159,16 @@ export function InvestmentList() {
   // Cartões analíticos e informativos — novo gradiente/principal
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Botões de ação - Exportação CSV incluída */}
+      {/* Actions refatoradas */}
       <div className="flex w-full justify-between mb-0 gap-2">
         <div />
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handleExportCsv}
-            size="sm"
-            className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
-            aria-label="Exportar investimentos para CSV"
-          >
-            <Lightbulb className="hidden" />{/* visual pad: para manter alinhamento */}
-            <TrendingUp className="hidden" />
-            <TrendingDown className="hidden" />
-            <Trash2 className="hidden" />
-            <Import className="hidden" />
-            <Plus className="hidden" />
-            <Edit2 className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            <Badge className="hidden" />
-            {/* Fim pad */}
-            <span className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
-              Exportar CSV
-            </span>
-          </Button>
-          {/* Botão Importar CSV, mesmo estilo */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="font-display min-w-[170px] flex gap-2 bg-white border border-[--primary]/20 text-[--primary] hover:bg-[--secondary]/10 shadow"
-                aria-label="Importar investimentos de CSV"
-              >
-                <Import className="w-4 h-4" />
-                Importar CSV
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg">
-              <DialogHeader>
-                <DialogTitle>Importar investimentos em lote (CSV)</DialogTitle>
-              </DialogHeader>
-              <ImportGoalsCSV onSuccess={fetchInvestments} />
-            </DialogContent>
-          </Dialog>
-          {/* Já existe o botão de adicionar investimento */}
-          <Dialog open={showForm} onOpenChange={setShowForm}>
-            <DialogTrigger asChild>
-              <Button size="lg" className="bg-gradient-to-r from-[#003f5c] to-[#2f9e44] text-white font-bold shadow-xl hover:from-[#2f9e44] hover:to-[#003f5c] hover:scale-105 transition">
-                <Plus className="w-5 h-5 mr-2" /> Novo Investimento
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-[#f4f4f4] rounded-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-[#003f5c] font-display">Novo Investimento</DialogTitle>
-              </DialogHeader>
-              <InvestmentForm 
-                onSuccess={() => {
-                  setShowForm(false);
-                  fetchInvestments();
-                }}
-                onCancel={() => setShowForm(false)}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
+        <InvestmentActionButtons
+          investments={investments}
+          onImportSuccess={fetchInvestments}
+          onCreateClick={() => setShowForm(true)}
+          showForm={showForm}
+          setShowForm={setShowForm}
+        />
       </div>
 
       {/* Cards informativos harmonizados agora SEM degradê em Nº Investimentos */}
