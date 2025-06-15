@@ -12,6 +12,8 @@ interface PlanCardProps {
   features: string[];
   isPopular?: boolean;
   isCurrentPlan?: boolean;
+  planId: string;
+  currentPlan: string | undefined;
   onSelect: () => void;
 }
 
@@ -22,8 +24,19 @@ export function PlanCard({
   features, 
   isPopular, 
   isCurrentPlan,
+  planId,
+  currentPlan,
   onSelect 
 }: PlanCardProps) {
+  // Badge cor do plano
+  const getPlanColor = (plan: string) => {
+    if (plan === "business") return "bg-green-100 text-green-700";
+    if (plan === "pro") return "bg-blue-100 text-blue-700";
+    return "bg-gray-100 text-gray-700";
+  };
+  // Botão cor do plano
+  const getButtonVariant = () => (isCurrentPlan ? "outline" : "default");
+
   return (
     <Card className={`relative ${isPopular ? 'border-blue-500 shadow-lg' : ''}`}>
       {isPopular && (
@@ -49,8 +62,8 @@ export function PlanCard({
           ))}
         </ul>
         <Button 
-          className="w-full" 
-          variant={isCurrentPlan ? "outline" : "default"}
+          className={`w-full ${getPlanColor(planId)}`}
+          variant={getButtonVariant()}
           onClick={onSelect}
           disabled={isCurrentPlan}
         >

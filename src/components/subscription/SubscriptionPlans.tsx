@@ -77,6 +77,8 @@ export function SubscriptionPlans() {
           features={plan.features}
           isPopular={plan.isPopular}
           isCurrentPlan={subscription?.plan === plan.id}
+          planId={plan.id}
+          currentPlan={subscription?.plan}
           onSelect={() => handleSelectPlan(plan.id)}
         />
       ))}

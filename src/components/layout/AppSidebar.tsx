@@ -9,6 +9,7 @@ import {
   MessageSquare,
   LogOut,
   User as UserIcon,
+  Users,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -51,7 +52,14 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
     return SLOGANS[Math.floor(Math.random() * SLOGANS.length)];
   });
 
-  // Menu items config
+  // Cores para diferentes planos
+  function getPlanColor(plan: string) {
+    if (plan === "business") return "bg-green-100 text-green-700";
+    if (plan === "pro") return "bg-blue-100 text-blue-700";
+    return "bg-gray-100 text-gray-700";
+  }
+
+  // Menu items config (adicionando Workspaces)
   const menuItems = [
     {
       key: "dashboard",
@@ -79,6 +87,11 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
       label: "Assinatura",
     },
     {
+      key: "workspaces",
+      icon: Users,
+      label: "Workspaces",
+    },
+    {
       key: "profile",
       icon: UserIcon,
       label: "Perfil",
@@ -89,9 +102,9 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          {/* Centralizado: Avatar + nome/email/assinatura */}
-          <div className="flex flex-col items-center gap-3 pt-8 pb-6 bg-gradient-to-r from-primary/10 to-secondary/10">
-            <Avatar className="w-20 h-20 ring-2 ring-primary/60 shadow-lg mb-2">
+          {/* Avatar centralizado */}
+          <div className="flex flex-col items-center gap-0 pt-7 pb-3 bg-gradient-to-r from-primary/10 to-secondary/10">
+            <Avatar className="w-20 h-20 ring-2 ring-primary/60 shadow-lg mb-3">
               {profile?.avatar_url ? (
                 <AvatarImage src={profile.avatar_url} alt={profile.full_name || "Avatar"} />
               ) : (
@@ -102,21 +115,16 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
                 </AvatarFallback>
               )}
             </Avatar>
-            <div className="flex flex-col items-center w-full">
+            {/* Info centralizada */}
+            <div className="flex flex-col items-center w-full gap-0.5">
               <span className="font-display font-bold text-primary text-xl truncate max-w-[170px] block">{profile?.full_name || "Usuário"}</span>
               <span className="text-sm text-muted-foreground truncate max-w-[200px]">{profile?.email}</span>
               {profile?.phone && (
-                <span className="text-xs text-muted-foreground mt-0.5">{profile.phone}</span>
+                <span className="text-xs text-muted-foreground">{profile.phone}</span>
               )}
               {subscription?.plan && (
                 <span
-                  className={`mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                    subscription.plan === "business"
-                      ? "bg-green-100 text-green-700"
-                      : subscription.plan === "pro"
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-gray-100 text-gray-700"
-                  }`}
+                  className={`mt-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${getPlanColor(subscription.plan)}`}
                 >
                   {subscription.plan === "business"
                     ? "Business"
@@ -127,7 +135,7 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
               )}
             </div>
           </div>
-          {/* Logo Plenne (com degradê, slogan rotativo e novo ícone folha) */}
+          {/* Logo Plenne (com degradê, slogan rotativo e novo ícone $) */}
           <div className="flex flex-col items-center gap-0 px-3 py-4 border-b border-primary/10">
             <LogoPlenne className="mb-1" />
             <span className="text-xs italic text-primary/80 text-center px-2 transition-all animate-fade-in font-medium max-w-[196px]">{slogan}</span>
@@ -164,4 +172,3 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
     </Sidebar>
   );
 }
-
