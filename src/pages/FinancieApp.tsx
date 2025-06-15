@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -191,29 +190,15 @@ export default function FinancieApp() {
                           </div>
                         </div>
                       </div>
-                      {/* Linha de gráficos - agora usando gráficos reais */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        <div className="col-span-1 xl:col-span-2 bg-white rounded-xl p-6 shadow border">
-                          <div className="text-lg font-bold mb-2 text-graphite">Receitas vs Despesas</div>
-                          {loadingGraphs ? (
-                            <div className="h-56 flex items-center justify-center text-muted-foreground bg-gray-50 rounded animate-pulse">Carregando gráfico...</div>
-                          ) : (
-                            <TrendsChartCard data={trendData} />
-                          )}
-                        </div>
-                        <div className="bg-white rounded-xl p-6 shadow border flex flex-col">
-                          <div className="text-lg font-bold mb-2 text-graphite">Distribuição de Gastos</div>
-                          {loadingGraphs ? (
-                            <div className="h-56 flex items-center justify-center text-muted-foreground bg-gray-50 rounded animate-pulse">Carregando gráfico...</div>
-                          ) : (
-                            <ExpenseByCategoryChart data={expenseByCategoryData} />
-                          )}
-                        </div>
-                      </div>
-                      {/* NOVO: DashboardTabs integrado após os gráficos */}
+
+                      {/* NOVO: Gráficos reais - FinancialCharts logo após cards principais */}
+                      <FinancialCharts />
+
+                      {/* NOVO: DashboardTabs segue logo abaixo dos gráficos para experiência unificada */}
                       <div className="mt-8">
                         <DashboardTabs />
                       </div>
+
                       {/* Finanças card dicas/alertas */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FinancialTipsCard />
@@ -225,7 +210,6 @@ export default function FinancieApp() {
                       </div> */}
                     </div>
                   )}
-
                   {/* As demais abas como Analytics/Education etc permanecem */}
                   {activeTab === "analytics" && (
                     <div className="animate-fade-in">
@@ -250,7 +234,7 @@ export default function FinancieApp() {
                         <CardContent>
                           <div className="mb-2">Comunique-se com o Plenne pelo WhatsApp para <strong>cadastrar transações, consultar saldo, definir metas e tirar dúvidas financeiras via IA</strong>! Exclusivo para assinantes <span className="font-bold text-green-600">Business</span>.</div>
                           <Button asChild>
-                            <a href="https://wa.me/5599999999999?text=Olá,+quero+ativar+meu+Assistente+Plenne!" target="_blank" rel="noopener noreferrer">
+                            <a href="https://wa.me/559999999999999?text=Olá,+quero+ativar+meu+Assistente+Plenne!" target="_blank" rel="noopener noreferrer">
                               Ativar WhatsApp Financeiro
                             </a>
                           </Button>
