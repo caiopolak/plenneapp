@@ -100,11 +100,12 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
 
   return (
     <>
-      {/* SidebarTrigger: destaque no mobile/tablet */}
-      <div className="md:hidden flex items-center z-30">
+      {/* SidebarTrigger: botão hambúrguer discreto no topo direito em mobile/tablet */}
+      <div className="fixed top-4 right-4 z-40 md:hidden">
         <SidebarTrigger
-          className="ml-3 mt-2 mb-1 rounded-full bg-white shadow-lg border border-gray-200 hover:bg-blue-50 focus:bg-blue-100 transition-colors
-            w-12 h-12 flex items-center justify-center text-primary"
+          className="rounded-full bg-white/90 shadow-lg border border-gray-200 
+          hover:bg-blue-100 focus:bg-blue-200 transition-colors w-10 h-10 
+          flex items-center justify-center text-primary"
           aria-label="Abrir menu"
         />
       </div>
@@ -177,8 +178,16 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
             variant="ghost"
             size="default"
             onClick={signOut}
-            // Corrige cor de fundo no mobile/tablet Drawer e melhora contraste
-            className="w-full flex items-center justify-start px-2 bg-primary/90 text-white hover:bg-primary focus:bg-primary border-t border-primary/10 rounded-none min-h-[48px] md:bg-transparent md:text-primary md:hover:bg-blue-50 md:focus:bg-blue-100 md:border-none md:rounded-xl"
+            // Botão degradê vermelho/preto, sem borda e com texto branco sempre
+            className="w-full flex items-center justify-start px-2 
+              min-h-[48px] 
+              bg-gradient-to-r from-red-700 via-red-900 to-black 
+              text-white
+              border-none
+              rounded-none 
+              md:bg-transparent md:text-primary md:hover:bg-blue-50 
+              md:focus:bg-blue-100 md:border-none md:rounded-xl
+              hover:brightness-110 focus:brightness-110 transition"
           >
             <LogOut className="w-5 h-5 mr-2" />
             Sair
