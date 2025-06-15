@@ -19,6 +19,12 @@ import { WorkspaceSelect } from "../common/WorkspaceSelect";
 import { CategoryManager } from "./CategoryManager";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { TransactionTypeField } from "./fields/TransactionTypeField";
+import { TransactionAmountField } from "./fields/TransactionAmountField";
+import { TransactionCategoryField } from "./fields/TransactionCategoryField";
+import { TransactionDateField } from "./fields/TransactionDateField";
+import { TransactionDescriptionField } from "./fields/TransactionDescriptionField";
+import { TransactionRecurrenceFields } from "./fields/TransactionRecurrenceFields";
 
 interface TransactionFormProps {
   onSuccess?: () => void;
@@ -65,6 +71,9 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
     if (!workspaceId && current?.id) setWorkspaceId(current.id);
   }, [current?.id, workspaceId]);
 
+  const [recurrencePattern, setRecurrencePattern] = useState(transaction?.recurrence_pattern || "");
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState(transaction?.recurrence_end_date || "");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // valida workspaceId
@@ -95,7 +104,9 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
         category,
         description,
         date: format(date, 'yyyy-MM-dd'),
-        is_recurring: isRecurring
+        is_recurring: isRecurring,
+        recurrence_pattern: isRecurring ? recurrencePattern : null,
+        recurrence_end_date: isRecurring ? recurrenceEndDate || null : null
       };
 
       if (transaction) {
@@ -184,132 +195,33 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
               "grid gap-4",
               isMobile ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
             )}>
-              <div className="space-y-2">
-                <Label htmlFor="type" className="text-sm font-medium">Tipo</Label>
-                <Select value={type} onValueChange={setType}>
-                  <SelectTrigger className={cn(
-                    "h-12",
-                    isMobile && "text-base"
-                  )}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="z-[1000] bg-white">
-                    <SelectItem value="income">Receita</SelectItem>
-                    <SelectItem value="expense">Despesa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="amount" className="text-sm font-medium">Valor (R$)</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="0,00"
-                  required
-                  className={cn("h-12", isMobile && "text-base")}
-                />
-              </div>
+              <TransactionTypeField value={type} onChange={setType} isMobile={isMobile} />
+              <TransactionAmountField value={amount} onChange={(e) => setAmount(e.target.value)} isMobile={isMobile} />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="category" className="text-sm font-medium">Categoria</Label>
-              <CategoryManager
-                type={type}
-                value={category}
-                onChange={setCategory}
-              />
-            </div>
+            <TransactionCategoryField
+              type={type}
+              value={category}
+              onChange={setCategory}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="date" className="text-sm font-medium">Data</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn("w-full justify-start text-left font-normal h-12", isMobile && "text-base")}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : "Selecione uma data"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 z-[2000] bg-white" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(date) => date && setDate(date)}
-                    initialFocus
-                    className="bg-white"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            <TransactionDateField value={date} onChange={setDate} isMobile={isMobile} />
 
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-sm font-medium">Descrição</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Descrição opcional..."
-                className={cn("min-h-[80px] resize-none", isMobile && "text-base")}
-              />
-            </div>
+            <TransactionDescriptionField 
+              value={description} 
+              onChange={(e) => setDescription(e.target.value)} 
+              isMobile={isMobile} 
+            />
 
-            {/* Recorrências avançadas */}
-            <div className="space-y-3">
-              <div className={cn(
-                "flex gap-3 items-center min-h-[48px]",
-                isMobile && "pl-2"
-              )}>
-                <Switch
-                  id="recurring"
-                  checked={isRecurring}
-                  onCheckedChange={setIsRecurring}
-                  className={isMobile ? "scale-110" : ""}
-                />
-                <Label htmlFor="recurring" className={cn("text-sm font-medium", isMobile && "text-base")}>
-                  Transação recorrente
-                </Label>
-              </div>
-              {isRecurring && (
-                <div className="space-y-3 pl-4 border-l-2 border-gray-200">
-                  <div className="space-y-2">
-                    <Label className={cn("text-sm font-medium", isMobile && "text-base")}>Padrão de recorrência</Label>
-                    <Select
-                      value={transaction?.recurrence_pattern || ""}
-                      onValueChange={(v) => {
-                        if (transaction) transaction.recurrence_pattern = v;
-                      }}
-                    >
-                      <SelectTrigger className={cn("h-10", isMobile && "text-base")}>
-                        <SelectValue placeholder="Selecione o padrão" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white z-[2000]">
-                        <SelectItem value="monthly">Mensal</SelectItem>
-                        <SelectItem value="weekly">Semanal</SelectItem>
-                        <SelectItem value="yearly">Anual</SelectItem>
-                        <SelectItem value="custom">Personalizado</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className={cn("text-sm font-medium", isMobile && "text-base")}>Data de término</Label>
-                    <Input
-                      type="date"
-                      value={transaction?.recurrence_end_date || ""}
-                      onChange={e => {
-                        if (transaction) transaction.recurrence_end_date = e.target.value;
-                      }}
-                      className={cn("h-10", isMobile && "text-base")}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+            <TransactionRecurrenceFields
+              isRecurring={isRecurring}
+              setIsRecurring={setIsRecurring}
+              recurrencePattern={recurrencePattern}
+              setRecurrencePattern={setRecurrencePattern}
+              recurrenceEndDate={recurrenceEndDate}
+              setRecurrenceEndDate={setRecurrenceEndDate}
+              isMobile={isMobile}
+            />
 
             <div className={cn(
               "flex flex-col-reverse sm:flex-row gap-2 pt-4",
