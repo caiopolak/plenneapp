@@ -23,6 +23,7 @@ import {
   SidebarFooter,
   SidebarSeparator,
   SidebarTrigger,
+  useSidebar, // ADICIONADO
 } from "@/components/ui/sidebar";
 import { LogoPlenne } from "./LogoPlenne";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,9 @@ interface AppSidebarProps {
 export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
   const { signOut } = useAuth();
   const { profile, subscription } = useProfile();
+
+  // Usar contexto do sidebar para saber se está no mobile/tablet e manipular open
+  const { isMobile, setOpenMobile } = useSidebar();
 
   // Sorteia slogan uma vez por recarga
   const [slogan] = React.useState(() => {
@@ -98,6 +102,15 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
       label: "Perfil",
     },
   ];
+
+  // Função para lidar com clique em itens do menu
+  function handleMenuClick(tab: string) {
+    setActiveTab(tab);
+    // Se estiver em mobile/tablet, feche o menu ao clicar
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }
 
   return (
     <>
@@ -163,7 +176,7 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
                   <SidebarMenuItem key={item.key}>
                     <SidebarMenuButton
                       isActive={activeTab === item.key}
-                      onClick={() => setActiveTab(item.key)}
+                      onClick={() => handleMenuClick(item.key)} // Usa o handler QUE fecha no mobile/tablet
                     >
                       <item.icon className="w-5 h-5 mr-2" />
                       <span>{item.label}</span>
