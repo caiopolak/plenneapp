@@ -8,6 +8,7 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { TransactionSummaryCards } from './TransactionSummaryCards';
 import { TransactionListFilters } from './TransactionListFilters';
 import { TransactionRow } from './TransactionRow';
+import { supabase } from "@/integrations/supabase/client";
 
 // type Transaction = ... já está explicitado no hook
 
@@ -76,12 +77,10 @@ export function TransactionList() {
 
   const deleteTransaction = async (id: string) => {
     try {
-      const { error } = await import("@/integrations/supabase/client").then(mod => 
-        mod.supabase
-          .from('transactions')
-          .delete()
-          .eq('id', id)
-      );
+      const { error } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', id);
       if (error) throw error;
       toast({
         title: "Sucesso!",
