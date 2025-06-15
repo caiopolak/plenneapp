@@ -149,6 +149,22 @@ export function TransactionList() {
 
   return (
     <div className="space-y-6">
+      {/* Nova Transação Modal */}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Nova Transação</DialogTitle>
+          </DialogHeader>
+          <TransactionForm
+            onSuccess={() => {
+              setShowForm(false);
+              fetchTransactions();
+            }}
+            onCancel={() => setShowForm(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-white shadow-card border border-[--primary]/10">
