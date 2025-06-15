@@ -47,29 +47,43 @@ export function WorkspaceManager() {
       ])
       .select()
       .single();
-    if (!res.error) {
+    if (!res.error && res.data) {
       setNewName("");
       setCreating(false);
-      reload();
+      await reload();
       toast({ title: "Workspace criada com sucesso!" });
     } else {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: res.error.message || "Não foi possível criar o workspace.",
+        description: res.error?.message || "Não foi possível criar o workspace.",
       });
     }
   }
 
   async function handleEditWorkspace(id: string, value: string) {
     if (!value.trim()) return;
-    await supabase
+    const { error, data } = await supabase
       .from("workspaces")
       .update({ name: value.trim() })
-      .eq("id", id);
+      .eq("id", id)
+      .select()
+      .maybeSingle();
+
+    if (error || !data) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao editar workspace",
+        description: error?.message || "Não foi possível editar o workspace.",
+      });
+      setEditingId(null);
+      setEditName("");
+      return;
+    }
     setEditingId(null);
     setEditName("");
-    reload();
+    await reload();
+    toast({ title: "Workspace editada com sucesso!" });
   }
 
   // Correção: deleção confiável com loading, logs, e validação
@@ -85,19 +99,25 @@ export function WorkspaceManager() {
     }
     setDeleting(true);
     console.log("-- Tentando deletar workspace --", id);
-    const { error } = await supabase.from("workspaces").delete().eq("id", id);
-    if (error) {
-      console.error("Erro ao deletar workspace:", error.message);
+
+    // Confirme se realmente deleto removendo .select()
+    const { error, count } = await supabase
+      .from("workspaces")
+      .delete({ count: "exact" })
+      .eq("id", id);
+
+    if (error || count === 0) {
+      console.error("Erro ao deletar workspace:", error?.message);
       toast({
         variant: "destructive",
         title: "Erro ao excluir",
-        description: error.message || "Não foi possível deletar o workspace.",
+        description: error?.message || "Não foi possível deletar o workspace.",
       });
       setDeleting(false);
       return;
     }
 
-    // Sucesso: aguardar o reload antes de fechar
+    // Sucesso
     await reload();
     setDeleting(false);
     setDeleteTarget(null);
