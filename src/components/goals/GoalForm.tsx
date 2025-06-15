@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,8 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSelect } from "../common/WorkspaceSelect";
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +21,7 @@ interface GoalFormProps {
   onCancel?: () => void;
 }
 
+// Campos padronizados: value, onChange! (igual aos outros módulos)
 export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
   const [name, setName] = useState(goal?.name || '');
   const [targetAmount, setTargetAmount] = useState(goal?.target_amount || '');
@@ -67,7 +67,7 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
         name,
         target_amount: parseFloat(targetAmount),
         current_amount: parseFloat(currentAmount) || 0,
-        target_date: targetDate ? format(targetDate, 'yyyy-MM-dd') : null,
+        target_date: targetDate ? targetDate.toISOString().split("T")[0] : null,
         priority,
         note: note || null
       };
@@ -123,14 +123,14 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
 
   return (
     <div className={cn("w-full", isMobile && "px-2")}>
-      <Card className="border-0 shadow-none">
-        <CardHeader className="px-2 sm:px-6">
-          <CardTitle className="text-lg sm:text-xl">
+      <Card className={cn("border-0 shadow-none bg-white", isMobile ? "rounded-none" : "rounded-xl")}>
+        <CardHeader className={cn(isMobile ? "px-0 pt-0 pb-3" : "px-2 sm:px-6")}>
+          <CardTitle className={cn("text-lg sm:text-xl", isMobile && "text-base")}>
             {goal ? 'Editar Meta' : 'Nova Meta Financeira'}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-2 sm:px-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className={cn(isMobile ? "px-0" : "px-2 sm:px-6")}>
+          <form onSubmit={handleSubmit} className={cn("space-y-4", isMobile && "pb-2")}>
             <WorkspaceSelect
               value={workspaceId}
               onChange={setWorkspaceId}
@@ -151,13 +151,13 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
               setPriority={setPriority}
             />
             <GoalNoteField note={note} setNote={setNote} />
-            <div className="flex flex-col-reverse sm:flex-row gap-2 pt-4">
+            <div className={cn("flex flex-col-reverse sm:flex-row gap-2 pt-4", isMobile && "space-y-2 sm:space-y-0")}>
               {onCancel && (
-                <Button type="button" variant="outline" onClick={onCancel} className="h-10">
+                <Button type="button" variant="outline" onClick={onCancel} className={cn("h-10", isMobile && "text-base")}>
                   Cancelar
                 </Button>
               )}
-              <Button type="submit" disabled={loading} className="flex-1 h-10">
+              <Button type="submit" disabled={loading} className={cn("flex-1 h-10", isMobile && "text-base")}>
                 {loading ? 'Salvando...' : (goal ? 'Atualizar' : 'Criar Meta')}
               </Button>
             </div>
