@@ -1,5 +1,6 @@
 
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { CategoryManager } from "../CategoryManager";
 
 interface TransactionCategoryFieldProps {
@@ -22,8 +23,9 @@ export function TransactionCategoryField({
         type={type}
         value={value}
         onChange={onChange}
-        isMobile={isMobile}
+        // isMobile was removed, not expected by CategoryManager
       />
     </div>
   );
 }
+

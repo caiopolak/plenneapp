@@ -196,20 +196,21 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
               isMobile ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
             )}>
               <TransactionTypeField value={type} onChange={setType} isMobile={isMobile} />
-              <TransactionAmountField value={amount} onChange={(e) => setAmount(e.target.value)} isMobile={isMobile} />
+              <TransactionAmountField value={amount} onChange={setAmount} isMobile={isMobile} />
             </div>
 
             <TransactionCategoryField
               type={type}
               value={category}
               onChange={setCategory}
+              isMobile={isMobile}
             />
 
             <TransactionDateField value={date} onChange={setDate} isMobile={isMobile} />
 
             <TransactionDescriptionField 
               value={description} 
-              onChange={(e) => setDescription(e.target.value)} 
+              onChange={setDescription} 
               isMobile={isMobile} 
             />
 
