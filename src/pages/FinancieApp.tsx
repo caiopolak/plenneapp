@@ -23,7 +23,6 @@ import { QuickNotifications } from "@/components/dashboard/QuickNotifications";
 import { FinancialTipsCard } from "@/components/dashboard/FinancialTipsCard";
 import { FinancialAlertsList } from "@/components/dashboard/FinancialAlertsList";
 import ProfilePage from "./ProfilePage";
-// Card component imports (fix missing references)
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TrendsChartCard } from "@/components/analytics/TrendsChartCard";
 import { ExpenseByCategoryChart } from "@/components/analytics/ExpenseByCategoryChart";
@@ -123,7 +122,8 @@ export default function FinancieApp() {
               <div className="sm:hidden flex items-center sticky top-0 z-40 bg-surface/90 h-14 px-4 border-b border-primary/10">
                 <SidebarTrigger />
                 <div className="ml-4 flex-1 flex items-center gap-2">
-                  <LogoPlenne />
+                  <span className="text-2xl font-bold text-primary pl-1">Plenne</span>
+                  {/* Apenas nome Plenne, sem caractere especial/logo antes */}
                   <span className="slogan text-xs font-medium text-primary/80">Controle financeiro de verdade.</span>
                 </div>
                 <Button
@@ -139,10 +139,10 @@ export default function FinancieApp() {
               {/* Header desktop e notificações rápidas */}
               <header className="hidden sm:flex flex-row justify-between items-center px-6 md:px-12 py-5 border-b border-primary/15 bg-surface/90 shadow-card gap-4 sticky top-0 z-30 backdrop-blur-lg">
                 <div className="flex items-center gap-4">
-                  <LogoPlenne />
+                  <span className="text-3xl font-bold text-primary">Plenne</span>
                   <span className="slogan hidden xs:inline">Você no controle do seu dinheiro, de verdade.</span>
                 </div>
-                <QuickNotifications onAddTransaction={handleAddTransaction} />
+                <QuickNotifications onAddTransaction={() => setActiveTab("transactions")} />
                 <div className="flex items-center gap-6">
                   <div className="text-right">
                     <p className="text-base font-bold text-primary font-display">
@@ -165,49 +165,22 @@ export default function FinancieApp() {
               {/* Main Content */}
               <section className="flex-1 w-full px-2 sm:px-4 md:px-10 pt-6 pb-10 bg-gradient-to-br from-background/80 to-neutral-light/70 min-h-[calc(100vh-56px)] sm:min-h-[calc(100vh-80px)] transition-padding">
                 <div className="max-w-[1320px] mx-auto w-full">
-                  {/* Nova Home: cards de overview e abas (dashboard no print) */}
+                  {/* NOVA HOME: sem cards de saldo/receitas/despesas e sem cabeçalho extra */}
                   {activeTab === "dashboard" && (
                     <div className="space-y-6 animate-fade-in">
-                      {/* Linha de saldo/receita/despesa */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          {/* Card Saldo Atual */}
-                          <div className="bg-white rounded-xl p-6 shadow hover:scale-105 transition-transform border border-green-50">
-                            <div className="font-bold text-xl text-primary mb-1">Saldo Atual</div>
-                            <div className="text-3xl font-bold text-green-700">R$ 5.247,89</div>
-                          </div>
-                        </div>
-                        <div>
-                          <div className="bg-white rounded-xl p-6 shadow hover:scale-105 transition-transform border border-green-50">
-                            <div className="font-bold text-xl text-green-800 mb-1">Receitas</div>
-                            <div className="text-3xl font-bold text-green-700">R$ 8.500,00</div>
-                          </div>
-                        </div>
-                        <div>
-                          <div className="bg-white rounded-xl p-6 shadow hover:scale-105 transition-transform border border-red-50">
-                            <div className="font-bold text-xl text-red-700 mb-1">Despesas</div>
-                            <div className="text-3xl font-bold text-red-600">R$ 3.252,11</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* NOVO: Gráficos reais - FinancialCharts logo após cards principais */}
-                      <FinancialCharts />
-
-                      {/* NOVO: DashboardTabs segue logo abaixo dos gráficos para experiência unificada */}
-                      <div className="mt-8">
-                        <DashboardTabs />
-                      </div>
-
-                      {/* Finanças card dicas/alertas */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Dicas e alertas primeiro */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <FinancialTipsCard />
                         <FinancialAlertsList />
                       </div>
-                      {/* Orçamentos Mensais */}
-                      {/* <div>
-                        <BudgetList />
-                      </div> */}
+                      {/* Tabs Transações, Metas, Investimentos */}
+                      <div className="mt-0">
+                        <DashboardTabs />
+                      </div>
+                      {/* Depois seção de gráficos */}
+                      <div className="mt-8">
+                        <FinancialCharts />
+                      </div>
                     </div>
                   )}
                   {/* As demais abas como Analytics/Education etc permanecem */}
@@ -258,7 +231,7 @@ export default function FinancieApp() {
               </section>
             </main>
           </div>
-          {/* Fundo decorativo suave - usando o seu gradiente oficial */}
+          {/* Fundo decorativo suave */}
           <div className="fixed left-[-40px] top-[-90px] w-[360px] h-[360px] bg-gradient-to-tr from-primary/10 via-secondary/20 to-attention/10 rounded-full blur-3xl z-0 pointer-events-none" />
           <div className="fixed bottom-[-90px] right-[-80px] w-[420px] h-[420px] bg-gradient-to-bl from-secondary/10 via-primary/10 to-attention/10 rounded-full blur-3xl z-0 pointer-events-none" />
         </SidebarProvider>
