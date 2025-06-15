@@ -5,20 +5,24 @@ import { cn } from '@/lib/utils';
 
 interface TransactionAmountFieldProps {
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
   isMobile?: boolean;
 }
 
+/**
+ * Campo de valor da transação, com padronização de props e responsividade.
+ */
 export function TransactionAmountField({ value, onChange, isMobile }: TransactionAmountFieldProps) {
   return (
     <div className="space-y-2">
-      <Label htmlFor="amount" className="text-sm font-medium">Valor (R$)</Label>
+      <Label htmlFor="transaction-amount" className="text-sm font-medium">Valor (R$)</Label>
       <Input
-        id="amount"
+        id="transaction-amount"
         type="number"
         step="0.01"
+        inputMode="decimal"
         value={value}
-        onChange={onChange}
+        onChange={e => onChange(e.target.value)}
         placeholder="0,00"
         required
         className={cn("h-12", isMobile && "text-base")}

@@ -14,10 +14,13 @@ interface TransactionDateFieldProps {
   isMobile?: boolean;
 }
 
+/**
+ * Campo de data da transação, padronizado.
+ */
 export function TransactionDateField({ value, onChange, isMobile }: TransactionDateFieldProps) {
   return (
     <div className="space-y-2">
-      <Label htmlFor="date" className="text-sm font-medium">Data</Label>
+      <Label htmlFor="transaction-date" className={cn("text-sm font-medium", isMobile && "text-base")}>Data</Label>
       <Popover>
         <PopoverTrigger asChild>
           <Button

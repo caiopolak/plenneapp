@@ -5,17 +5,24 @@ import { CategoryManager } from "../CategoryManager";
 interface TransactionCategoryFieldProps {
   type: string;
   value: string;
-  onChange: (v: string) => void;
+  onChange: (category: string) => void;
+  isMobile?: boolean;
 }
 
-export function TransactionCategoryField({ type, value, onChange }: TransactionCategoryFieldProps) {
+/**
+ * Campo Categoria, padronizado para receber isMobile.
+ */
+export function TransactionCategoryField({
+  type, value, onChange, isMobile
+}: TransactionCategoryFieldProps) {
   return (
     <div className="space-y-2">
-      <Label htmlFor="category" className="text-sm font-medium">Categoria</Label>
+      <Label htmlFor="transaction-category" className={cn("text-sm font-medium", isMobile && "text-base")}>Categoria</Label>
       <CategoryManager
         type={type}
         value={value}
         onChange={onChange}
+        isMobile={isMobile}
       />
     </div>
   );
