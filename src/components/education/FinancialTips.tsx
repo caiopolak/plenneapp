@@ -7,21 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
-
-interface FinancialTip {
-  id: string;
-  title: string;
-  content: string;
-  category?: string | null;
-  difficulty_level?: string | null;
-  creator_id?: string | null;
-  is_public?: boolean | null;
-  created_at?: string | null;
-}
+import { useAutomaticTips } from "@/hooks/useAutomaticTips";
 
 export function FinancialTips() {
-  const [tips, setTips] = useState<FinancialTip[]>([]);
-  const [loading, setLoading] = useState(true);
+  const tips = useAutomaticTips();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [newTip, setNewTip] = useState<{ title: string; content: string; category: string; difficulty_level: string }>({
@@ -35,43 +24,12 @@ export function FinancialTips() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  useEffect(() => {
-    let filter = '';
-    if (selectedCategory !== 'all') filter += `&category=eq.${selectedCategory}`;
-    if (selectedLevel !== 'all') filter += `&difficulty_level=eq.${selectedLevel}`;
-
-    const fetchTips = async () => {
-      setLoading(true);
-      let query = supabase
-        .from('financial_tips')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (selectedCategory !== 'all') {
-        query = query.eq('category', selectedCategory);
-      }
-      if (selectedLevel !== 'all') {
-        query = query.eq('difficulty_level', selectedLevel);
-      }
-      // filtra apenas públicos ou criados pelo usuário
-      if (user) {
-        query = query.or(
-          `is_public.eq.true,creator_id.eq.${user.id}`
-        );
-      } else {
-        query = query.eq('is_public', true);
-      }
-      const { data, error } = await query;
-      if (!error && data) {
-        setTips(data as FinancialTip[]);
-      } else {
-        setTips([]); // fallback vazio
-      }
-      setLoading(false);
-    };
-
-    fetchTips();
-  }, [selectedCategory, selectedLevel, user]);
+  // Agora filtra dicas automáticas + manuais conforme seleção
+  const filteredTips = tips.filter(tip => {
+    if (selectedCategory !== 'all' && tip.category !== selectedCategory) return false;
+    if (selectedLevel !== 'all' && tip.difficulty_level !== selectedLevel) return false;
+    return true;
+  });
 
   const handleAddTip = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,10 +112,6 @@ export function FinancialTips() {
     { value: 'advanced', label: 'Avançado' }
   ];
 
-  if (loading) {
-    return <div>Carregando dicas...</div>;
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -234,7 +188,7 @@ export function FinancialTips() {
         </div>
       </form>
 
-      {tips.length === 0 ? (
+      {filteredTips.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center">
             <Brain className="w-12 h-12 mx-auto text-[#003f5c]/50 mb-4" />
@@ -243,7 +197,7 @@ export function FinancialTips() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {tips.map((tip) => (
+          {filteredTips.map((tip) => (
             <Card key={tip.id} className="border-l-4 border-l-[#2f9e44] hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">

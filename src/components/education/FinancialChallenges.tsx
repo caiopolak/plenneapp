@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,22 +12,12 @@ import { format, differenceInDays, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-
-interface FinancialChallenge {
-  id: string;
-  title: string;
-  description: string;
-  target_amount: number | null;
-  duration_days: number;
-  status: 'active' | 'completed' | 'failed' | 'paused';
-  started_at: string;
-  completed_at: string | null;
-  created_at: string;
-}
+import { useAutoChallenges } from "@/hooks/useAutoChallenges";
 
 export function FinancialChallenges() {
-  const [challenges, setChallenges] = useState<FinancialChallenge[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [challenges, setChallenges] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const autoChallenges = useAutoChallenges();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -41,40 +30,14 @@ export function FinancialChallenges() {
   const { user } = useAuth();
 
   useEffect(() => {
-    // Simulando dados locais para evitar erros de banco
-    const mockChallenges: FinancialChallenge[] = [
-      {
-        id: '1',
-        title: 'Desafio 30 dias sem delivery',
-        description: 'Economizar dinheiro cozinhando em casa por 30 dias',
-        target_amount: 500,
-        duration_days: 30,
-        status: 'active',
-        started_at: new Date().toISOString(),
-        completed_at: null,
-        created_at: new Date().toISOString()
-      },
-      {
-        id: '2',
-        title: 'Poupar R$ 1000 em 60 dias',
-        description: 'Meta de economia através de redução de gastos supérfluos',
-        target_amount: 1000,
-        duration_days: 60,
-        status: 'active',
-        started_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-        completed_at: null,
-        created_at: new Date().toISOString()
-      }
-    ];
-    
-    setChallenges(mockChallenges);
-    setLoading(false);
-  }, [user]);
+    setChallenges([...autoChallenges]); // exibe as automáticas primeiro
+    // Adicione lógica para carregar desafios manuais do banco se desejar manter personalizados do usuário
+  }, [autoChallenges]);
 
   const createChallenge = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newChallenge: FinancialChallenge = {
+    const newChallenge = {
       id: Date.now().toString(),
       title: formData.title,
       description: formData.description,
@@ -143,7 +106,7 @@ export function FinancialChallenges() {
     }
   };
 
-  const calculateProgress = (challenge: FinancialChallenge) => {
+  const calculateProgress = (challenge: any) => {
     const startDate = new Date(challenge.started_at);
     const endDate = addDays(startDate, challenge.duration_days);
     const today = new Date();
@@ -154,7 +117,7 @@ export function FinancialChallenges() {
     return Math.min(Math.max((daysElapsed / totalDays) * 100, 0), 100);
   };
 
-  const getDaysRemaining = (challenge: FinancialChallenge) => {
+  const getDaysRemaining = (challenge: any) => {
     const startDate = new Date(challenge.started_at);
     const endDate = addDays(startDate, challenge.duration_days);
     const today = new Date();

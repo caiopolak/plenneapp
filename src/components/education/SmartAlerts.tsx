@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSmartAlerts } from "@/hooks/useSmartAlerts";
 
 interface SmartAlert {
   id: string;
@@ -20,63 +20,18 @@ interface SmartAlert {
 }
 
 export function SmartAlerts() {
-  const [alerts, setAlerts] = useState<SmartAlert[]>([]);
+  const alerts = useSmartAlerts();
   const [filter, setFilter] = useState<string>('all');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // hook já lida com loading via array vazio/cheio
   const { toast } = useToast();
   const { user } = useAuth();
 
-  useEffect(() => {
-    // Simulando alertas inteligentes
-    const mockAlerts: SmartAlert[] = [
-      {
-        id: '1',
-        title: 'Gasto Alto Detectado',
-        message: 'Você gastou R$ 450 em alimentação esta semana, 30% acima da sua média. Que tal cozinhar mais em casa?',
-        alert_type: 'spending',
-        priority: 'high',
-        is_read: false,
-        created_at: new Date().toISOString()
-      },
-      {
-        id: '2',
-        title: 'Meta Próxima do Prazo',
-        message: 'Sua meta "Fundo de Emergência" tem prazo até próximo mês. Você está 70% do caminho!',
-        alert_type: 'goal',
-        priority: 'medium',
-        is_read: false,
-        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: '3',
-        title: 'Oportunidade de Investimento',
-        message: 'O Tesouro Selic está com rendimento de 13.5% ao ano. Considere diversificar sua carteira.',
-        alert_type: 'investment',
-        priority: 'medium',
-        is_read: true,
-        created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: '4',
-        title: 'Dica do Dia',
-        message: 'Sabia que automatizar transferências para poupança aumenta em 40% a chance de alcançar suas metas?',
-        alert_type: 'tip',
-        priority: 'low',
-        is_read: false,
-        created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
-      }
-    ];
-    
-    setAlerts(mockAlerts);
-    setLoading(false);
-  }, [user]);
-
+  // Ações do usuário seguem as mesmas (marcar como lido/remover)
   const markAsRead = (alertId: string) => {
     setAlerts(prev => prev.map(alert => 
       alert.id === alertId ? { ...alert, is_read: true } : alert
     ));
   };
-
   const deleteAlert = (alertId: string) => {
     setAlerts(prev => prev.filter(alert => alert.id !== alertId));
     toast({
@@ -125,6 +80,7 @@ export function SmartAlerts() {
     }
   };
 
+  // Filtro dos alertas conforme seleção
   const filteredAlerts = alerts.filter(alert => {
     if (filter === 'all') return true;
     if (filter === 'unread') return !alert.is_read;
