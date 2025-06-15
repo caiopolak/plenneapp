@@ -141,13 +141,13 @@ export function BudgetList() {
 
   return (
     <div className="w-full max-w-2xl mx-auto mt-2 animate-fade-in">
-      <Card className="bg-gradient-to-br from-[#003f5c]/95 via-[#2f9e44]/90 to-[#eaf6ee] border-0 shadow-card p-1 mb-6">
+      <Card className="bg-white border border-[--primary]/10 shadow-card rounded-xl p-1 mb-6">
         <CardHeader className="pb-1 flex-row items-center gap-2">
           <Wallet className="h-8 w-8 text-[--secondary] mb-2" />
           <div>
-            <CardTitle className="text-2xl font-display text-[--secondary] flex items-center gap-2">
+            <CardTitle className="text-2xl font-display text-[--primary] flex items-center gap-2">
               Orçamentos Mensais
-              <Info className="ml-2 w-5 h-5 text-[--primary]" />
+              <Info className="ml-2 w-5 h-5 text-[--secondary]" />
             </CardTitle>
             <CardDescription className="text-base text-[--primary] mt-1 font-text">
               Defina, acompanhe e controle seus limites de gastos nas principais categorias do seu mês. Use o orçamento para manter sua saúde financeira <span className="font-bold text-[--secondary] font-highlight">sempre sob controle</span>!
@@ -156,21 +156,21 @@ export function BudgetList() {
         </CardHeader>
         <CardContent>
           {/* Barra/resumo topo */}
-          <div className="flex flex-wrap md:flex-nowrap gap-6 bg-[#eaf6ee] rounded-lg p-4 mb-6 border border-[--secondary]/30 shadow-sm">
+          <div className="flex flex-wrap md:flex-nowrap gap-6 bg-[#eaf6ee] rounded-lg p-4 mb-6 border border-[--primary]/20 shadow-sm">
             <div className="flex-1 min-w-[120px] flex flex-col items-center">
-              <span className="text-sm text-muted-foreground font-text">Total Orçado</span>
+              <span className="text-sm text-graphite font-text">Total Orçado</span>
               <span className="text-xl font-bold text-[--primary] font-display">
                 R$ {totalBudget.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </div>
-            <div className="flex-1 min-w-[120px] flex flex-col items-center border-l border-[--secondary]/40 pl-3">
-              <span className="text-sm text-muted-foreground font-text">Utilizado</span>
+            <div className="flex-1 min-w-[120px] flex flex-col items-center border-l border-[--primary]/10 pl-3">
+              <span className="text-sm text-graphite font-text">Utilizado</span>
               <span className="text-xl font-bold text-[--secondary] flex items-center font-display">
                 <ArrowUp className="w-4 h-4 mr-1 text-[--secondary]" />R$ {totalUsed.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
             </div>
-            <div className="flex-1 min-w-[120px] flex flex-col items-center border-l border-[--secondary]/40 pl-3">
-              <span className="text-sm text-muted-foreground font-text">Disponível</span>
+            <div className="flex-1 min-w-[120px] flex flex-col items-center border-l border-[--primary]/10 pl-3">
+              <span className="text-sm text-graphite font-text">Disponível</span>
               <span className="text-xl font-bold text-[--primary] flex items-center font-display">
                 <ArrowDown className="w-4 h-4 mr-1 text-[--primary]" />R$ {totalAvailable.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </span>
@@ -234,15 +234,14 @@ export function BudgetList() {
           {/* Lista de cards orçamentários */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-1">
             {budgets.length === 0 && (
-              <div className="col-span-2 text-center bg-[--background]/80 p-6 rounded-lg border text-muted-foreground font-medium">
+              <div className="col-span-2 text-center bg-[#f4f4f4] p-6 rounded-lg border border-[--primary]/10 text-muted-foreground font-medium">
                 Nenhum limite cadastrado para este mês/ano.<br />
                 Que tal começar com um orçamento para Alimentação ou Contas?
               </div>
             )}
             {budgets.map(bgt => (
               <Card key={bgt.id} className={cn(
-                "p-0 border-[--secondary]/50 group hover:shadow-xl hover:border-[--primary] transition-all",
-                "relative overflow-visible bg-white"
+                "p-0 border border-[--primary]/10 group hover:shadow-lg transition-all relative overflow-visible bg-white"
               )}>
                 <CardHeader className="flex flex-row items-center gap-2 py-3 px-4">
                   <Badge className="bg-[--secondary] text-white text-base px-3 min-w-[110px] font-display">{bgt.category}</Badge>
@@ -269,7 +268,7 @@ export function BudgetList() {
                         <span className="font-bold text-[--primary] font-display">R$ {bgt.amount_limit.toFixed(2)}</span>
                       </span>
                       <div className="flex gap-2 mt-1">
-                        <Button size="sm" variant="outline" onClick={() => { setEditId(bgt.id); setEditLimit(bgt.amount_limit.toString()); }} disabled={loading} className="font-display">
+                        <Button size="sm" variant="outline" onClick={() => { setEditId(bgt.id); setEditLimit(bgt.amount_limit.toString()); }} disabled={loading} className="font-display border-[--secondary] text-[--primary]">
                           Editar
                         </Button>
                         <Button size="sm" variant="ghost" className="text-[--error] hover:bg-red-100 font-text" onClick={() => handleDeleteBudget(bgt.id)} disabled={loading}>

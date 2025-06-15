@@ -150,7 +150,7 @@ export function TransactionList() {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-gradient-to-br from-[#2f9e44]/90 via-[#003f5c]/80 to-[#eaf6ee] shadow-card">
+        <Card className="bg-white shadow-card border border-[--primary]/10">
           <CardContent className="p-4">
             <div className="text-sm text-[--primary] font-text">Receitas</div>
             <div className="text-2xl font-bold text-[--secondary] font-display">
@@ -158,15 +158,15 @@ export function TransactionList() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-[#003f5c]/90 via-[#2f9e44]/60 to-[#eaf6ee] shadow-card">
+        <Card className="bg-white shadow-card border border-[--primary]/10">
           <CardContent className="p-4">
             <div className="text-sm text-[--primary] font-text">Despesas</div>
-            <div className="text-2xl font-bold text-[--primary] font-display">
+            <div className="text-2xl font-bold text-[--error] font-display">
               R$ {totalExpense.toFixed(2).replace('.', ',')}
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-[#eaf6ee]/70 to-[#ffffff]/95 shadow-card">
+        <Card className="bg-[#eaf6ee]/80 shadow-card border border-[--primary]/10">
           <CardContent className="p-4">
             <div className="text-sm text-[--primary] font-text">Saldo</div>
             <div className={`text-2xl font-bold font-display ${balance >= 0 ? 'text-[--secondary]' : 'text-[--error]'}`}>
@@ -272,17 +272,17 @@ export function TransactionList() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <Badge
-                        variant={transaction.type === 'income' ? 'default' : 'secondary'}
+                        variant="default"
                         className={
                           transaction.type === 'income'
                             ? 'bg-[--secondary] text-white font-display'
-                            : 'bg-[--primary]/90 text-white font-display'
+                            : 'bg-[--error] text-white font-display'
                         }
                       >
                         {transaction.type === 'income' ? 'Receita' : 'Despesa'}
                       </Badge>
                       {transaction.is_recurring && (
-                        <Badge variant="outline" className="font-text text-[--primary] border-[--primary]/30 bg-[--background]">Recorrente</Badge>
+                        <Badge variant="outline" className="font-text text-[--primary] border-[--primary]/30 bg-[#f4f4f4]">Recorrente</Badge>
                       )}
                     </div>
                     <div className="mt-1 font-text">
@@ -300,7 +300,7 @@ export function TransactionList() {
                   
                   <div className="flex items-center gap-2">
                     <span className={`text-lg font-bold font-display ${
-                      transaction.type === 'income' ? 'text-[--secondary]' : 'text-[--primary]'
+                      transaction.type === 'income' ? 'text-[--secondary]' : 'text-[--error]'
                     }`}>
                       {transaction.type === 'income' ? '+' : '-'}R$ {Number(transaction.amount).toFixed(2).replace('.', ',')}
                     </span>

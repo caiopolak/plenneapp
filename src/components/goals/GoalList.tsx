@@ -118,9 +118,9 @@ export function GoalList() {
 
   const getPriorityColor = (priority: string | null) => {
     switch (priority) {
-      case 'high': return 'destructive';
-      case 'medium': return 'default';
-      case 'low': return 'secondary';
+      case 'high': return 'destructive'; // vermelho
+      case 'medium': return 'default';   // azul petróleo (badge padrão)
+      case 'low': return 'secondary';    // dourado claro/cinza
       default: return 'default';
     }
   };
@@ -165,8 +165,8 @@ export function GoalList() {
       </div>
 
       {goals.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center bg-[--background] rounded-lg">
+        <Card className="bg-[#f4f4f4] border border-[--primary]/10">
+          <CardContent className="p-8 text-center rounded-lg">
             <p className="text-muted-foreground font-text">Nenhuma meta criada ainda</p>
             <p className="text-sm text-muted-foreground mt-2 font-text">
               Crie sua primeira meta financeira para começar a planejar seu futuro!
@@ -182,7 +182,7 @@ export function GoalList() {
             const isCompleted = progress >= 100;
             
             return (
-              <Card key={goal.id} className={`border-[--secondary]/70 ${isCompleted ? 'border-[--secondary]' : ''}`}>
+              <Card key={goal.id} className={`bg-white border border-[--primary]/10 ${isCompleted ? 'border-[--secondary]' : ''}`}>
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
@@ -256,7 +256,7 @@ export function GoalList() {
                       <span className="font-text">Progresso</span>
                       <span className="font-text">{progress.toFixed(1)}%</span>
                     </div>
-                    <Progress value={Math.min(progress, 100)} className={`h-2 ${isCompleted ? "bg-[--primary]" : "bg-[--secondary]"}`} />
+                    <Progress value={Math.min(progress, 100)} className="h-2 bg-[--primary]/10" />
                   </div>
                   
                   <div className="flex justify-between">
