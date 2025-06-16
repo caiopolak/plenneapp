@@ -34,7 +34,7 @@ export function useMembers() {
       .from("workspace_members")
       .select(`
         *,
-        profiles:user_id (
+        profiles (
           full_name,
           email,
           avatar_url
