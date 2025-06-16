@@ -9,7 +9,7 @@ export function LogoPlenne({ className = "" }: { className?: string }) {
     <div className={`flex items-center gap-3 select-none ${className}`}>
       {/* Logo personalizado */}
       <div
-        className="rounded-full p-1 flex items-center justify-center shadow transition w-9 h-9 sm:w-10 sm:h-10"
+        className="rounded-full p-1 flex items-center justify-center shadow transition w-14 h-14 sm:w-15 sm:h-15"
         aria-label="Logo Plenne"
         role="img"
       >
