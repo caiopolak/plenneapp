@@ -10,6 +10,11 @@ export interface Member {
   invited_email: string | null;
   status: string;
   created_at: string;
+  profiles?: {
+    full_name: string | null;
+    email: string | null;
+    avatar_url: string | null;
+  } | null;
 }
 
 export function useMembers() {
@@ -18,12 +23,25 @@ export function useMembers() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!current) return;
+    if (!current) {
+      setMembers([]);
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
     supabase
       .from("workspace_members")
-      .select("*")
+      .select(`
+        *,
+        profiles:user_id (
+          full_name,
+          email,
+          avatar_url
+        )
+      `)
       .eq("workspace_id", current.id)
+      .in("status", ["active", "invited"])
       .then(({ data }) => {
         setMembers(data || []);
         setLoading(false);

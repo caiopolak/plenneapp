@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,9 @@ import { WorkspaceInfoBox } from "./WorkspaceInfoBox";
 import { WorkspaceCreateForm } from "./WorkspaceCreateForm";
 import { WorkspaceList } from "./WorkspaceList";
 import { WorkspaceDeleteDialog } from "./WorkspaceDeleteDialog";
+import { WorkspaceMembersManager } from "./WorkspaceMembersManager";
+import { WorkspaceInviteAccept } from "./WorkspaceInviteAccept";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function WorkspaceManager() {
   const { workspaces, current, setCurrent, reload } = useWorkspace();
@@ -131,8 +135,11 @@ export function WorkspaceManager() {
   }
 
   return (
-    <div className="max-w-xl mx-auto py-10 px-2 md:px-4">
+    <div className="max-w-4xl mx-auto py-10 px-2 md:px-4">
+      <WorkspaceInviteAccept />
+      
       <WorkspaceInfoBox />
+      
       <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text mb-5 text-center">
         Workspaces
       </h1>
@@ -156,36 +163,62 @@ export function WorkspaceManager() {
           />
         </div>
       ) : (
-        <>
-          <WorkspaceList
-            workspaces={workspaces}
-            current={current}
-            editingId={editingId}
-            editName={editName}
-            setEditName={setEditName}
-            setEditingId={setEditingId}
-            handleSelectWorkspace={handleSelectWorkspace}
-            handleEditWorkspace={handleEditWorkspace}
-            setDeleteTarget={setDeleteTarget}
-          />
-          <WorkspaceCreateForm
-            creating={creating}
-            newName={newName}
-            setNewName={setNewName}
-            onCreate={handleCreateWorkspace}
-            onCancel={() => {
-              setCreating(false);
-              setNewName("");
-            }}
-            setCreating={setCreating}
-          />
-          <WorkspaceDeleteDialog
-            open={!!deleteTarget}
-            onOpenChange={() => setDeleteTarget(null)}
-            onDelete={() => handleDeleteWorkspace(deleteTarget)}
-            disabled={deleting}
-          />
-        </>
+        <Tabs defaultValue="workspaces" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="workspaces">Meus Workspaces</TabsTrigger>
+            <TabsTrigger value="members">Gerenciar Membros</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="workspaces" className="space-y-6">
+            <WorkspaceList
+              workspaces={workspaces}
+              current={current}
+              editingId={editingId}
+              editName={editName}
+              setEditName={setEditName}
+              setEditingId={setEditingId}
+              handleSelectWorkspace={handleSelectWorkspace}
+              handleEditWorkspace={handleEditWorkspace}
+              setDeleteTarget={setDeleteTarget}
+            />
+            <WorkspaceCreateForm
+              creating={creating}
+              newName={newName}
+              setNewName={setNewName}
+              onCreate={handleCreateWorkspace}
+              onCancel={() => {
+                setCreating(false);
+                setNewName("");
+              }}
+              setCreating={setCreating}
+            />
+            <WorkspaceDeleteDialog
+              open={!!deleteTarget}
+              onOpenChange={() => setDeleteTarget(null)}
+              onDelete={() => handleDeleteWorkspace(deleteTarget)}
+              disabled={deleting}
+            />
+          </TabsContent>
+          
+          <TabsContent value="members">
+            {current ? (
+              <div className="space-y-4">
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-semibold">
+                    Gerenciando: <span className="text-primary">{current.name}</span>
+                  </h2>
+                </div>
+                <WorkspaceMembersManager />
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  Selecione um workspace para gerenciar seus membros.
+                </p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   );
