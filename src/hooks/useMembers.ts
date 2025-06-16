@@ -5,7 +5,7 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 
 export interface Member {
   id: string;
-  user_id: string;
+  user_id: string | null;
   role: string;
   invited_email: string | null;
   status: string;
@@ -34,7 +34,7 @@ export function useMembers() {
       .from("workspace_members")
       .select(`
         *,
-        profiles!workspace_members_user_id_fkey (
+        profiles (
           full_name,
           email,
           avatar_url
