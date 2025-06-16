@@ -6,7 +6,7 @@ import React from "react";
  */
 export function LogoPlenne({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-3 select-none ${className}`}>
+    <div className={`flex items-center gap-1 select-none ${className}`}>
       {/* Logo personalizado */}
       <div
         className="rounded-full p-1 flex items-center justify-center shadow transition w-14 h-14 sm:w-15 sm:h-15"
