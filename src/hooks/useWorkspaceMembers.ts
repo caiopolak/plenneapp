@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
@@ -36,7 +37,7 @@ export function useWorkspaceMembers() {
         .from("workspace_members")
         .select(`
           *,
-          profiles (
+          profiles!workspace_members_user_id_fkey (
             full_name,
             email,
             avatar_url
