@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
@@ -54,7 +53,7 @@ export function useBudgets() {
 
       if (budgetError) throw budgetError;
 
-      // Buscar gastos por categoria no mesmo período
+      // Buscar gastos por categoria no mesmo período (CONECTADO COM TRANSAÇÕES)
       const startDate = new Date(targetYear, targetMonth - 1, 1);
       const endDate = new Date(targetYear, targetMonth, 0);
 
@@ -74,11 +73,18 @@ export function useBudgets() {
         return acc;
       }, {} as Record<string, number>);
 
-      // Combinar orçamentos com gastos
+      // Combinar orçamentos com gastos REAIS das transações
       const budgetsWithSpent: BudgetWithSpent[] = (budgetData || []).map(budget => {
         const spent = spentByCategory[budget.category] || 0;
         const remaining = budget.amount_limit - spent;
         const percentage = budget.amount_limit > 0 ? (spent / budget.amount_limit) * 100 : 0;
+
+        // Gerar alertas automáticos baseados no progresso
+        if (percentage >= 90 && percentage < 100) {
+          generateBudgetAlert(budget.category, percentage, "warning");
+        } else if (percentage >= 100) {
+          generateBudgetAlert(budget.category, percentage, "critical");
+        }
 
         return {
           ...budget,
@@ -98,6 +104,31 @@ export function useBudgets() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Função para gerar alertas automáticos conectados com IA/Assistant
+  const generateBudgetAlert = async (category: string, percentage: number, priority: "warning" | "critical") => {
+    try {
+      const alertMessage = percentage >= 100 
+        ? `Orçamento de ${category} estourado! Você gastou ${percentage.toFixed(1)}% do limite.`
+        : `Atenção! Você já gastou ${percentage.toFixed(1)}% do orçamento de ${category}.`;
+
+      const { error } = await supabase
+        .from("financial_alerts")
+        .insert({
+          user_id: user!.id,
+          title: `Alerta de Orçamento: ${category}`,
+          message: alertMessage,
+          alert_type: "budget_exceeded",
+          priority: priority === "critical" ? "high" : "medium"
+        });
+
+      if (error) {
+        console.error("Erro ao criar alerta:", error);
+      }
+    } catch (error) {
+      console.error("Erro ao gerar alerta automático:", error);
     }
   };
 

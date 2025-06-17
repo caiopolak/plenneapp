@@ -26,6 +26,7 @@ import { TrendsChartCard } from "@/components/analytics/TrendsChartCard";
 import { ExpenseByCategoryChart } from "@/components/analytics/ExpenseByCategoryChart";
 import { supabase } from "@/integrations/supabase/client";
 import { WorkspaceManager } from "@/components/workspaces/WorkspaceManager";
+import BudgetPage from "./BudgetPage";
 
 // Define types for chart data
 type MonthlyData = { month: string; income: number; expense: number };
@@ -133,7 +134,14 @@ export default function FinancieApp() {
                       {/* --- REMOVIDO: Seção de gráficos do dashboard --- */}
                     </div>
                   )}
-                  {/* As demais abas como Analytics/Education etc permanecem */}
+                  
+                  {/* NOVA ABA: Orçamentos */}
+                  {activeTab === "budgets" && (
+                    <div className="animate-fade-in">
+                      <BudgetPage />
+                    </div>
+                  )}
+                  
                   {activeTab === "analytics" && (
                     <div className="animate-fade-in">
                       <h1 className="font-display text-4xl brand-gradient-text mb-8">Análises Detalhadas</h1>
@@ -146,6 +154,7 @@ export default function FinancieApp() {
                       <Education />
                     </div>
                   )}
+                  {/* As demais abas como Analytics/Education etc permanecem */}
                   {activeTab === "whatsapp" && (
                     <div className="animate-fade-in">
                       <h1 className="font-display text-4xl text-secondary mb-8">Assistente WhatsApp</h1>

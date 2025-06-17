@@ -1,14 +1,13 @@
 
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Bell, Trophy, GraduationCap, Bot, Wallet } from "lucide-react";
+import { BookOpen, Bell, Trophy, GraduationCap, Bot } from "lucide-react";
 import { 
   EducationTipsTab,
   EducationAlertsTab,
   EducationChallengesTab,
   EducationModulesTab,
-  EducationAssistantTab,
-  EducationBudgetsTab
+  EducationAssistantTab
 } from "./education-tabs/_exports";
 
 // Config de cada aba: label, valor, ícone e componente da tab.
@@ -18,14 +17,6 @@ const tabConfigs = [
   { label: "Desafios", value: "challenges", icon: Trophy, component: <EducationChallengesTab /> },
   { label: "Aulas", value: "modules", icon: GraduationCap, component: <EducationModulesTab /> },
   { label: "Assistente", value: "assistant", icon: Bot, component: <EducationAssistantTab /> },
-  {
-    label: "Orçamentos",
-    value: "budgets",
-    icon: Wallet,
-    component: <EducationBudgetsTab />,
-    // Estilo especial verde para aba de orçamento:
-    activeColorClass: "data-[state=active]:bg-[#2f9e44] data-[state=active]:text-white",
-  },
 ];
 
 export default function Education() {
@@ -39,19 +30,17 @@ export default function Education() {
           </h1>
         </div>
         <Tabs defaultValue="tips" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm rounded-lg">
-            {tabConfigs.map(({ label, value, icon: Icon, activeColorClass }) => (
+          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm rounded-lg">
+            {tabConfigs.map(({ label, value, icon: Icon }) => (
               <TabsTrigger
                 key={value}
                 value={value}
-                className={`flex items-center gap-2 
+                className="flex items-center gap-2 
                   data-[state=active]:bg-[#017F66] data-[state=active]:text-white
                   text-xs px-1 py-0.5
                   md:text-sm md:px-3 md:py-1.5
                   lg:text-base lg:px-3
-                  truncate
-                  ${activeColorClass ? activeColorClass : ""}
-                `}
+                  truncate"
               >
                 <Icon className="w-4 h-4" />
                 {label}

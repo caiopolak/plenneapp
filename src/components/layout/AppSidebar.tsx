@@ -9,6 +9,7 @@ import {
   LogOut,
   User as UserIcon,
   Users,
+  PiggyBank,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -22,7 +23,7 @@ import {
   SidebarFooter,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar, // ADICIONADO
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { LogoPlenne } from "./LogoPlenne";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,6 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
   const { signOut } = useAuth();
   const { profile, subscription } = useProfile();
 
-  // Usar contexto do sidebar para saber se está no mobile/tablet e manipular open
   const { isMobile, setOpenMobile } = useSidebar();
 
   // Sorteia slogan uma vez por recarga
@@ -63,12 +63,17 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
     return "bg-gray-100 text-gray-700";
   }
 
-  // Menu items config (adicionando Workspaces)
+  // Menu items config (adicionando Orçamentos após Dashboard)
   const menuItems = [
     {
       key: "dashboard",
       icon: LayoutDashboard,
       label: "Dashboard",
+    },
+    {
+      key: "budgets",
+      icon: PiggyBank,
+      label: "Orçamentos",
     },
     {
       key: "analytics",
