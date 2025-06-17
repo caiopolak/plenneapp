@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
@@ -29,8 +30,12 @@ export function useBudgets() {
   const [budgets, setBudgets] = useState<BudgetWithSpent[]>([]);
   const [loading, setLoading] = useState(true);
 
+  console.log("useBudgets - current workspace:", current?.id);
+  console.log("useBudgets - user:", user?.id);
+
   const fetchBudgets = async (year?: number, month?: number) => {
     if (!current?.id || !user?.id) {
+      console.log("useBudgets - No workspace or user, clearing budgets");
       setBudgets([]);
       setLoading(false);
       return;
@@ -42,7 +47,13 @@ export function useBudgets() {
       const targetYear = year ?? currentDate.getFullYear();
       const targetMonth = month ?? currentDate.getMonth() + 1;
 
-      // Buscar orçamentos
+      console.log("useBudgets - Fetching budgets for:", { 
+        workspace: current.id, 
+        year: targetYear, 
+        month: targetMonth 
+      });
+
+      // Buscar orçamentos do workspace atual
       const { data: budgetData, error: budgetError } = await supabase
         .from("budgets")
         .select("*")
@@ -51,11 +62,18 @@ export function useBudgets() {
         .eq("month", targetMonth)
         .order("category");
 
-      if (budgetError) throw budgetError;
+      if (budgetError) {
+        console.error("useBudgets - Budget error:", budgetError);
+        throw budgetError;
+      }
 
-      // Buscar gastos por categoria no mesmo período (CONECTADO COM TRANSAÇÕES)
+      console.log("useBudgets - Found budgets:", budgetData?.length || 0);
+
+      // Buscar transações do workspace atual no período
       const startDate = new Date(targetYear, targetMonth - 1, 1);
       const endDate = new Date(targetYear, targetMonth, 0);
+
+      console.log("useBudgets - Fetching transactions from", startDate.toISOString().split('T')[0], "to", endDate.toISOString().split('T')[0]);
 
       const { data: transactionData, error: transactionError } = await supabase
         .from("transactions")
@@ -65,7 +83,12 @@ export function useBudgets() {
         .gte("date", startDate.toISOString().split('T')[0])
         .lte("date", endDate.toISOString().split('T')[0]);
 
-      if (transactionError) throw transactionError;
+      if (transactionError) {
+        console.error("useBudgets - Transaction error:", transactionError);
+        throw transactionError;
+      }
+
+      console.log("useBudgets - Found transactions:", transactionData?.length || 0);
 
       // Calcular gastos por categoria
       const spentByCategory = (transactionData || []).reduce((acc, transaction) => {
@@ -73,11 +96,15 @@ export function useBudgets() {
         return acc;
       }, {} as Record<string, number>);
 
-      // Combinar orçamentos com gastos REAIS das transações
+      console.log("useBudgets - Spent by category:", spentByCategory);
+
+      // Combinar orçamentos com gastos
       const budgetsWithSpent: BudgetWithSpent[] = (budgetData || []).map(budget => {
         const spent = spentByCategory[budget.category] || 0;
         const remaining = budget.amount_limit - spent;
         const percentage = budget.amount_limit > 0 ? (spent / budget.amount_limit) * 100 : 0;
+
+        console.log(`useBudgets - Budget ${budget.category}: spent=${spent}, limit=${budget.amount_limit}, percentage=${percentage}`);
 
         // Gerar alertas automáticos baseados no progresso
         if (percentage >= 90 && percentage < 100) {
@@ -96,7 +123,7 @@ export function useBudgets() {
 
       setBudgets(budgetsWithSpent);
     } catch (error) {
-      console.error("Erro ao buscar orçamentos:", error);
+      console.error("useBudgets - Error fetching budgets:", error);
       toast({
         variant: "destructive",
         title: "Erro",
@@ -107,7 +134,7 @@ export function useBudgets() {
     }
   };
 
-  // Função para gerar alertas automáticos conectados com IA/Assistant
+  // Função para gerar alertas automáticos
   const generateBudgetAlert = async (category: string, percentage: number, priority: "warning" | "critical") => {
     try {
       const alertMessage = percentage >= 100 
@@ -125,15 +152,18 @@ export function useBudgets() {
         });
 
       if (error) {
-        console.error("Erro ao criar alerta:", error);
+        console.error("useBudgets - Error creating alert:", error);
       }
     } catch (error) {
-      console.error("Erro ao gerar alerta automático:", error);
+      console.error("useBudgets - Error generating automatic alert:", error);
     }
   };
 
   const createBudget = async (category: string, amount: number, year: number, month: number) => {
-    if (!current?.id || !user?.id) return false;
+    if (!current?.id || !user?.id) {
+      console.log("useBudgets - Cannot create budget: no workspace or user");
+      return false;
+    }
 
     try {
       const { error } = await supabase
@@ -157,7 +187,7 @@ export function useBudgets() {
       await fetchBudgets(year, month);
       return true;
     } catch (error) {
-      console.error("Erro ao criar orçamento:", error);
+      console.error("useBudgets - Error creating budget:", error);
       toast({
         variant: "destructive",
         title: "Erro",
@@ -191,7 +221,7 @@ export function useBudgets() {
       }
       return true;
     } catch (error) {
-      console.error("Erro ao atualizar orçamento:", error);
+      console.error("useBudgets - Error updating budget:", error);
       toast({
         variant: "destructive",
         title: "Erro",
@@ -218,7 +248,7 @@ export function useBudgets() {
       setBudgets(prev => prev.filter(b => b.id !== budgetId));
       return true;
     } catch (error) {
-      console.error("Erro ao deletar orçamento:", error);
+      console.error("useBudgets - Error deleting budget:", error);
       toast({
         variant: "destructive",
         title: "Erro",
@@ -229,6 +259,7 @@ export function useBudgets() {
   };
 
   useEffect(() => {
+    console.log("useBudgets - Effect triggered, workspace:", current?.id, "user:", user?.id);
     fetchBudgets();
   }, [current?.id, user?.id]);
 

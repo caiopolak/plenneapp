@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -58,35 +59,33 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
   const { current, workspaces } = useWorkspace();
   const isMobile = useIsMobile();
 
-  // workspaceId sempre inicializado corretamente
-  const [workspaceId, setWorkspaceId] = useState(
-    transaction?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "")
-  );
+  // Sempre usar o workspace atual
+  const workspaceId = current?.id || "";
+
+  console.log("TransactionForm - current workspace:", current?.id);
+  console.log("TransactionForm - workspaceId:", workspaceId);
 
   // Resetar categoria ao mudar tipo
   React.useEffect(() => {
     setCategory('');
   }, [type]);
 
-  // Reset workspaceId se current mudar
-  React.useEffect(() => {
-    if (!workspaceId && current?.id) setWorkspaceId(current.id);
-  }, [current?.id, workspaceId]);
-
   const [recurrencePattern, setRecurrencePattern] = useState(transaction?.recurrence_pattern || "");
   const [recurrenceEndDate, setRecurrenceEndDate] = useState(transaction?.recurrence_end_date || "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // valida workspaceId
+    
+    // Validar workspace
     if (!workspaceId) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Nenhuma workspace selecionada."
+        description: "Nenhum workspace selecionado. Verifique se você tem acesso a um workspace."
       });
       return;
     }
+
     if (!amount || !category || !user) {
       toast({
         variant: "destructive",
@@ -95,6 +94,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
       });
       return;
     }
+
     setLoading(true);
 
     try {
@@ -110,6 +110,8 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
         recurrence_pattern: isRecurring ? recurrencePattern : null,
         recurrence_end_date: isRecurring ? recurrenceEndDate || null : null
       };
+
+      console.log("TransactionForm - Saving transaction:", transactionData);
 
       if (transaction) {
         const { error } = await supabase
@@ -145,11 +147,10 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
         setDescription('');
         setDate(new Date());
         setIsRecurring(false);
-        setWorkspaceId(current?.id ?? "");
       }
 
     } catch (error) {
-      console.error('Error saving transaction:', error);
+      console.error('TransactionForm - Error saving transaction:', error);
       toast({
         variant: "destructive",
         title: "Erro",
@@ -160,6 +161,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
     }
   };
 
+  // Não mostrar WorkspaceSelect já que sempre usa o workspace atual
   return (
     <div className={cn(
       "w-full",
@@ -178,6 +180,11 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
           )}>
             {transaction ? 'Editar Transação' : 'Nova Transação'}
           </CardTitle>
+          {current && (
+            <p className="text-sm text-muted-foreground">
+              Workspace: {current.name}
+            </p>
+          )}
         </CardHeader>
         <CardContent className={cn(
           isMobile ? "px-0" : "px-2 sm:px-6"
@@ -186,13 +193,6 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
             "space-y-4",
             isMobile && "pb-2"
           )}>
-            <WorkspaceSelect
-              value={workspaceId}
-              onChange={setWorkspaceId}
-              label="Workspace"
-              disabled={workspaces.length <= 1}
-            />
-
             {/* Grupo dos campos principais */}
             <TransactionFieldsGroup
               type={type} setType={setType}
