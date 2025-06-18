@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -13,8 +14,9 @@ import { TransactionList } from '@/components/transactions/TransactionList';
 import { GoalList } from '@/components/goals/GoalList';
 import { InvestmentList } from '@/components/investments/InvestmentList';
 import { SubscriptionPlans } from "@/components/subscription/SubscriptionPlans";
-import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration";
 import Education from './Education';
+import AssistantPage from './AssistantPage';
+import SettingsPage from './SettingsPage';
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -121,7 +123,7 @@ export default function FinancieApp() {
               {/* Main Content */}
               <section className="flex-1 w-full px-2 sm:px-4 md:px-10 pt-6 pb-10 bg-gradient-to-br from-background/80 to-neutral-light/70 min-h-[calc(100vh-56px)] sm:min-h-[calc(100vh-80px)] transition-padding">
                 <div className="max-w-[1320px] mx-auto w-full">
-                  {/* NOVA HOME: sem cards de saldo/receitas/despesas e sem cabeçalho extra */}
+                  {/* DASHBOARD */}
                   {activeTab === "dashboard" && (
                     <div className="space-y-6 animate-fade-in">
                       {/* Dicas e alertas primeiro */}
@@ -131,65 +133,65 @@ export default function FinancieApp() {
                       <div className="mt-0">
                         <DashboardTabs />
                       </div>
-                      {/* --- REMOVIDO: Seção de gráficos do dashboard --- */}
                     </div>
                   )}
                   
-                  {/* NOVA ABA: Orçamentos */}
+                  {/* PERFIL */}
+                  {activeTab === "profile" && (
+                    <div className="animate-fade-in">
+                      <ProfilePage />
+                    </div>
+                  )}
+                  
+                  {/* WORKSPACES */}
+                  {activeTab === "workspaces" && (
+                    <div className="animate-fade-in">
+                      <WorkspaceManager />
+                    </div>
+                  )}
+                  
+                  {/* ORÇAMENTOS */}
                   {activeTab === "budgets" && (
                     <div className="animate-fade-in">
                       <BudgetPage />
                     </div>
                   )}
                   
+                  {/* ANÁLISES */}
                   {activeTab === "analytics" && (
                     <div className="animate-fade-in">
                       <h1 className="font-display text-4xl brand-gradient-text mb-8">Análises Detalhadas</h1>
                       <FinancialCharts />
                     </div>
                   )}
+                  
+                  {/* EDUCAÇÃO */}
                   {activeTab === "education" && (
                     <div className="animate-fade-in">
                       <h1 className="font-display text-4xl text-secondary mb-8">Educação Financeira</h1>
                       <Education />
                     </div>
                   )}
-                  {/* As demais abas como Analytics/Education etc permanecem */}
-                  {activeTab === "whatsapp" && (
+                  
+                  {/* ASSISTENTE - NOVA ÁREA CONSOLIDADA */}
+                  {activeTab === "assistant" && (
                     <div className="animate-fade-in">
-                      <h1 className="font-display text-4xl text-secondary mb-8">Assistente WhatsApp</h1>
-                      {/* Exemplo de integração/CTA */}
-                      <Card className="mb-8">
-                        <CardHeader>
-                          <CardTitle>Ative o Assistente Financeiro via WhatsApp</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="mb-2">Comunique-se com o Plenne pelo WhatsApp para <strong>cadastrar transações, consultar saldo, definir metas e tirar dúvidas financeiras via IA</strong>! Exclusivo para assinantes <span className="font-bold text-green-600">Business</span>.</div>
-                          <Button asChild>
-                            <a href="https://wa.me/559999999999999?text=Olá,+quero+ativar+meu+Assistente+Plenne!" target="_blank" rel="noopener noreferrer">
-                              Ativar WhatsApp Financeiro
-                            </a>
-                          </Button>
-                        </CardContent>
-                      </Card>
-                      <WhatsAppIntegration />
+                      <AssistantPage />
                     </div>
                   )}
+                  
+                  {/* ASSINATURA */}
                   {activeTab === "subscription" && (
                     <div className="animate-fade-in">
                       <h1 className="font-display text-4xl text-attention mb-8">Sua Assinatura</h1>
                       <SubscriptionPlans />
                     </div>
                   )}
-                  {activeTab === "profile" && (
+                  
+                  {/* CONFIGURAÇÕES - NOVA PÁGINA */}
+                  {activeTab === "settings" && (
                     <div className="animate-fade-in">
-                      <ProfilePage />
-                    </div>
-                  )}
-                  {/* NOVO GERENCIADOR DE WORKSPACES */}
-                  {activeTab === "workspaces" && (
-                    <div className="animate-fade-in">
-                      <WorkspaceManager />
+                      <SettingsPage />
                     </div>
                   )}
                 </div>

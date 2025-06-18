@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   LayoutDashboard,
@@ -5,11 +6,13 @@ import {
   Wallet,
   Activity,
   GraduationCap,
-  MessageSquare,
+  Bot,
   LogOut,
   User as UserIcon,
   Users,
   PiggyBank,
+  CreditCard,
+  Cog,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -63,12 +66,22 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
     return "bg-gray-100 text-gray-700";
   }
 
-  // Menu items config (adicionando Orçamentos após Dashboard)
+  // Menu items config - NOVA ORDEM
   const menuItems = [
     {
       key: "dashboard",
       icon: LayoutDashboard,
       label: "Dashboard",
+    },
+    {
+      key: "profile",
+      icon: UserIcon,
+      label: "Perfil",
+    },
+    {
+      key: "workspaces",
+      icon: Users,
+      label: "Workspaces",
     },
     {
       key: "budgets",
@@ -86,24 +99,19 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
       label: "Educação",
     },
     {
-      key: "whatsapp",
-      icon: MessageSquare,
-      label: "WhatsApp",
+      key: "assistant",
+      icon: Bot,
+      label: "Assistente",
     },
     {
       key: "subscription",
-      icon: Settings,
+      icon: CreditCard,
       label: "Assinatura",
     },
     {
-      key: "workspaces",
-      icon: Users,
-      label: "Workspaces",
-    },
-    {
-      key: "profile",
-      icon: UserIcon,
-      label: "Perfil",
+      key: "settings",
+      icon: Cog,
+      label: "Configurações",
     },
   ];
 

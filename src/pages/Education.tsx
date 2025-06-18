@@ -1,13 +1,12 @@
 
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Bell, Trophy, GraduationCap, Bot } from "lucide-react";
+import { BookOpen, Bell, Trophy, GraduationCap } from "lucide-react";
 import { 
   EducationTipsTab,
   EducationAlertsTab,
   EducationChallengesTab,
-  EducationModulesTab,
-  EducationAssistantTab
+  EducationModulesTab
 } from "./education-tabs/_exports";
 
 // Config de cada aba: label, valor, ícone e componente da tab.
@@ -16,7 +15,6 @@ const tabConfigs = [
   { label: "Alertas", value: "alerts", icon: Bell, component: <EducationAlertsTab /> },
   { label: "Desafios", value: "challenges", icon: Trophy, component: <EducationChallengesTab /> },
   { label: "Aulas", value: "modules", icon: GraduationCap, component: <EducationModulesTab /> },
-  { label: "Assistente", value: "assistant", icon: Bot, component: <EducationAssistantTab /> },
 ];
 
 export default function Education() {
@@ -30,7 +28,7 @@ export default function Education() {
           </h1>
         </div>
         <Tabs defaultValue="tips" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm rounded-lg">
+          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm rounded-lg">
             {tabConfigs.map(({ label, value, icon: Icon }) => (
               <TabsTrigger
                 key={value}
