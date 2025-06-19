@@ -712,6 +712,10 @@ export type Database = {
           | { user_uuid: string; resource_type: string }
         Returns: boolean
       }
+      create_recurring_transactions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       risk_profile: "conservative" | "moderate" | "aggressive"
