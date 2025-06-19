@@ -1,52 +1,61 @@
 
 import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bot, MessageCircle } from "lucide-react";
 import { FinancialAssistant } from "@/components/education/FinancialAssistant";
 import { WhatsAppIntegration } from "@/components/whatsapp/WhatsAppIntegration";
+import { MessageCircle, MessageSquare } from "lucide-react";
 
 export default function AssistantPage() {
   return (
-    <div className="min-h-screen p-0 sm:p-4 bg-gradient-to-br from-[#f4f4f4] to-white">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8 flex items-center gap-4">
-          <Bot className="w-8 h-8 text-[--primary]" />
-          <h1 className="text-3xl font-extrabold text-[#003f5c]">
-            Assistente Plenne
-          </h1>
-        </div>
-        
-        <Tabs defaultValue="chatbot" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-white shadow-sm rounded-lg">
-            <TabsTrigger
-              value="chatbot"
-              className="flex items-center gap-2 
-                data-[state=active]:bg-[#017F66] data-[state=active]:text-white
-                text-sm px-4 py-2"
-            >
-              <Bot className="w-4 h-4" />
-              Assistente IA
-            </TabsTrigger>
-            <TabsTrigger
-              value="whatsapp"
-              className="flex items-center gap-2 
-                data-[state=active]:bg-[#017F66] data-[state=active]:text-white
-                text-sm px-4 py-2"
-            >
-              <MessageCircle className="w-4 h-4" />
-              WhatsApp
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="chatbot" className="space-y-4">
-            <FinancialAssistant />
-          </TabsContent>
-          
-          <TabsContent value="whatsapp" className="space-y-4">
-            <WhatsAppIntegration />
-          </TabsContent>
-        </Tabs>
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">Assistente Inteligente</h1>
+        <p className="text-muted-foreground">
+          Utilize nossos assistentes para obter insights financeiros e automatizar suas consultas via WhatsApp.
+        </p>
       </div>
+
+      <Tabs defaultValue="chat" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="chat" className="flex items-center gap-2">
+            <MessageCircle className="h-4 w-4" />
+            Assistente Chat
+          </TabsTrigger>
+          <TabsTrigger value="whatsapp" className="flex items-center gap-2">
+            <MessageSquare className="h-4 w-4" />
+            WhatsApp Bot
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="chat" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5" />
+                Assistente Financeiro IA
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FinancialAssistant />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="whatsapp" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5" />
+                Integração WhatsApp
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <WhatsAppIntegration />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

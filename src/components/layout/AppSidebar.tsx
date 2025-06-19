@@ -1,222 +1,129 @@
 
-import React from "react";
 import {
-  LayoutDashboard,
-  Settings,
-  Wallet,
-  Activity,
-  GraduationCap,
-  Bot,
-  LogOut,
-  User as UserIcon,
+  Home,
+  User,
   Users,
   PiggyBank,
+  BarChart3,
+  GraduationCap,
+  MessageCircle,
   CreditCard,
-  Cog,
+  Settings,
+  LogOut,
+  Building2
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
-  SidebarSeparator,
-  SidebarTrigger,
-  useSidebar,
+  SidebarMenuItem,
+  SidebarHeader,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
 import { LogoPlenne } from "./LogoPlenne";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useProfile } from "@/hooks/useProfile";
+import { useLocation, useNavigate } from "react-router-dom";
 
-// Slogans para sortear ao recarregar a página
-const SLOGANS = [
-  "Controle financeiro de verdade.",
-  "Sua vida financeira, plena.",
-  "Transforme seus sonhos em conquistas.",
-  "Planeje, realize, viva melhor.",
-  "Disciplina hoje, plenitude amanhã.",
-  "Acompanhe. Evolua. Conquiste.",
+const items = [
+  {
+    title: "Dashboard",
+    url: "/app",
+    icon: Home,
+  },
+  {
+    title: "Perfil",
+    url: "/app/profile",
+    icon: User,
+  },
+  {
+    title: "Workspaces",
+    url: "/app/workspaces",
+    icon: Building2,
+  },
+  {
+    title: "Orçamentos",
+    url: "/app/budgets",
+    icon: PiggyBank,
+  },
+  {
+    title: "Análises",
+    url: "/app/analytics",
+    icon: BarChart3,
+  },
+  {
+    title: "Educação",
+    url: "/app/education",
+    icon: GraduationCap,
+  },
+  {
+    title: "Assistente",
+    url: "/app/assistant",
+    icon: MessageCircle,
+  },
+  {
+    title: "Assinatura",
+    url: "/app/subscription",
+    icon: CreditCard,
+  },
+  {
+    title: "Configurações",
+    url: "/app/settings",
+    icon: Settings,
+  },
 ];
 
-interface AppSidebarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-}
-
-export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
+export function AppSidebar() {
   const { signOut } = useAuth();
-  const { profile, subscription } = useProfile();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const { isMobile, setOpenMobile } = useSidebar();
-
-  // Sorteia slogan uma vez por recarga
-  const [slogan] = React.useState(() => {
-    return SLOGANS[Math.floor(Math.random() * SLOGANS.length)];
-  });
-
-  // Cores para diferentes planos
-  function getPlanColor(plan: string) {
-    if (plan === "business") return "bg-green-100 text-green-700";
-    if (plan === "pro") return "bg-blue-100 text-blue-700";
-    return "bg-gray-100 text-gray-700";
-  }
-
-  // Menu items config - NOVA ORDEM
-  const menuItems = [
-    {
-      key: "dashboard",
-      icon: LayoutDashboard,
-      label: "Dashboard",
-    },
-    {
-      key: "profile",
-      icon: UserIcon,
-      label: "Perfil",
-    },
-    {
-      key: "workspaces",
-      icon: Users,
-      label: "Workspaces",
-    },
-    {
-      key: "budgets",
-      icon: PiggyBank,
-      label: "Orçamentos",
-    },
-    {
-      key: "analytics",
-      icon: Activity,
-      label: "Análises",
-    },
-    {
-      key: "education",
-      icon: GraduationCap,
-      label: "Educação",
-    },
-    {
-      key: "assistant",
-      icon: Bot,
-      label: "Assistente",
-    },
-    {
-      key: "subscription",
-      icon: CreditCard,
-      label: "Assinatura",
-    },
-    {
-      key: "settings",
-      icon: Cog,
-      label: "Configurações",
-    },
-  ];
-
-  // Função para lidar com clique em itens do menu
-  function handleMenuClick(tab: string) {
-    setActiveTab(tab);
-    // Se estiver em mobile/tablet, feche o menu ao clicar
-    if (isMobile) {
-      setOpenMobile(false);
-    }
-  }
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
-    <>
-      {/* SidebarTrigger: botão hambúrguer discreto no topo direito em mobile/tablet */}
-      <div className="fixed top-4 right-4 z-40 md:hidden">
-        <SidebarTrigger
-          className="rounded-full bg-white/90 shadow-lg border border-gray-200 
-          hover:bg-blue-100 focus:bg-blue-200 transition-colors w-10 h-10 
-          flex items-center justify-center text-primary"
-          aria-label="Abrir menu"
-        />
-      </div>
-      {/* Sidebar (Drawer no mobile) */}
-      <Sidebar>
-        <SidebarContent className="w-full max-w-xs min-w-[200px] bg-white shadow-lg flex flex-col h-full p-0">
-          <SidebarGroup className="p-0">
-            {/* Avatar e info responsivos */}
-            <div
-              className="flex flex-col items-center gap-0 py-5 px-2 bg-gradient-to-r from-blue-50 to-white w-full
-              sm:py-7 sm:pt-8"
-            >
-              <Avatar className="w-16 h-16 sm:w-20 sm:h-20 ring-2 ring-primary/60 shadow-lg mb-2 sm:mb-3">
-                {profile?.avatar_url ? (
-                  <AvatarImage src={profile.avatar_url} alt={profile.full_name || "Avatar"} />
-                ) : (
-                  <AvatarFallback>
-                    {profile?.full_name
-                      ? profile.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
-                      : <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />}
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              <div className="flex flex-col items-center w-full gap-0.5">
-                <span className="font-display font-bold text-primary text-lg sm:text-xl truncate max-w-[140px] sm:max-w-[170px] block">{profile?.full_name || "Usuário"}</span>
-                <span className="text-xs sm:text-sm text-muted-foreground truncate max-w-[160px] sm:max-w-[200px]">{profile?.email}</span>
-                {profile?.phone && (
-                  <span className="text-xs text-muted-foreground">{profile.phone}</span>
-                )}
-                {subscription?.plan && (
-                  <span
-                    className={`mt-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${getPlanColor(subscription.plan)}`}
+    <Sidebar variant="inset">
+      <SidebarHeader>
+        <LogoPlenne />
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild
+                    isActive={location.pathname === item.url}
                   >
-                    {subscription.plan === "business"
-                      ? "Business"
-                      : subscription.plan === "pro"
-                        ? "Pro"
-                        : "Free"}
-                  </span>
-                )}
-              </div>
-            </div>
-            <SidebarSeparator className="mb-1" />
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {menuItems.map((item) => (
-                  <SidebarMenuItem key={item.key}>
-                    <SidebarMenuButton
-                      isActive={activeTab === item.key}
-                      onClick={() => handleMenuClick(item.key)} // Usa o handler QUE fecha no mobile/tablet
-                    >
-                      <item.icon className="w-5 h-5 mr-2" />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-        {/* Logo + slogan acima do botão sair, sempre com fundo branco */}
-        <div className="flex flex-col items-center gap-0 px-1 sm:px-3 py-3 sm:py-4 border-t border-primary/10 w-full bg-white">
-          <LogoPlenne className="mb-1 scale-90 sm:scale-100" />
-          <span className="text-xs italic text-primary/80 text-center px-1 sm:px-2 transition-all animate-fade-in font-medium max-w-[170px] sm:max-w-[196px]">
-            {slogan}
-          </span>
-        </div>
-        {/* Sidebar footer ALWAYS with bg and border */}
-        <SidebarFooter className="bg-white border-t border-gray-200 p-0">
-          <Button
-            variant="ghost"
-            size="default"
-            onClick={signOut}
-            className="w-full flex items-center justify-start px-2 min-h-[48px] 
-              bg-[#f4f4f4] text-graphite border border-gray-300 rounded-none
-              hover:bg-gray-200 hover:text-graphite
-              focus:bg-gray-200
-              md:bg-transparent md:text-primary md:border-none md:rounded-xl md:hover:bg-blue-50 md:focus:bg-blue-100
-              transition"
-          >
-            <LogOut className="w-5 h-5 mr-2" />
-            Sair
-          </Button>
-        </SidebarFooter>
-      </Sidebar>
-    </>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleSignOut}>
+              <LogOut />
+              <span>Sair</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
   );
 }

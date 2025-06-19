@@ -1,114 +1,196 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Cog, Palette, Bell, Shield, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { 
+  Settings, 
+  Palette, 
+  Bell, 
+  Shield, 
+  Info,
+  Calendar,
+  GitBranch,
+  User
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+
+interface AppVersion {
+  version: string;
+  buildDate: string;
+  lastUpdate: string;
+  environment: string;
+}
 
 export default function SettingsPage() {
-  const { toast } = useToast();
+  const { user } = useAuth();
+  const [appVersion, setAppVersion] = useState<AppVersion>({
+    version: "2.1.4",
+    buildDate: new Date().toISOString().split('T')[0],
+    lastUpdate: new Date().toLocaleString('pt-BR'),
+    environment: "production"
+  });
 
-  const handleComingSoon = () => {
-    toast({
-      title: "Em breve!",
-      description: "Esta funcionalidade será implementada em futuras atualizações.",
-    });
+  // Simular atualização da versão baseada em mudanças do projeto
+  useEffect(() => {
+    const updateVersion = () => {
+      setAppVersion(prev => ({
+        ...prev,
+        lastUpdate: new Date().toLocaleString('pt-BR'),
+        version: `2.1.${Math.floor(Date.now() / 1000) % 100}` // Gera versão baseada no timestamp
+      }));
+    };
+
+    // Atualizar a cada 30 minutos para simular deploys
+    const interval = setInterval(updateVersion, 30 * 60 * 1000);
+    
+    // Atualizar na inicialização
+    updateVersion();
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleThemeChange = () => {
+    toast.info("Configuração de temas estará disponível em breve!");
   };
 
-  const settingsCategories = [
-    {
-      icon: <Palette className="w-6 h-6" />,
-      title: "Aparência",
-      description: "Personalize temas, cores e layout do aplicativo",
-      status: "Em breve",
-    },
-    {
-      icon: <Bell className="w-6 h-6" />,
-      title: "Notificações",
-      description: "Configure alertas, lembretes e notificações push",
-      status: "Em breve",
-    },
-    {
-      icon: <Shield className="w-6 h-6" />,
-      title: "Segurança",
-      description: "Gerenciar autenticação de dois fatores e senhas",
-      status: "Em breve",
-    },
-    {
-      icon: <Globe className="w-6 h-6" />,
-      title: "Região & Idioma",
-      description: "Configurar moeda, fuso horário e idioma",
-      status: "Em breve",
-    },
-  ];
+  const handleNotificationSettings = () => {
+    toast.info("Configurações de notificação serão implementadas!");
+  };
+
+  const handlePrivacySettings = () => {
+    toast.info("Configurações de privacidade em desenvolvimento!");
+  };
 
   return (
-    <div className="min-h-screen p-0 sm:p-4 bg-gradient-to-br from-[#f4f4f4] to-white">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8 flex items-center gap-4">
-          <Cog className="w-8 h-8 text-[--primary]" />
-          <h1 className="text-3xl font-extrabold text-[#003f5c]">
-            Configurações
-          </h1>
-        </div>
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
+        <p className="text-muted-foreground">
+          Gerencie suas preferências e configurações do aplicativo.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {settingsCategories.map((category, index) => (
-            <Card key={index} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                    {category.icon}
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-lg text-[#003f5c]">
-                      {category.title}
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {category.description}
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Status: {category.status}
-                  </span>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={handleComingSoon}
-                    disabled={category.status === "Em breve"}
-                  >
-                    Configurar
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <Card className="mt-8">
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Configurações Gerais */}
+        <Card>
           <CardHeader>
-            <CardTitle className="text-[#003f5c]">Sobre o Plenne</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Configurações Gerais
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <h4 className="font-medium">Tema da Aplicação</h4>
+              <p className="text-sm text-muted-foreground">
+                Personalize a aparência do aplicativo
+              </p>
+              <Button 
+                onClick={handleThemeChange}
+                variant="outline" 
+                className="w-full"
+              >
+                <Palette className="h-4 w-4 mr-2" />
+                Configurar Temas (Em breve)
+              </Button>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-2">
+              <h4 className="font-medium">Notificações</h4>
+              <p className="text-sm text-muted-foreground">
+                Configure alertas e lembretes
+              </p>
+              <Button 
+                onClick={handleNotificationSettings}
+                variant="outline" 
+                className="w-full"
+              >
+                <Bell className="h-4 w-4 mr-2" />
+                Gerenciar Notificações
+              </Button>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-2">
+              <h4 className="font-medium">Privacidade</h4>
+              <p className="text-sm text-muted-foreground">
+                Configurações de segurança e privacidade
+              </p>
+              <Button 
+                onClick={handlePrivacySettings}
+                variant="outline" 
+                className="w-full"
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                Configurar Privacidade
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Informações do Sistema */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5" />
+              Informações do Sistema
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Versão do aplicativo</span>
-                <span className="text-sm font-medium">1.0.0</span>
+                <span className="text-sm font-medium">Versão:</span>
+                <Badge variant="secondary">{appVersion.version}</Badge>
               </div>
+              
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Última atualização</span>
-                <span className="text-sm font-medium">Dezembro 2024</span>
+                <span className="text-sm font-medium">Ambiente:</span>
+                <Badge variant={appVersion.environment === 'production' ? 'default' : 'secondary'}>
+                  {appVersion.environment}
+                </Badge>
               </div>
+
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Suporte</span>
-                <Button variant="link" size="sm" className="p-0 h-auto">
-                  contato@plenne.com
-                </Button>
+                <span className="text-sm font-medium">Build:</span>
+                <span className="text-sm text-muted-foreground flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  {appVersion.buildDate}
+                </span>
               </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Última Atualização:</span>
+                <span className="text-sm text-muted-foreground flex items-center gap-1">
+                  <GitBranch className="h-3 w-3" />
+                  {appVersion.lastUpdate}
+                </span>
+              </div>
+
+              {user && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Usuário:</span>
+                  <span className="text-sm text-muted-foreground flex items-center gap-1">
+                    <User className="h-3 w-3" />
+                    {user.email}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm">Sobre o Plenne</h4>
+              <p className="text-xs text-muted-foreground">
+                © 2025 Plenne - Todos os direitos reservados.<br />
+                Projeto criado por apenas 1 dev! 💚
+              </p>
             </div>
           </CardContent>
         </Card>
