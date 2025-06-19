@@ -6,6 +6,8 @@ import { PeriodFilter, PeriodOption } from './PeriodFilter';
 import { FinancialCharts } from '@/components/analytics/FinancialCharts';
 import { GoalProgressCard } from './GoalProgressCard';
 import { WelcomeCard } from './WelcomeCard';
+import { SmartFinancialAlerts } from '@/components/alerts/SmartFinancialAlerts';
+import { IncomingTransactions } from '@/components/transactions/IncomingTransactions';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useQuery } from '@tanstack/react-query';
@@ -89,21 +91,29 @@ export function EnhancedDashboard() {
       {/* KPI Cards */}
       <KPICards />
 
-      {/* Layout de duas colunas para insights e gráficos */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Coluna principal - Gráficos */}
+      {/* Layout principal com 3 colunas */}
+      <div className="grid gap-6 lg:grid-cols-4">
+        {/* Coluna principal - Gráficos (2 colunas) */}
         <div className="lg:col-span-2 space-y-6">
           <FinancialCharts period={selectedPeriod} />
         </div>
         
-        {/* Sidebar - Insights e Metas */}
-        <div className="space-y-6">
-          <FinancialInsights />
-          <GoalProgressCard 
-            completedGoals={goalsData?.completedGoals || 0}
-            totalGoals={goalsData?.totalGoals || 0}
-            goalsProgress={goalsData?.goalsProgress || 0}
-          />
+        {/* Sidebar direita - Insights e Alertas (2 colunas) */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="space-y-6">
+              <FinancialInsights />
+              <GoalProgressCard 
+                completedGoals={goalsData?.completedGoals || 0}
+                totalGoals={goalsData?.totalGoals || 0}
+                goalsProgress={goalsData?.goalsProgress || 0}
+              />
+            </div>
+            <div className="space-y-6">
+              <SmartFinancialAlerts />
+              <IncomingTransactions />
+            </div>
+          </div>
         </div>
       </div>
     </div>

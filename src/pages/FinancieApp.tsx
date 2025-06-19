@@ -8,6 +8,7 @@ import BudgetPage from "./BudgetPage";
 import Education from "./Education";
 import AssistantPage from "./AssistantPage";
 import SettingsPage from "./SettingsPage";
+import IncomingPage from "./IncomingPage";
 import { WorkspaceManager } from "@/components/workspaces/WorkspaceManager";
 import { SubscriptionPlans } from "@/components/subscription/SubscriptionPlans";
 import { TransactionList } from "@/components/transactions/TransactionList";
@@ -31,6 +32,7 @@ export default function FinancieApp() {
             <Route path="/assistant" element={<AssistantPage />} />
             <Route path="/subscription" element={<SubscriptionPlans />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/incoming" element={<IncomingPage />} />
             
             {/* Sub-rotas existentes */}
             <Route path="/transactions" element={<TransactionList />} />
