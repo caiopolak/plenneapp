@@ -24,23 +24,6 @@ export default function FinancieApp() {
         <main className="p-4 md:p-6">
           <Routes>
             <Route path="/" element={<EnhancedDashboard />} />
-            <Route path="/app" element={<EnhancedDashboard />} />
-            <Route path="/app/profile" element={<ProfilePage />} />
-            <Route path="/app/workspaces" element={<WorkspaceManager />} />
-            <Route path="/app/budgets" element={<BudgetPage />} />
-            <Route path="/app/analytics" element={<DashboardTabs />} />
-            <Route path="/app/education" element={<Education />} />
-            <Route path="/app/assistant" element={<AssistantPage />} />
-            <Route path="/app/subscription" element={<SubscriptionPlans />} />
-            <Route path="/app/settings" element={<SettingsPage />} />
-            <Route path="/app/incoming" element={<IncomingPage />} />
-            
-            {/* Sub-rotas existentes */}
-            <Route path="/app/transactions" element={<TransactionList />} />
-            <Route path="/app/goals" element={<GoalList />} />
-            <Route path="/app/investments" element={<InvestmentList />} />
-            
-            {/* Rotas sem /app para compatibilidade */}
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/workspaces" element={<WorkspaceManager />} />
             <Route path="/budgets" element={<BudgetPage />} />
@@ -50,6 +33,8 @@ export default function FinancieApp() {
             <Route path="/subscription" element={<SubscriptionPlans />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/incoming" element={<IncomingPage />} />
+            
+            {/* Sub-rotas existentes */}
             <Route path="/transactions" element={<TransactionList />} />
             <Route path="/goals" element={<GoalList />} />
             <Route path="/investments" element={<InvestmentList />} />
