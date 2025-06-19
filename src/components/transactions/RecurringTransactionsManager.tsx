@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,6 +49,7 @@ export function RecurringTransactionsManager() {
     
     setProcessing(true);
     try {
+      // Call the create_recurring_transactions function directly
       const { error } = await supabase.rpc('create_recurring_transactions');
       
       if (error) throw error;

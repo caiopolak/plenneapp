@@ -1,7 +1,6 @@
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
-import { Header } from "@/components/layout/Header";
 import { Routes, Route } from "react-router-dom";
 import { EnhancedDashboard } from "@/components/dashboard/EnhancedDashboard";
 import ProfilePage from "./ProfilePage";
@@ -21,7 +20,6 @@ export default function FinancieApp() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <Header />
         <main className="p-4 md:p-6">
           <Routes>
             <Route path="/" element={<EnhancedDashboard />} />
