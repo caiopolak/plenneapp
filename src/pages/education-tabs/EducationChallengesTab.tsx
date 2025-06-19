@@ -1,5 +1,6 @@
 
 import { FinancialChallenges } from "@/components/education/FinancialChallenges";
-export function EducationChallengesTab() {
+
+export default function EducationChallengesTab() {
   return <FinancialChallenges />;
 }

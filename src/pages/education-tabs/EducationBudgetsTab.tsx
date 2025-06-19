@@ -1,5 +1,6 @@
 
 import { BudgetList } from "@/components/budget/BudgetList";
-export function EducationBudgetsTab() {
+
+export default function EducationBudgetsTab() {
   return <BudgetList />;
 }
