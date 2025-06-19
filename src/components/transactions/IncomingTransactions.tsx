@@ -13,14 +13,14 @@ import { ptBR } from 'date-fns/locale';
 
 interface IncomingTransaction {
   id: string;
-  type: 'income' | 'expense';
+  type: string;
   amount: number;
   category: string;
-  description: string;
+  description: string | null;
   expected_date: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: string;
   user_id: string;
-  workspace_id: string;
+  workspace_id: string | null;
   created_at: string;
 }
 
