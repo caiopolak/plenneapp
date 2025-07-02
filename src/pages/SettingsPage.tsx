@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Settings, 
   Palette, 
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { NotificationSettings } from "@/components/settings/NotificationSettings";
 
 interface AppVersion {
   version: string;
@@ -67,13 +69,21 @@ export default function SettingsPage() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
+        <h1 className="text-3xl font-bold tracking-tight brand-gradient-text">Configurações</h1>
         <p className="text-muted-foreground">
           Gerencie suas preferências e configurações do aplicativo.
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <Tabs defaultValue="general" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="general">Geral</TabsTrigger>
+          <TabsTrigger value="notifications">Notificações</TabsTrigger>
+          <TabsTrigger value="system">Sistema</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="general" className="mt-6">
+          <div className="grid gap-6 md:grid-cols-2">
         {/* Configurações Gerais */}
         <Card>
           <CardHeader>
@@ -194,7 +204,38 @@ export default function SettingsPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="notifications" className="mt-6">
+          <NotificationSettings />
+        </TabsContent>
+
+        <TabsContent value="system" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Info className="h-5 w-5" />
+                Informações do Sistema
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Versão:</span>
+                  <Badge variant="secondary">{appVersion.version}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Ambiente:</span>
+                  <Badge variant={appVersion.environment === 'production' ? 'default' : 'secondary'}>
+                    {appVersion.environment}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -136,6 +136,56 @@ export type Database = {
           },
         ]
       }
+      education_lessons: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_free: boolean | null
+          module_id: string | null
+          order_index: number | null
+          title: string
+          updated_at: string | null
+          video_url: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_free?: boolean | null
+          module_id?: string | null
+          order_index?: number | null
+          title: string
+          updated_at?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_free?: boolean | null
+          module_id?: string | null
+          order_index?: number | null
+          title?: string
+          updated_at?: string | null
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "education_lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "learning_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       financial_alerts: {
         Row: {
           alert_type: string | null
@@ -457,6 +507,51 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_settings: {
+        Row: {
+          budget_alerts: boolean | null
+          created_at: string | null
+          email_enabled: boolean | null
+          goal_reminders: boolean | null
+          id: string
+          monthly_report: boolean | null
+          push_enabled: boolean | null
+          reminder_time: string | null
+          transaction_notifications: boolean | null
+          updated_at: string | null
+          user_id: string
+          weekly_summary: boolean | null
+        }
+        Insert: {
+          budget_alerts?: boolean | null
+          created_at?: string | null
+          email_enabled?: boolean | null
+          goal_reminders?: boolean | null
+          id?: string
+          monthly_report?: boolean | null
+          push_enabled?: boolean | null
+          reminder_time?: string | null
+          transaction_notifications?: boolean | null
+          updated_at?: string | null
+          user_id: string
+          weekly_summary?: boolean | null
+        }
+        Update: {
+          budget_alerts?: boolean | null
+          created_at?: string | null
+          email_enabled?: boolean | null
+          goal_reminders?: boolean | null
+          id?: string
+          monthly_report?: boolean | null
+          push_enabled?: boolean | null
+          reminder_time?: string | null
+          transaction_notifications?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+          weekly_summary?: boolean | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -646,6 +741,50 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_lesson_progress: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          lesson_id: string
+          progress_percentage: number | null
+          time_spent_minutes: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          lesson_id: string
+          progress_percentage?: number | null
+          time_spent_minutes?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          lesson_id?: string
+          progress_percentage?: number | null
+          time_spent_minutes?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "education_lessons"
             referencedColumns: ["id"]
           },
         ]
