@@ -1,5 +1,5 @@
 
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Routes, Route } from "react-router-dom";
 import { EnhancedDashboard } from "@/components/dashboard/EnhancedDashboard";
@@ -22,15 +22,22 @@ export default function FinancieApp() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
+        {/* Header móvel */}
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 md:hidden">
+          <SidebarTrigger className="-ml-1" />
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold text-[#003f5c]">Plenne</h1>
+          </div>
+        </header>
         <main className="p-4 md:p-6">
           <Routes>
             <Route path="/" element={<EnhancedDashboard />} />
-            <Route path="/app" element={<DashboardTabs />} />
+            <Route path="/app" element={<EnhancedDashboard />} />
             <Route path="/app/incoming" element={<IncomingPage />} />
             <Route path="/app/profile" element={<ProfilePageNew />} />
             <Route path="/app/workspaces" element={<WorkspaceManager />} />
             <Route path="/app/budgets" element={<BudgetPage />} />
-            <Route path="/app/analytics" element={<EnhancedDashboard />} />
+            <Route path="/app/analytics" element={<DashboardTabs />} />
             <Route path="/app/alerts" element={<AlertsPage />} />
             <Route path="/app/education" element={<Education />} />
             <Route path="/app/assistant" element={<AssistantPage />} />
