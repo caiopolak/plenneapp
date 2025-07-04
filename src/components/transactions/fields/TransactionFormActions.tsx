@@ -2,19 +2,25 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Clock } from 'lucide-react';
+import { Clock, Calendar } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { IncomingTransactionForm } from '../IncomingTransactionForm';
+import { TransactionPendingForm } from '../TransactionPendingForm';
 
 interface TransactionFormActionsProps {
   loading: boolean;
   isMobile: boolean;
   onCancel?: () => void;
   isEdit: boolean;
+  formData?: {
+    type: string;
+    amount: string;
+    category: string;
+    description: string;
+  };
 }
 
 export function TransactionFormActions({
-  loading, isMobile, onCancel, isEdit
+  loading, isMobile, onCancel, isEdit, formData
 }: TransactionFormActionsProps) {
   const [showIncomingForm, setShowIncomingForm] = useState(false);
 
@@ -28,17 +34,21 @@ export function TransactionFormActions({
               <Button
                 type="button"
                 variant="outline"
-                className="border-[#f8961e] text-[#f8961e] hover:bg-[#f8961e] hover:text-white"
+                className="border-[#f8961e] text-[#f8961e] hover:bg-[#f8961e] hover:text-white flex-1 sm:flex-none"
               >
-                <Clock className="w-4 h-4 mr-2" />
-                Agendar para Depois
+                <Calendar className="w-4 h-4 mr-2" />
+                {isMobile ? "Agendar" : "Agendar para Depois"}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Agendar Transação</DialogTitle>
               </DialogHeader>
-              <IncomingTransactionForm onSuccess={() => setShowIncomingForm(false)} />
+              <TransactionPendingForm 
+                initialData={formData}
+                onSuccess={() => setShowIncomingForm(false)} 
+                onCancel={() => setShowIncomingForm(false)}
+              />
             </DialogContent>
           </Dialog>
         </div>

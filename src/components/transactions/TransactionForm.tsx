@@ -177,6 +177,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
               isMobile={isMobile}
               onCancel={onCancel}
               isEdit={!!transaction}
+              formData={{ type, amount, category, description }}
             />
           </form>
         </CardContent>

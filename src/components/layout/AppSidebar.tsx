@@ -34,31 +34,11 @@ import { useProfile } from "@/hooks/useProfile";
 import { usePlenneSlogan } from "@/hooks/usePlenneSlogan";
 import { Badge } from "@/components/ui/badge";
 
-const items = [
+const mainItems = [
   {
     title: "Dashboard",
     url: "/app",
     icon: Home,
-  },
-  {
-    title: "Transações Pendentes",
-    url: "/app/incoming",
-    icon: Clock,
-  },
-  {
-    title: "Perfil",
-    url: "/app/profile",
-    icon: User,
-  },
-  {
-    title: "Workspaces",
-    url: "/app/workspaces",
-    icon: Building2,
-  },
-  {
-    title: "Orçamentos",
-    url: "/app/budgets",
-    icon: PiggyBank,
   },
   {
     title: "Análises",
@@ -66,10 +46,18 @@ const items = [
     icon: BarChart3,
   },
   {
-    title: "Alertas Financeiros",
-    url: "/app/alerts",
-    icon: Bell,
+    title: "Orçamentos",
+    url: "/app/budgets",
+    icon: PiggyBank,
   },
+  {
+    title: "Transações Pendentes",
+    url: "/app/incoming",
+    icon: Clock,
+  },
+];
+
+const educationItems = [
   {
     title: "Educação",
     url: "/app/education",
@@ -79,6 +67,24 @@ const items = [
     title: "Assistente",
     url: "/app/assistant",
     icon: MessageCircle,
+  },
+  {
+    title: "Alertas Financeiros",
+    url: "/app/alerts",
+    icon: Bell,
+  },
+];
+
+const configItems = [
+  {
+    title: "Perfil",
+    url: "/app/profile",
+    icon: User,
+  },
+  {
+    title: "Workspaces",
+    url: "/app/workspaces",
+    icon: Building2,
   },
   {
     title: "Assinatura",
@@ -106,12 +112,59 @@ export function AppSidebar() {
 
   return (
     <Sidebar variant="inset" className="bg-gradient-to-b from-white to-[#f8fffe]">
-      <SidebarContent>
+      <SidebarContent className="space-y-1">
+        {/* Menu Principal - Financeiro */}
         <SidebarGroup>
-          <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[#003f5c] font-semibold">Financeiro</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {mainItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild
+                    isActive={location.pathname === item.url}
+                    className="hover:bg-[#eaf6ee] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c]"
+                  >
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Menu Educação */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-[#2f9e44] font-semibold">Educação & Alertas</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {educationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild
+                    isActive={location.pathname === item.url}
+                    className="hover:bg-[#eaf6ee] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c]"
+                  >
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Menu Configurações */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-muted-foreground font-semibold">Configurações</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {configItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild
