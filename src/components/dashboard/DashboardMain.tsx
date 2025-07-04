@@ -1,20 +1,20 @@
-
 import React, { useState } from 'react';
-import { KPICards } from './KPICards';
-import { FinancialInsights } from './FinancialInsights';
-import { PeriodFilter, PeriodOption } from './PeriodFilter';
-import { FinancialCharts } from '@/components/analytics/FinancialCharts';
-import { GoalProgressCard } from './GoalProgressCard';
 import { WelcomeCard } from './WelcomeCard';
+import { KPICards } from './KPICards';
 import { SmartFinancialAlerts } from '@/components/alerts/SmartFinancialAlerts';
 import { IncomingTransactions } from '@/components/transactions/IncomingTransactions';
+import { GoalProgressCard } from './GoalProgressCard';
+import { TransactionForm } from '@/components/transactions/TransactionForm';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export function EnhancedDashboard() {
-  const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption>('1month');
+export function DashboardMain() {
+  const [showTransactionForm, setShowTransactionForm] = useState(false);
   const { user } = useAuth();
   const { current: workspace } = useWorkspace();
 
@@ -69,47 +69,64 @@ export function EnhancedDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Header com filtro de período */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
-            Análises Financeiras
+            Dashboard Financeiro
           </h1>
           <p className="text-muted-foreground">
-            Visualize tendências e insights dos seus dados financeiros
+            Acompanhe sua situação financeira em tempo real
           </p>
         </div>
-        <PeriodFilter period={selectedPeriod} onPeriodChange={setSelectedPeriod} />
+        <Button 
+          onClick={() => setShowTransactionForm(true)}
+          className="bg-[#2f9e44] hover:bg-[#2f9e44]/90 text-white"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Nova Transação
+        </Button>
       </div>
+
+      {/* Welcome Card */}
+      <WelcomeCard 
+        name={userProfile?.name}
+        plan={userProfile?.plan}
+      />
 
       {/* KPI Cards */}
       <KPICards />
 
-      {/* Layout principal com 3 colunas */}
-      <div className="grid gap-6 lg:grid-cols-4">
-        {/* Coluna principal - Gráficos (2 colunas) */}
+      {/* Layout principal */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Coluna esquerda - Alertas e Transações */}
         <div className="lg:col-span-2 space-y-6">
-          <FinancialCharts period={selectedPeriod} />
+          <SmartFinancialAlerts />
+          <IncomingTransactions />
         </div>
         
-        {/* Sidebar direita - Insights e Alertas (2 colunas) */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="space-y-6">
-              <FinancialInsights />
-              <GoalProgressCard 
-                completedGoals={goalsData?.completedGoals || 0}
-                totalGoals={goalsData?.totalGoals || 0}
-                goalsProgress={goalsData?.goalsProgress || 0}
-              />
-            </div>
-            <div className="space-y-6">
-              <SmartFinancialAlerts />
-              <IncomingTransactions />
-            </div>
-          </div>
+        {/* Sidebar direita - Progresso */}
+        <div className="space-y-6">
+          <GoalProgressCard 
+            completedGoals={goalsData?.completedGoals || 0}
+            totalGoals={goalsData?.totalGoals || 0}
+            goalsProgress={goalsData?.goalsProgress || 0}
+          />
         </div>
       </div>
+
+      {/* Modal de Nova Transação */}
+      <Dialog open={showTransactionForm} onOpenChange={setShowTransactionForm}>
+        <DialogContent className="max-w-xl w-full rounded-2xl p-4 md:p-6">
+          <DialogHeader>
+            <DialogTitle>Nova Transação</DialogTitle>
+          </DialogHeader>
+          <TransactionForm
+            onSuccess={() => setShowTransactionForm(false)}
+            onCancel={() => setShowTransactionForm(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

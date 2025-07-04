@@ -31,13 +31,13 @@ export default function FinancieApp() {
         </header>
         <main className="p-4 md:p-6">
           <Routes>
-            <Route path="/" element={<EnhancedDashboard />} />
-            <Route path="/app" element={<EnhancedDashboard />} />
+            <Route path="/" element={<DashboardTabs />} />
+            <Route path="/app" element={<DashboardTabs />} />
             <Route path="/app/incoming" element={<IncomingPage />} />
             <Route path="/app/profile" element={<ProfilePageNew />} />
             <Route path="/app/workspaces" element={<WorkspaceManager />} />
             <Route path="/app/budgets" element={<BudgetPage />} />
-            <Route path="/app/analytics" element={<DashboardTabs />} />
+            <Route path="/app/analytics" element={<EnhancedDashboard />} />
             <Route path="/app/alerts" element={<AlertsPage />} />
             <Route path="/app/education" element={<EducationNew />} />
             <Route path="/app/assistant" element={<AssistantPage />} />
@@ -53,7 +53,7 @@ export default function FinancieApp() {
             <Route path="/profile" element={<ProfilePageNew />} />
             <Route path="/workspaces" element={<WorkspaceManager />} />
             <Route path="/budgets" element={<BudgetPage />} />
-            <Route path="/analytics" element={<DashboardTabs />} />
+            <Route path="/analytics" element={<EnhancedDashboard />} />
             <Route path="/education" element={<EducationNew />} />
             <Route path="/assistant" element={<AssistantPage />} />
             <Route path="/subscription" element={<SubscriptionPlans />} />
