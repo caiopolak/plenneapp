@@ -50,11 +50,6 @@ const mainItems = [
     url: "/app/budgets",
     icon: PiggyBank,
   },
-  {
-    title: "Transações Pendentes",
-    url: "/app/incoming",
-    icon: Clock,
-  },
 ];
 
 const educationItems = [

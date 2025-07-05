@@ -3,7 +3,7 @@ import { WelcomeCard } from './WelcomeCard';
 import { KPICards } from './KPICards';
 import { SmartFinancialAlerts } from '@/components/alerts/SmartFinancialAlerts';
 import { IncomingTransactions } from '@/components/transactions/IncomingTransactions';
-import { GoalProgressCard } from './GoalProgressCard';
+
 import { TransactionForm } from '@/components/transactions/TransactionForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -98,21 +98,9 @@ export function DashboardMain() {
       <KPICards />
 
       {/* Layout principal */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Coluna esquerda - Alertas e Transações */}
-        <div className="lg:col-span-2 space-y-6">
-          <SmartFinancialAlerts />
-          <IncomingTransactions />
-        </div>
-        
-        {/* Sidebar direita - Progresso */}
-        <div className="space-y-6">
-          <GoalProgressCard 
-            completedGoals={goalsData?.completedGoals || 0}
-            totalGoals={goalsData?.totalGoals || 0}
-            goalsProgress={goalsData?.goalsProgress || 0}
-          />
-        </div>
+      <div className="space-y-6">
+        <SmartFinancialAlerts />
+        <IncomingTransactions />
       </div>
 
       {/* Modal de Nova Transação */}

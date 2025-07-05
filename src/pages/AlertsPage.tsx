@@ -1,5 +1,5 @@
 import React from "react";
-import { SmartFinancialAlerts } from "@/components/alerts/SmartFinancialAlerts";
+import { SmartAlerts } from "@/components/education/SmartAlerts";
 
 export default function AlertsPage() {
   return (
@@ -10,7 +10,7 @@ export default function AlertsPage() {
           Acompanhe alertas importantes sobre sua situação financeira
         </p>
       </div>
-      <SmartFinancialAlerts />
+      <SmartAlerts />
     </div>
   );
 }
