@@ -1,6 +1,6 @@
 
-import { SmartAlerts } from "@/components/education/SmartAlerts";
+import { UnifiedSmartAlerts } from "@/components/alerts/UnifiedSmartAlerts";
 
 export default function EducationAlertsTab() {
-  return <SmartAlerts />;
+  return <UnifiedSmartAlerts />;
 }

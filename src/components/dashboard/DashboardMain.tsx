@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { WelcomeCard } from './WelcomeCard';
 import { KPICards } from './KPICards';
-import { SmartFinancialAlerts } from '@/components/alerts/SmartFinancialAlerts';
+import { UnifiedSmartAlerts } from '@/components/alerts/UnifiedSmartAlerts';
 import { IncomingTransactions } from '@/components/transactions/IncomingTransactions';
 
 import { TransactionForm } from '@/components/transactions/TransactionForm';
@@ -99,7 +99,7 @@ export function DashboardMain() {
 
       {/* Layout principal */}
       <div className="space-y-6">
-        <SmartFinancialAlerts />
+        <UnifiedSmartAlerts />
         <IncomingTransactions />
       </div>
 
