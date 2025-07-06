@@ -340,20 +340,23 @@ export function useIntelligentAlerts() {
   const deleteAlert = async (alertId: string) => {
     if (!user) return;
     
-    // Se for alerta automático, apenas remover localmente
-    if (alertId.includes('-')) {
-      setAlerts(prev => prev.filter(alert => alert.id !== alertId));
-      return;
-    }
-
-    // Se for alerta manual, deletar do banco
-    await supabase
-      .from('financial_alerts')
-      .delete()
-      .eq('id', alertId)
-      .eq('user_id', user.id);
-    
+    // Sempre remover localmente primeiro
     setAlerts(prev => prev.filter(alert => alert.id !== alertId));
+    
+    // Se for alerta manual, deletar do banco também
+    if (!alertId.includes('-')) {
+      try {
+        await supabase
+          .from('financial_alerts')
+          .delete()
+          .eq('id', alertId)
+          .eq('user_id', user.id);
+      } catch (error) {
+        console.error('Erro ao deletar alerta do banco:', error);
+        // Se der erro, recarregar alertas
+        fetchAlerts();
+      }
+    }
   };
 
   useEffect(() => {

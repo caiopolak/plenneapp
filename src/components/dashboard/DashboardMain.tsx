@@ -99,7 +99,6 @@ export function DashboardMain() {
 
       {/* Layout principal */}
       <div className="space-y-6">
-        <UnifiedSmartAlerts />
         <IncomingTransactions />
       </div>
 

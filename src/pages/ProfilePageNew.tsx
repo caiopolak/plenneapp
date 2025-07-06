@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
+import { useAvatarUpload } from "@/hooks/useAvatarUpload";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { User, Settings, Shield, CreditCard } from "lucide-react";
 
 const ProfilePageNew = () => {
   const { profile, subscription, updateProfile, loading } = useProfile();
+  const { uploadAvatar, uploading: avatarUploading } = useAvatarUpload();
   const { toast } = useToast();
 
   // Form states
@@ -28,6 +30,16 @@ const ProfilePageNew = () => {
     setRiskProfile(profile?.risk_profile || "moderate");
     setAvatarUrl(profile?.avatar_url || "");
   }, [profile]);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const url = await uploadAvatar(file);
+    if (url) {
+      setAvatarUrl(url);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,14 +125,27 @@ const ProfilePageNew = () => {
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid gap-4">
                       <div>
-                        <Label htmlFor="avatar">Avatar (URL)</Label>
-                        <Input
-                          id="avatar"
-                          type="url"
-                          value={avatarUrl || ""}
-                          onChange={e => setAvatarUrl(e.target.value)}
-                          placeholder="https://..."
-                        />
+                        <Label htmlFor="avatar">Avatar</Label>
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-16 w-16">
+                            <AvatarImage src={avatarUrl || ''} alt="Preview" />
+                            <AvatarFallback>
+                              {fullName?.charAt(0) || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 space-y-2">
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleAvatarUpload}
+                              disabled={avatarUploading}
+                              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-[#eaf6ee] file:text-[#003f5c] hover:file:bg-[#d1f2d1]"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              JPG, PNG, WebP ou GIF - Máximo 5MB
+                            </p>
+                          </div>
+                        </div>
                       </div>
                       <div>
                         <Label htmlFor="fullName">Nome completo</Label>

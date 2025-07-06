@@ -16,6 +16,7 @@ import {
   User
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useThemes } from "@/hooks/useThemes";
 import { toast } from "sonner";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 
@@ -28,6 +29,7 @@ interface AppVersion {
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const { themes, currentTheme, saveTheme } = useThemes();
   const [appVersion, setAppVersion] = useState<AppVersion>({
     version: "2.1.4",
     buildDate: new Date().toISOString().split('T')[0],
@@ -98,14 +100,27 @@ export default function SettingsPage() {
               <p className="text-sm text-muted-foreground">
                 Personalize a aparência do aplicativo
               </p>
-              <Button 
-                onClick={handleThemeChange}
-                variant="outline" 
-                className="w-full"
-              >
-                <Palette className="h-4 w-4 mr-2" />
-                Configurar Temas (Em breve)
-              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                {themes.map((theme) => (
+                  <Button
+                    key={theme.name}
+                    onClick={() => saveTheme(theme.name)}
+                    variant={currentTheme === theme.name ? "default" : "outline"}
+                    className="h-12 flex flex-col gap-1"
+                  >
+                    <div className="flex gap-1">
+                      {Object.values(theme.colors).map((color, idx) => (
+                        <div
+                          key={idx}
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: `rgb(${color})` }}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs">{theme.label}</span>
+                  </Button>
+                ))}
+              </div>
             </div>
 
             <Separator />

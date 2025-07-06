@@ -824,6 +824,36 @@ export type Database = {
           },
         ]
       }
+      user_themes: {
+        Row: {
+          created_at: string | null
+          custom_colors: Json | null
+          id: string
+          is_active: boolean | null
+          theme_name: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_colors?: Json | null
+          id?: string
+          is_active?: boolean | null
+          theme_name?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_colors?: Json | null
+          id?: string
+          is_active?: boolean | null
+          theme_name?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       workspace_members: {
         Row: {
           created_at: string | null

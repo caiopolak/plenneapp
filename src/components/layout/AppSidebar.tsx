@@ -11,7 +11,9 @@ import {
   LogOut,
   Building2,
   Bell,
-  Clock
+  Clock,
+  Target,
+  TrendingUp
 } from "lucide-react";
 
 import {
@@ -41,14 +43,29 @@ const mainItems = [
     icon: Home,
   },
   {
-    title: "Análises",
-    url: "/app/analytics",
+    title: "Transações",
+    url: "/app/transactions",
     icon: BarChart3,
+  },
+  {
+    title: "Metas",
+    url: "/app/goals",
+    icon: Target,
+  },
+  {
+    title: "Investimentos", 
+    url: "/app/investments",
+    icon: TrendingUp,
   },
   {
     title: "Orçamentos",
     url: "/app/budgets",
     icon: PiggyBank,
+  },
+  {
+    title: "Análises",
+    url: "/app/analytics",
+    icon: BarChart3,
   },
 ];
 
