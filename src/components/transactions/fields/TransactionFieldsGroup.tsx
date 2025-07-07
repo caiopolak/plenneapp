@@ -24,8 +24,10 @@ interface TransactionFieldsGroupProps {
   recurrencePattern: string;
   setRecurrencePattern: (v: string) => void;
   recurrenceEndDate: string;
-  setRecurrenceEndDate: (s: string) => void;
+  setRecurrenceEndDate: (value: string) => void;
   isMobile: boolean;
+  isScheduled?: boolean;
+  canUseRecurring?: boolean;
 }
 
 export function TransactionFieldsGroup({
@@ -48,18 +50,23 @@ export function TransactionFieldsGroup({
         <TransactionTypeField value={type} onChange={setType} isMobile={isMobile} />
         <TransactionAmountField value={amount} onChange={setAmount} isMobile={isMobile} />
       </div>
-      <TransactionCategoryField type={type} value={category} onChange={setCategory} isMobile={isMobile} />
-      <TransactionDateField value={date} onChange={setDate} isMobile={isMobile} />
-      <TransactionDescriptionField value={description} onChange={setDescription} isMobile={isMobile} />
-      <TransactionRecurrenceFields
-        isRecurring={isRecurring}
-        setIsRecurring={setIsRecurring}
-        recurrencePattern={recurrencePattern}
-        setRecurrencePattern={setRecurrencePattern}
-        recurrenceEndDate={recurrenceEndDate}
-        setRecurrenceEndDate={setRecurrenceEndDate}
-        isMobile={isMobile}
-      />
+        <TransactionDateField 
+          date={date} 
+          setDate={setDate} 
+          label={isScheduled ? "Data Esperada" : "Data da Transação"}
+        />
+        <TransactionDescriptionField value={description} onChange={setDescription} isMobile={isMobile} />
+        {!isScheduled && (
+          <TransactionRecurrenceFields
+            isRecurring={isRecurring}
+            setIsRecurring={setIsRecurring}
+            recurrencePattern={recurrencePattern}
+            setRecurrencePattern={setRecurrencePattern}
+            recurrenceEndDate={recurrenceEndDate}
+            setRecurrenceEndDate={setRecurrenceEndDate}
+            canUseRecurring={canUseRecurring}
+          />
+        )}
     </div>
   );
 }

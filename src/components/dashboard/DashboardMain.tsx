@@ -4,8 +4,8 @@ import { KPICards } from './KPICards';
 import { UnifiedSmartAlerts } from '@/components/alerts/UnifiedSmartAlerts';
 import { IncomingTransactions } from '@/components/transactions/IncomingTransactions';
 
-import { TransactionForm } from '@/components/transactions/TransactionForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { UnifiedTransactionForm } from '@/components/transactions/UnifiedTransactionForm';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -108,7 +108,7 @@ export function DashboardMain() {
           <DialogHeader>
             <DialogTitle>Nova Transação</DialogTitle>
           </DialogHeader>
-          <TransactionForm
+          <UnifiedTransactionForm
             onSuccess={() => setShowTransactionForm(false)}
             onCancel={() => setShowTransactionForm(false)}
           />
