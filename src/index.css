@@ -7,16 +7,73 @@
 
 @layer base {
   :root {
-    --primary: #003f5c;
-    --secondary: #2f9e44;
-    --neutral-light: #f4f4f4;
-    --graphite: #2b2b2b;
-    --attention: #f8961e;
-    --error: #d62828;
-    --background: #f4f4f4;
-    --surface: #fff;
-    --accent: #f8961e;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 216 56% 92%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 210 40% 98%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 210 40% 98%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
     --radius: 1rem;
+    
+    /* Cores customizadas do Plenne */
+    --color-primary: 0, 63, 92;
+    --color-secondary: 47, 158, 68;
+    --color-accent: 248, 150, 30;
+    --color-error: 214, 40, 40;
+    --color-surface: 255, 255, 255;
+    --color-background: 244, 244, 244;
+    --color-graphite: 43, 43, 43;
+    
+    /* Gradientes */
+    --gradient-primary: linear-gradient(120deg, rgb(var(--color-primary)) 0%, rgb(var(--color-secondary)) 100%);
+    --gradient-accent: linear-gradient(98deg, rgb(var(--color-accent)) 15%, rgb(var(--color-primary)) 89%);
+    
+    /* Sombras */
+    --shadow-card: 0 4px 32px 0 rgba(44, 63, 92, 0.12);
+    --shadow-accent: 0 2px 16px 0 rgba(47, 158, 68, 0.08), 0 6px 32px 0 rgba(0,63,92,0.10);
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    
+    /* Cores escuras do Plenne */
+    --color-primary: 30, 30, 30;
+    --color-secondary: 60, 60, 60;
+    --color-accent: 248, 150, 30;
+    --color-background: 24, 24, 27;
+    --color-surface: 39, 39, 42;
+    --color-graphite: 244, 244, 244;
   }
 
   body {

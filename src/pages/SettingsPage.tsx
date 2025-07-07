@@ -13,7 +13,8 @@ import {
   Info,
   Calendar,
   GitBranch,
-  User
+  User,
+  CheckCircle
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useThemes } from "@/hooks/useThemes";
@@ -95,31 +96,48 @@ export default function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <h4 className="font-medium">Tema da Aplicação</h4>
-              <p className="text-sm text-muted-foreground">
-                Personalize a aparência do aplicativo
-              </p>
-              <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium">Tema da Aplicação</h4>
+                <p className="text-sm text-muted-foreground">
+                  Personalize a aparência do aplicativo escolhendo um dos temas disponíveis
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {themes.map((theme) => (
                   <Button
                     key={theme.name}
                     onClick={() => saveTheme(theme.name)}
                     variant={currentTheme === theme.name ? "default" : "outline"}
-                    className="h-12 flex flex-col gap-1"
+                    className={`h-16 flex flex-col gap-2 p-3 ${
+                      currentTheme === theme.name ? 'ring-2 ring-primary' : ''
+                    }`}
                   >
-                    <div className="flex gap-1">
-                      {Object.values(theme.colors).map((color, idx) => (
-                        <div
-                          key={idx}
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: `rgb(${color})` }}
-                        />
-                      ))}
+                    <div className="flex gap-1.5">
+                      <div
+                        className="w-4 h-4 rounded-full border border-white/20"
+                        style={{ backgroundColor: `rgb(${theme.colors.primary})` }}
+                      />
+                      <div
+                        className="w-4 h-4 rounded-full border border-white/20"
+                        style={{ backgroundColor: `rgb(${theme.colors.secondary})` }}
+                      />
+                      <div
+                        className="w-4 h-4 rounded-full border border-white/20"
+                        style={{ backgroundColor: `rgb(${theme.colors.accent})` }}
+                      />
                     </div>
-                    <span className="text-xs">{theme.label}</span>
+                    <span className="text-xs font-medium">{theme.label}</span>
+                    {currentTheme === theme.name && (
+                      <div className="absolute top-1 right-1">
+                        <CheckCircle className="h-4 w-4 text-primary" />
+                      </div>
+                    )}
                   </Button>
                 ))}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                💡 Os temas são aplicados instantaneamente e salvos automaticamente na sua conta
               </div>
             </div>
 

@@ -15,45 +15,84 @@ const defaultThemes = [
     name: 'default',
     label: 'Padrão Verde',
     colors: {
-      primary: '216, 56, 92', // #003f5c
-      secondary: '47, 158, 68', // #2f9e44
-      accent: '248, 150, 30', // #f8961e
+      primary: '0, 63, 92',
+      secondary: '47, 158, 68',
+      accent: '248, 150, 30',
+      background: '244, 244, 244',
+      surface: '255, 255, 255',
+      graphite: '43, 43, 43'
     }
   },
   {
     name: 'blue',
     label: 'Azul Profissional',
     colors: {
-      primary: '59, 130, 246', // blue-500
-      secondary: '99, 102, 241', // indigo-500
-      accent: '168, 85, 247', // purple-500
+      primary: '37, 99, 235',
+      secondary: '59, 130, 246',
+      accent: '99, 102, 241',
+      background: '248, 250, 252',
+      surface: '255, 255, 255',
+      graphite: '30, 41, 59'
     }
   },
   {
     name: 'purple',
     label: 'Roxo Moderno',
     colors: {
-      primary: '147, 51, 234', // purple-600
-      secondary: '168, 85, 247', // purple-500
-      accent: '236, 72, 153', // pink-500
+      primary: '147, 51, 234',
+      secondary: '168, 85, 247',
+      accent: '236, 72, 153',
+      background: '250, 245, 255',
+      surface: '255, 255, 255',
+      graphite: '88, 28, 135'
     }
   },
   {
     name: 'emerald',
     label: 'Verde Esmeralda',
     colors: {
-      primary: '5, 150, 105', // emerald-600
-      secondary: '16, 185, 129', // emerald-500
-      accent: '34, 197, 94', // green-500
+      primary: '5, 150, 105',
+      secondary: '16, 185, 129',
+      accent: '34, 197, 94',
+      background: '240, 253, 244',
+      surface: '255, 255, 255',
+      graphite: '20, 83, 45'
+    }
+  },
+  {
+    name: 'sunset',
+    label: 'Pôr do Sol',
+    colors: {
+      primary: '251, 146, 60',
+      secondary: '251, 191, 36',
+      accent: '239, 68, 68',
+      background: '255, 251, 235',
+      surface: '255, 255, 255',
+      graphite: '154, 52, 18'
+    }
+  },
+  {
+    name: 'ocean',
+    label: 'Oceano',
+    colors: {
+      primary: '14, 165, 233',
+      secondary: '6, 182, 212',
+      accent: '34, 211, 238',
+      background: '240, 249, 255',
+      surface: '255, 255, 255',
+      graphite: '12, 74, 110'
     }
   },
   {
     name: 'dark',
     label: 'Modo Escuro',
     colors: {
-      primary: '30, 30, 30',
-      secondary: '60, 60, 60',
+      primary: '148, 163, 184',
+      secondary: '100, 116, 139',
       accent: '248, 150, 30',
+      background: '15, 23, 42',
+      surface: '30, 41, 59',
+      graphite: '248, 250, 252'
     }
   }
 ];
@@ -70,9 +109,25 @@ export function useThemes() {
     if (!theme) return;
 
     const root = document.documentElement;
+    
+    // Aplicar modo escuro se necessário
+    if (themeName === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    
+    // Aplicar cores customizadas
     Object.entries(theme.colors).forEach(([key, value]) => {
       root.style.setProperty(`--color-${key}`, value);
     });
+    
+    // Atualizar gradientes baseados nas novas cores
+    const gradientPrimary = `linear-gradient(120deg, rgb(${theme.colors.primary}) 0%, rgb(${theme.colors.secondary}) 100%)`;
+    const gradientAccent = `linear-gradient(98deg, rgb(${theme.colors.accent}) 15%, rgb(${theme.colors.primary}) 89%)`;
+    
+    root.style.setProperty('--gradient-primary', gradientPrimary);
+    root.style.setProperty('--gradient-accent', gradientAccent);
     
     setCurrentTheme(themeName);
   };

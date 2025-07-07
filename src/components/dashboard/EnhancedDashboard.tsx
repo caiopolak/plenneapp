@@ -4,6 +4,7 @@ import { KPICards } from './KPICards';
 import { FinancialInsights } from './FinancialInsights';
 import { PeriodFilter, PeriodOption } from './PeriodFilter';
 import { FinancialCharts } from '@/components/analytics/FinancialCharts';
+import { AdvancedAnalytics } from '@/components/analytics/AdvancedAnalytics';
 import { GoalProgressCard } from './GoalProgressCard';
 import { WelcomeCard } from './WelcomeCard';
 import { SmartFinancialAlerts } from '@/components/alerts/SmartFinancialAlerts';
@@ -85,30 +86,12 @@ export function EnhancedDashboard() {
       {/* KPI Cards */}
       <KPICards />
 
-      {/* Layout principal com 3 colunas */}
-      <div className="grid gap-6 lg:grid-cols-4">
-        {/* Coluna principal - Gráficos (2 colunas) */}
-        <div className="lg:col-span-2 space-y-6">
-          <FinancialCharts period={selectedPeriod} />
-        </div>
-        
-        {/* Sidebar direita - Insights e Alertas (2 colunas) */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="space-y-6">
-              <FinancialInsights />
-              <GoalProgressCard 
-                completedGoals={goalsData?.completedGoals || 0}
-                totalGoals={goalsData?.totalGoals || 0}
-                goalsProgress={goalsData?.goalsProgress || 0}
-              />
-            </div>
-            <div className="space-y-6">
-              <SmartFinancialAlerts />
-              <IncomingTransactions />
-            </div>
-          </div>
-        </div>
+      {/* Análises Avançadas */}
+      <AdvancedAnalytics period={selectedPeriod} />
+
+      {/* Layout principal com gráficos */}
+      <div className="space-y-6">
+        <FinancialCharts period={selectedPeriod} />
       </div>
     </div>
   );
