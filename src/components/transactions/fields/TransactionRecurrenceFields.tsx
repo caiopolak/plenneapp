@@ -13,6 +13,7 @@ interface TransactionRecurrenceFieldsProps {
   recurrenceEndDate: string;
   setRecurrenceEndDate: (v: string) => void;
   isMobile?: boolean;
+  canUseRecurring?: boolean;
 }
 
 export function TransactionRecurrenceFields({

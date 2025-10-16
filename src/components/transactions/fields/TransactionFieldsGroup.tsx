@@ -40,6 +40,8 @@ export function TransactionFieldsGroup({
   recurrencePattern, setRecurrencePattern,
   recurrenceEndDate, setRecurrenceEndDate,
   isMobile,
+  isScheduled = false,
+  canUseRecurring = true,
 }: TransactionFieldsGroupProps) {
   return (
     <div className="space-y-4">
@@ -50,10 +52,11 @@ export function TransactionFieldsGroup({
         <TransactionTypeField value={type} onChange={setType} isMobile={isMobile} />
         <TransactionAmountField value={amount} onChange={setAmount} isMobile={isMobile} />
       </div>
+        <TransactionCategoryField type={type} value={category} onChange={setCategory} isMobile={isMobile} />
         <TransactionDateField 
-          date={date} 
-          setDate={setDate} 
-          label={isScheduled ? "Data Esperada" : "Data da Transação"}
+          value={date} 
+          onChange={setDate} 
+          isMobile={isMobile}
         />
         <TransactionDescriptionField value={description} onChange={setDescription} isMobile={isMobile} />
         {!isScheduled && (
