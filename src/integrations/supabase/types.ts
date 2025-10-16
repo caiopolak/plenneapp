@@ -947,7 +947,7 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      is_workspace_admin: {
+      is_workspace_owner: {
         Args: { _user_id: string; _workspace_id: string }
         Returns: boolean
       }
