@@ -23,9 +23,7 @@ export function useIntelligentAlerts() {
   const { current: workspace } = useWorkspace();
 
   const generateIntelligentAlerts = async (): Promise<IntelligentAlert[]> => {
-    if (!user) return [];
-    // Se não houver workspace, só buscar alertas do usuário sem análises contextuais
-    if (!workspace?.id) return [];
+    if (!user || !workspace?.id) return [];
 
     const currentDate = new Date();
     const currentMonth = startOfMonth(currentDate);
@@ -281,11 +279,6 @@ export function useIntelligentAlerts() {
       const automaticAlerts = await generateIntelligentAlerts();
 
       // Buscar alertas manuais do banco
-      if (!user?.id) {
-        setAlerts([]);
-        return;
-      }
-
       const { data: manualAlerts } = await supabase
         .from('financial_alerts')
         .select('*')
@@ -367,7 +360,7 @@ export function useIntelligentAlerts() {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && workspace) {
       fetchAlerts();
     } else {
       setAlerts([]);

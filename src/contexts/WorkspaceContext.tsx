@@ -32,14 +32,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const [current, setCurrent] = useState<Workspace | null>(null);
 
   const reload = async () => {
-    if (!user) {
-      console.log("WorkspaceContext - No user, clearing workspaces");
-      setWorkspaces([]);
-      setCurrent(null);
-      return;
-    }
-
-    console.log("WorkspaceContext - Reloading workspaces for user:", user.id);
+    if (!user) return;
 
     // Primeiro, buscar todos os workspace_ids onde o user é membro:
     const { data: memberRecords, error: memberError } = await supabase
@@ -48,10 +41,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       .eq("user_id", user.id)
       .eq("status", "active");
 
-    console.log("WorkspaceContext - Member records:", memberRecords);
-
     if (memberError || !memberRecords || memberRecords.length === 0) {
-      console.log("WorkspaceContext - No workspace members found");
       setWorkspaces([]);
       setCurrent(null);
       return;
@@ -59,10 +49,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     // Extrair array de IDs
     const workspaceIds = memberRecords.map((rec: any) => rec.workspace_id).filter(Boolean);
 
-    console.log("WorkspaceContext - Workspace IDs:", workspaceIds);
-
     if (workspaceIds.length === 0) {
-      console.log("WorkspaceContext - No valid workspace IDs");
       setWorkspaces([]);
       setCurrent(null);
       return;
@@ -74,18 +61,9 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       .select("*")
       .in("id", workspaceIds);
 
-    console.log("WorkspaceContext - Workspaces loaded:", data);
-
-    if (!error && data && data.length > 0) {
+    if (!error && data) {
       setWorkspaces(data);
-      // Se não houver workspace atual OU o atual não está mais na lista, selecionar o primeiro
-      const newCurrent = current && data.find((w: any) => w.id === current.id) ? current : data[0];
-      console.log("WorkspaceContext - Setting current workspace to:", newCurrent);
-      setCurrent(newCurrent);
-    } else {
-      console.log("WorkspaceContext - Error or no workspaces:", error);
-      setWorkspaces([]);
-      setCurrent(null);
+      setCurrent((c) => c && data.find((w: any) => w.id === c.id) ? c : data[0] || null);
     }
   };
 
