@@ -153,7 +153,7 @@ export function IncomingTransactions() {
   if (loading) return <div>Carregando transações pendentes...</div>;
 
   return (
-    <Card className="bg-white border-[--primary]/10">
+    <Card className="bg-card border-border/10">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[--primary] font-display">
           <Clock className="w-5 h-5" />
@@ -169,18 +169,18 @@ export function IncomingTransactions() {
         ) : (
           <div className="space-y-3">
             {incomingTransactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-[#eaf6ee] bg-white"
-              >
+                <div
+                  key={transaction.id}
+                  className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted bg-card"
+                >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <Badge
                       variant="default"
                       className={
                         transaction.type === 'income'
-                          ? 'bg-[--secondary] text-white'
-                          : 'bg-[--error] text-white'
+                          ? 'bg-secondary text-secondary-foreground'
+                          : 'bg-destructive text-destructive-foreground'
                       }
                     >
                       {transaction.type === 'income' ? 'Receita' : 'Despesa'}
@@ -200,7 +200,7 @@ export function IncomingTransactions() {
 
                 <div className="flex items-center gap-3">
                   <span className={`text-lg font-bold ${
-                    transaction.type === 'income' ? 'text-[--secondary]' : 'text-[--error]'
+                    transaction.type === 'income' ? 'text-secondary' : 'text-destructive'
                   }`}>
                     {transaction.type === 'income' ? '+' : '-'}R$ {Number(transaction.amount).toFixed(2).replace('.', ',')}
                   </span>
@@ -208,7 +208,7 @@ export function IncomingTransactions() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-[--secondary] border-[--secondary] hover:bg-[--secondary] hover:text-white"
+                      className="text-secondary border-secondary hover:bg-secondary hover:text-secondary-foreground"
                       onClick={() => confirmTransaction(transaction)}
                     >
                       <Check className="w-4 h-4" />
@@ -216,7 +216,7 @@ export function IncomingTransactions() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-[--error] border-[--error] hover:bg-[--error] hover:text-white"
+                      className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
                       onClick={() => cancelTransaction(transaction.id)}
                     >
                       <X className="w-4 h-4" />

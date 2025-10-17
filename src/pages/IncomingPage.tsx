@@ -28,7 +28,7 @@ export default function IncomingPage() {
         
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 text-white hover:from-[#003f5c] hover:to-[#2f9e44]">
+            <Button className="bg-gradient-to-tr from-primary/80 to-secondary/40 text-primary-foreground hover:from-primary hover:to-secondary">
               <Plus className="w-4 h-4 mr-2" />
               Nova Transação Pendente
             </Button>

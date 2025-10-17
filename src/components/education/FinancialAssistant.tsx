@@ -66,7 +66,7 @@ export function FinancialAssistant() {
               </div>
             ) : (
               messages.map((msg, idx) => (
-                <div key={idx} className={`text-sm rounded px-3 py-2 ${msg.role === "user" ? "bg-white self-end border font-semibold" : "bg-[#003f5c] text-white self-start whitespace-pre-line"}`}>
+                <div key={idx} className={`text-sm rounded px-3 py-2 ${msg.role === "user" ? "bg-card self-end border border-border font-semibold text-foreground" : "bg-primary text-primary-foreground self-start whitespace-pre-line"}`}>
                   {msg.content}
                 </div>
               ))
