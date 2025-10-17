@@ -51,7 +51,22 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     console.log("WorkspaceContext - Member records:", memberRecords);
 
     if (memberError || !memberRecords || memberRecords.length === 0) {
-      console.log("WorkspaceContext - No workspace members found");
+      console.log("WorkspaceContext - No workspace members found, trying fallback to owner workspaces");
+      
+      // Fallback: try to load workspaces where user is owner
+      const { data: ownedWorkspaces, error: ownerError } = await supabase
+        .from("workspaces")
+        .select("*")
+        .eq("owner_id", user.id);
+
+      if (!ownerError && ownedWorkspaces && ownedWorkspaces.length > 0) {
+        console.log("WorkspaceContext - Found owner workspaces:", ownedWorkspaces);
+        setWorkspaces(ownedWorkspaces);
+        setCurrent(ownedWorkspaces[0]);
+        return;
+      }
+
+      console.log("WorkspaceContext - No workspaces found at all");
       setWorkspaces([]);
       setCurrent(null);
       return;

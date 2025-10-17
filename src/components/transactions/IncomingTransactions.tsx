@@ -32,7 +32,12 @@ export function IncomingTransactions() {
   const { toast } = useToast();
 
   const fetchIncomingTransactions = async () => {
-    if (!user || !workspace?.id) return;
+    if (!user || !workspace?.id) {
+      console.log("IncomingTransactions - No user or workspace, clearing transactions");
+      setIncomingTransactions([]);
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
