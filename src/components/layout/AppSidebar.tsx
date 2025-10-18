@@ -123,11 +123,11 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar variant="inset" className="bg-gradient-to-b from-white to-[#f8fffe]">
-      <SidebarContent className="space-y-1">
+    <Sidebar variant="inset" className="bg-background border-r">
+      <SidebarContent className="space-y-1 bg-background">
         {/* Menu Principal - Financeiro */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[#003f5c] font-semibold">Financeiro</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-primary font-semibold">Financeiro</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
@@ -135,7 +135,7 @@ export function AppSidebar() {
                   <SidebarMenuButton 
                     asChild
                     isActive={location.pathname === item.url}
-                    className="hover:bg-[#eaf6ee] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c]"
+                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary"
                   >
                     <a href={item.url}>
                       <item.icon />
@@ -150,7 +150,7 @@ export function AppSidebar() {
 
         {/* Menu Educação */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[#2f9e44] font-semibold">Educação & Alertas</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-secondary font-semibold">Educação & Alertas</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {educationItems.map((item) => (
@@ -158,7 +158,7 @@ export function AppSidebar() {
                   <SidebarMenuButton 
                     asChild
                     isActive={location.pathname === item.url}
-                    className="hover:bg-[#eaf6ee] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c]"
+                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary"
                   >
                     <a href={item.url}>
                       <item.icon />
@@ -181,7 +181,7 @@ export function AppSidebar() {
                   <SidebarMenuButton 
                     asChild
                     isActive={location.pathname === item.url}
-                    className="hover:bg-[#eaf6ee] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c]"
+                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary"
                   >
                     <a href={item.url}>
                       <item.icon />
@@ -194,25 +194,25 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-4 space-y-4">
+      <SidebarFooter className="p-4 space-y-4 bg-background">
         {/* Logo com slogan aleatório */}
-        <div className="flex flex-col items-center space-y-2 p-3 bg-gradient-to-r from-[#003f5c] to-[#2f9e44] rounded-lg">
+        <div className="flex flex-col items-center space-y-2 p-3 bg-gradient-to-r from-primary to-secondary rounded-lg">
           <LogoPlenne />
-          <p className="text-xs text-white text-center font-medium">
+          <p className="text-xs text-primary-foreground text-center font-medium">
             {getRandomSlogan()}
           </p>
         </div>
         
         {/* Informações do usuário */}
-        <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
+        <div className="flex items-center space-x-3 p-3 bg-card rounded-lg border">
           <Avatar className="h-10 w-10">
             <AvatarImage src={profile?.avatar_url || ''} alt={profile?.full_name || ''} />
-            <AvatarFallback className="bg-[#eaf6ee] text-[#003f5c] font-bold">
+            <AvatarFallback className="bg-secondary/20 text-primary font-bold">
               {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[#003f5c] truncate">
+            <p className="text-sm font-medium text-primary truncate">
               {profile?.full_name || 'Usuário'}
             </p>
             <p className="text-xs text-muted-foreground truncate">
@@ -225,7 +225,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={handleSignOut}
-              className="hover:bg-[#d62828]/10 hover:text-[#d62828] justify-center"
+              className="hover:bg-destructive/10 hover:text-destructive justify-center"
             >
               <LogOut />
               <span>Sair</span>
