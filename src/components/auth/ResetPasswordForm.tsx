@@ -56,7 +56,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onBack }) 
         <Button
           type="button"
           variant="ghost"
-          className="w-full text-[--primary] hover:bg-[--primary]/10 font-inter"
+          className="w-full text-primary hover:bg-primary/10 font-inter"
           onClick={onBack}
         >
           Voltar ao Login

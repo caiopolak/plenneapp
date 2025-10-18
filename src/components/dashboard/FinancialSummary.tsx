@@ -94,7 +94,7 @@ export function FinancialSummary() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[200px] text-lg font-medium text-[--primary] animate-pulse">
+      <div className="flex items-center justify-center min-h-[200px] text-lg font-medium text-primary animate-pulse">
         Carregando dados financeiros...
       </div>
     );

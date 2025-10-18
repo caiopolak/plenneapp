@@ -27,9 +27,9 @@ export function Header({ onNavigate, currentSection }: HeaderProps) {
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'pro': return 'bg-[--accent] text-[--accent-foreground]';
-      case 'business': return 'bg-[--secondary] text-[--secondary-foreground]';
-      default: return 'bg-[--primary] text-[--primary-foreground]';
+      case 'pro': return 'bg-accent text-accent-foreground';
+      case 'business': return 'bg-secondary text-secondary-foreground';
+      default: return 'bg-primary text-primary-foreground';
     }
   };
 

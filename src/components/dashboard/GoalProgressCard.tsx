@@ -33,8 +33,8 @@ export const GoalProgressCard: React.FC<GoalProgressCardProps> = ({
   return (
     <div className="bg-white rounded-xl shadow border border-green-100 px-6 py-5 flex flex-col justify-between">
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-2xl text-[--secondary]">🎯</span>
-        <span className="font-bold text-[--secondary]">Progresso das Metas</span>
+        <span className="text-2xl text-secondary">🎯</span>
+        <span className="font-bold text-secondary">Progresso das Metas</span>
       </div>
       <div className="flex items-center gap-6">
         <div className="text-xl font-bold text-graphite">{completedGoals} / {totalGoals} metas</div>
@@ -43,7 +43,7 @@ export const GoalProgressCard: React.FC<GoalProgressCardProps> = ({
       <div className="mt-4 mb-1 w-full bg-green-50 rounded">
         <GoalsProgressBar goalsProgress={goalsProgress} />
       </div>
-      <div className="text-xs mt-1 text-[--secondary]">{goalsProgress.toFixed(0)}% das metas concluídas</div>
+      <div className="text-xs mt-1 text-secondary">{goalsProgress.toFixed(0)}% das metas concluídas</div>
     </div>
   );
 }

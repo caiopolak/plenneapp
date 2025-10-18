@@ -10,7 +10,7 @@ export function ImportGoalsCSV({ onSuccess }: { onSuccess: () => void }) {
       </div>
       <button
         type="button"
-        className="px-4 py-2 rounded bg-[--secondary] text-white font-semibold"
+        className="px-4 py-2 rounded bg-secondary text-secondary-foreground font-semibold"
         onClick={onSuccess}
       >
         Simular Importação

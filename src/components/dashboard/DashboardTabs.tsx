@@ -38,25 +38,25 @@ export function DashboardTabs() {
         <TabsList className="mb-6 shadow-md bg-[#f7fafd] grid grid-cols-4 rounded-xl px-1 py-[6px]">
           <TabsTrigger 
             value="dashboard" 
-            className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all"
+            className="flex gap-2 items-center font-display text-primary data-[state=active]:bg-secondary/10 data-[state=active]:text-primary rounded-lg transition-all"
           >
             <Home className="w-5 h-5" /> Dashboard
           </TabsTrigger>
           <TabsTrigger 
             value="transactions" 
-            className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all"
+            className="flex gap-2 items-center font-display text-primary data-[state=active]:bg-secondary/10 data-[state=active]:text-primary rounded-lg transition-all"
           >
             <BarChart3 className="w-5 h-5" /> Transações
           </TabsTrigger>
           <TabsTrigger 
             value="goals" 
-            className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all"
+            className="flex gap-2 items-center font-display text-primary data-[state=active]:bg-secondary/10 data-[state=active]:text-primary rounded-lg transition-all"
           >
             <Target className="w-5 h-5" /> Metas
           </TabsTrigger>
           <TabsTrigger 
             value="investments" 
-            className="flex gap-2 items-center font-display text-[--primary] data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c] rounded-lg transition-all"
+            className="flex gap-2 items-center font-display text-primary data-[state=active]:bg-secondary/10 data-[state=active]:text-primary rounded-lg transition-all"
           >
             <TrendingUp className="w-5 h-5" /> Investimentos
           </TabsTrigger>

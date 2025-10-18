@@ -32,7 +32,7 @@ export function AuthTabs({ onForgot }: { onForgot: () => void }) {
       </CardHeader>
       <CardContent>
         <Tabs value={tab} onValueChange={val => setTab(val as AuthTab)} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4 bg-[--muted]/70 rounded-lg">
+          <TabsList className="grid w-full grid-cols-2 mb-4 bg-muted/70 rounded-lg">
             <TabsTrigger value="signin" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-primary">Entrar</TabsTrigger>
             <TabsTrigger value="signup" className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-primary">Cadastrar</TabsTrigger>
           </TabsList>

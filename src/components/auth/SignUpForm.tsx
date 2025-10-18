@@ -23,45 +23,45 @@ export const SignUpForm: React.FC = () => {
   return (
     <form onSubmit={handleSignUp} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="signup-name" className="text-[--primary] font-poppins">Nome Completo</Label>
+        <Label htmlFor="signup-name" className="text-primary font-poppins">Nome Completo</Label>
         <Input
           id="signup-name"
           type="text"
           value={fullName}
           onChange={e => setFullName(e.target.value)}
           placeholder="Digite seu nome"
-          className="border-[--primary]/20 focus:border-[--electric] font-inter"
+          className="border-primary/20 focus:border-secondary font-inter"
           required
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="signup-email" className="text-[--primary] font-poppins">Email</Label>
+        <Label htmlFor="signup-email" className="text-primary font-poppins">Email</Label>
         <Input
           id="signup-email"
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="seu@email.com"
-          className="border-[--primary]/20 focus:border-[--electric] font-inter"
+          className="border-primary/20 focus:border-secondary font-inter"
           required
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="signup-password" className="text-[--primary] font-poppins">Senha</Label>
+        <Label htmlFor="signup-password" className="text-primary font-poppins">Senha</Label>
         <Input
           id="signup-password"
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           placeholder="••••••••"
-          className="border-[--primary]/20 focus:border-[--electric] font-inter"
+          className="border-primary/20 focus:border-secondary font-inter"
           required
           minLength={6}
         />
       </div>
       <Button
         type="submit"
-        className="w-full bg-gradient-to-r from-[--primary] to-[--gold] hover:to-[--electric] shadow font-bold"
+        className="w-full bg-gradient-to-r from-primary via-secondary to-accent hover:from-primary/90 shadow font-bold"
         disabled={isLoading}
       >
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

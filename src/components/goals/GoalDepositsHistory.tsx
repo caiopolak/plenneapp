@@ -85,8 +85,8 @@ export function GoalDepositsHistory({ goalId }: GoalDepositsHistoryProps) {
 
   return (
     <div>
-      <div className="font-semibold text-sm mb-1 text-[--primary]">Histórico de Aportes</div>
-      <ul className="divide-y divide-[--primary]/10">
+      <div className="font-semibold text-sm mb-1 text-primary">Histórico de Aportes</div>
+      <ul className="divide-y divide-primary/10">
         {deposits.map(dep => (
           <li key={dep.id} className="py-1 flex items-center justify-between text-xs">
             {editingId === dep.id ? (

@@ -23,19 +23,19 @@ export const FinancialAlertsCard: React.FC<FinancialAlertsCardProps> = ({ balanc
           </svg>
         </span>
       )}
-      <span className={`font-semibold ${balance < 0 ? "text-[--error]" : "text-[--secondary]"} text-base`}>
+      <span className={`font-semibold ${balance < 0 ? "text-destructive" : "text-secondary"} text-base`}>
         {balance < 0 ? "Alerta Financeiro" : "Parabéns!"}
       </span>
     </div>
-    <div className={`mt-2 text-sm ${balance < 0 ? "text-[--error] font-medium" : "text-[--secondary]"}`}>
+    <div className={`mt-2 text-sm ${balance < 0 ? "text-destructive font-medium" : "text-secondary"}`}>
       {balance < 0
         ? "Seus gastos superaram as receitas. Reveja despesas e ajuste sua rota!"
         : "Ótimo! Seu saldo está positivo este mês. Avalie investir o excedente para crescer ainda mais 🚀"}
     </div>
     {totalGoals === 0 && (
       <div className="mt-4 p-3 rounded-md bg-blue-50 border border-[--primary]/20 flex items-center gap-2">
-        <span className="text-xl text-[--primary]">🎯</span>
-        <span className="text-[--primary] font-semibold">
+        <span className="text-xl text-primary">🎯</span>
+        <span className="text-primary font-semibold">
           Crie sua primeira meta financeira e conquiste seu próximo objetivo!
         </span>
       </div>

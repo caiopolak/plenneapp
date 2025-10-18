@@ -208,7 +208,7 @@ export function GoalList() {
       </Dialog>
       
       <div className="flex justify-between items-center gap-2 flex-wrap">
-        <h2 className="text-2xl font-bold font-display text-[--primary]">Metas Financeiras</h2>
+        <h2 className="text-2xl font-bold font-display text-primary">Metas Financeiras</h2>
         <GoalActionButtons
           goals={goals}
           onSearchChange={e => setSearch(e.target.value)}
@@ -243,13 +243,13 @@ export function GoalList() {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-lg font-display text-[--primary]">{goal.name}</CardTitle>
+                      <CardTitle className="text-lg font-display text-primary">{goal.name}</CardTitle>
                       <div className="flex gap-2 mt-2">
                         <Badge variant={getPriorityColor(goal.priority)} className="font-display">
                           {getPriorityLabel(goal.priority)}
                         </Badge>
                         {isCompleted && (
-                          <Badge variant="default" className="bg-[--secondary] text-white font-display">
+                          <Badge variant="default" className="bg-secondary text-secondary-foreground font-display">
                             Concluída!
                           </Badge>
                         )}
@@ -259,7 +259,7 @@ export function GoalList() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="font-display border-[--secondary] text-[--primary]"
+                        className="font-display border-secondary text-primary"
                         onClick={() => {
                           setDetailsGoal(goal);
                           setShowDetailsModal(true);
@@ -272,7 +272,7 @@ export function GoalList() {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            className="text-[--primary]"
+                            className="text-primary"
                             onClick={() => setEditingGoal(goal)}
                           >
                             <Edit2 className="w-4 h-4" />
@@ -280,7 +280,7 @@ export function GoalList() {
                         </DialogTrigger>
                         <DialogContent className="max-w-2xl">
                           <DialogHeader>
-                            <DialogTitle className="font-display text-[--primary]">Editar Meta</DialogTitle>
+                            <DialogTitle className="font-display text-primary">Editar Meta</DialogTitle>
                           </DialogHeader>
                           {editingGoal && (
                             <GoalForm 
@@ -298,7 +298,7 @@ export function GoalList() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-[--error]"
+                        className="text-destructive"
                         onClick={() => deleteGoal(goal.id)}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -313,25 +313,25 @@ export function GoalList() {
                       <span className="font-text">Progresso</span>
                       <span className="font-text">{progress.toFixed(1)}%</span>
                     </div>
-                    <Progress value={Math.min(progress, 100)} className="h-2 bg-[--primary]/10" />
+                    <Progress value={Math.min(progress, 100)} className="h-2 bg-primary/10" />
                   </div>
                   
                   <div className="flex justify-between">
                     <div>
                       <div className="text-sm text-muted-foreground font-text">Atual</div>
-                      <div className="font-bold text-[--secondary] font-display">
+                      <div className="font-bold text-secondary font-display">
                         R$ {currentAmount.toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                     <div>
                       <div className="text-sm text-muted-foreground font-text">Meta</div>
-                      <div className="font-bold text-[--primary] font-display">
+                      <div className="font-bold text-primary font-display">
                         R$ {targetAmount.toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                     <div>
                       <div className="text-sm text-muted-foreground font-text">Faltam</div>
-                      <div className="font-bold text-[--primary] font-display">
+                      <div className="font-bold text-primary font-display">
                         R$ {Math.max(0, targetAmount - currentAmount).toFixed(2).replace('.', ',')}
                       </div>
                     </div>
@@ -355,10 +355,10 @@ export function GoalList() {
                       <DialogTrigger asChild>
                         <Button 
                           variant="outline" 
-                          className="w-full font-display border-[--secondary] text-[--primary] hover:bg-[--secondary]/10"
+                          className="w-full font-display border-secondary text-primary hover:bg-secondary/10"
                           onClick={() => setSelectedGoalId(goal.id)}
                         >
-                          <TrendingUp className="w-4 h-4 mr-2 text-[--secondary]" />
+                          <TrendingUp className="w-4 h-4 mr-2 text-secondary" />
                           Adicionar Valor
                         </Button>
                       </DialogTrigger>

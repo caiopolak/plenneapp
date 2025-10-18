@@ -45,14 +45,14 @@ export function TransactionRow({
             variant="default"
             className={
               transaction.type === 'income'
-                ? 'bg-[--secondary] text-white font-display'
-                : 'bg-[--error] text-white font-display'
+                ? 'bg-secondary text-secondary-foreground font-display'
+                : 'bg-destructive text-destructive-foreground font-display'
             }
           >
             {transaction.type === 'income' ? 'Receita' : 'Despesa'}
           </Badge>
           {transaction.is_recurring && (
-            <Badge variant="outline" className="font-text text-[--primary] border-[--primary]/30 bg-[#f4f4f4]">Recorrente</Badge>
+            <Badge variant="outline" className="font-text text-primary border-primary/30 bg-muted">Recorrente</Badge>
           )}
         </div>
         <div className="mt-1 font-text">
@@ -70,7 +70,7 @@ export function TransactionRow({
 
       <div className="flex items-center gap-2">
         <span className={`text-lg font-bold font-display ${
-          transaction.type === 'income' ? 'text-[--secondary]' : 'text-[--error]'
+          transaction.type === 'income' ? 'text-secondary' : 'text-destructive'
         }`}>
           {transaction.type === 'income' ? '+' : '-'}R$ {Number(transaction.amount).toFixed(2).replace('.', ',')}
         </span>
@@ -80,7 +80,7 @@ export function TransactionRow({
             <Button
                 variant="ghost"
                 size="sm"
-                className="text-[--primary] font-display"
+                className="text-primary font-display"
                 onClick={() => onEdit(transaction)}
               >
                 <Edit2 className="w-4 h-4" />
@@ -105,7 +105,7 @@ export function TransactionRow({
         <Button
           variant="ghost"
           size="sm"
-          className="text-[--error]"
+          className="text-destructive"
           onClick={() => onDelete(transaction.id)}
         >
           <Trash2 className="w-4 h-4" />

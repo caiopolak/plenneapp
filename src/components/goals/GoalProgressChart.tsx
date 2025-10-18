@@ -39,7 +39,7 @@ export function GoalProgressChart({ goalId, targetAmount }: GoalProgressChartPro
 
   return (
     <div className="mt-4 w-full">
-      <div className="font-semibold mb-1 text-sm text-[--secondary]">Evolução dos Aportes</div>
+      <div className="font-semibold mb-1 text-sm text-secondary">Evolução dos Aportes</div>
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
