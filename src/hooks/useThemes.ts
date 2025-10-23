@@ -97,6 +97,9 @@ const defaultThemes = [
   }
 ];
 
+// Chave para localStorage
+const THEME_STORAGE_KEY = 'plenne_user_theme';
+
 export function useThemes() {
   const [themes, setThemes] = useState<Theme[]>([]);
   const [currentTheme, setCurrentTheme] = useState<string>('default');
@@ -137,10 +140,22 @@ export function useThemes() {
     root.style.setProperty('--gradient-accent', gradientAccent);
     
     setCurrentTheme(themeName);
+    
+    // Salvar no localStorage para persistência imediata
+    localStorage.setItem(THEME_STORAGE_KEY, themeName);
   };
 
   const saveTheme = async (themeName: string) => {
-    if (!user) return;
+    // Aplicar o tema imediatamente
+    applyTheme(themeName);
+
+    if (!user) {
+      toast({
+        title: "Tema aplicado!",
+        description: "Faça login para salvar suas preferências."
+      });
+      return;
+    }
 
     try {
       // Desativar tema atual
@@ -158,25 +173,33 @@ export function useThemes() {
           is_active: true,
           custom_colors: {}
         });
-
-      applyTheme(themeName);
       
       toast({
-        title: "Tema aplicado!",
-        description: `Tema ${defaultThemes.find(t => t.name === themeName)?.label} ativado.`
+        title: "Tema salvo!",
+        description: `Tema ${defaultThemes.find(t => t.name === themeName)?.label} aplicado em todas as páginas.`
       });
     } catch (error) {
       console.error('Erro ao salvar tema:', error);
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao aplicar tema."
+        description: "Erro ao salvar tema, mas foi aplicado localmente."
       });
     }
   };
 
   const loadUserTheme = async () => {
-    if (!user) return;
+    if (!user) {
+      // Tentar carregar do localStorage se não estiver logado
+      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+      if (savedTheme) {
+        applyTheme(savedTheme);
+      } else {
+        applyTheme('default');
+      }
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data } = await supabase
@@ -189,31 +212,39 @@ export function useThemes() {
       if (data) {
         applyTheme(data.theme_name);
       } else {
-        applyTheme('default');
+        // Tentar carregar do localStorage
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme) {
+          applyTheme(savedTheme);
+        } else {
+          applyTheme('default');
+        }
       }
     } catch (error) {
-      // Se não há tema salvo, usar padrão
-      applyTheme('default');
+      // Se não há tema salvo, tentar localStorage
+      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+      if (savedTheme) {
+        applyTheme(savedTheme);
+      } else {
+        applyTheme('default');
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  // Carregar tema quando o usuário mudar
   useEffect(() => {
-    if (user) {
-      loadUserTheme();
-    } else {
-      applyTheme('default');
-      setLoading(false);
-    }
-  }, [user]);
+    loadUserTheme();
+  }, [user?.id]);
 
-  // Garantir que o tema seja aplicado sempre que o componente renderizar
+  // Aplicar tema sempre que o componente renderizar (garantir persistência)
   useEffect(() => {
-    if (currentTheme) {
-      applyTheme(currentTheme);
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'default';
+    if (currentTheme !== savedTheme) {
+      applyTheme(savedTheme);
     }
-  }, [currentTheme]);
+  }, []);
 
   return {
     themes: defaultThemes,

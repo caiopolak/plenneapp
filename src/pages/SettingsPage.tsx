@@ -109,22 +109,22 @@ export default function SettingsPage() {
                     key={theme.name}
                     onClick={() => saveTheme(theme.name)}
                     variant={currentTheme === theme.name ? "default" : "outline"}
-                    className={`h-16 flex flex-col gap-2 p-3 ${
+                    className={`h-16 flex flex-col gap-2 p-3 relative ${
                       currentTheme === theme.name ? 'ring-2 ring-primary' : ''
                     }`}
                   >
                     <div className="flex gap-1.5">
                       <div
-                        className="w-4 h-4 rounded-full border border-white/20"
-                        style={{ backgroundColor: `rgb(${theme.colors.primary})` }}
+                        className="w-4 h-4 rounded-full border"
+                        style={{ backgroundColor: `hsl(${theme.colors.primary})` }}
                       />
                       <div
-                        className="w-4 h-4 rounded-full border border-white/20"
-                        style={{ backgroundColor: `rgb(${theme.colors.secondary})` }}
+                        className="w-4 h-4 rounded-full border"
+                        style={{ backgroundColor: `hsl(${theme.colors.secondary})` }}
                       />
                       <div
-                        className="w-4 h-4 rounded-full border border-white/20"
-                        style={{ backgroundColor: `rgb(${theme.colors.accent})` }}
+                        className="w-4 h-4 rounded-full border"
+                        style={{ backgroundColor: `hsl(${theme.colors.accent})` }}
                       />
                     </div>
                     <span className="text-xs font-medium">{theme.label}</span>
