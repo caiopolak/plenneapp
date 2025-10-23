@@ -41,25 +41,21 @@ const mainItems = [
     title: "Dashboard",
     url: "/app",
     icon: Home,
-    hideOnMobile: true,
   },
   {
     title: "Transações",
     url: "/app/transactions",
     icon: BarChart3,
-    hideOnMobile: true,
   },
   {
     title: "Metas",
     url: "/app/goals",
     icon: Target,
-    hideOnMobile: true,
   },
   {
     title: "Investimentos", 
     url: "/app/investments",
     icon: TrendingUp,
-    hideOnMobile: true,
   },
   {
     title: "Orçamentos",
@@ -135,7 +131,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title} className={item.hideOnMobile ? "hidden md:block" : ""}>
+                <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild
                     isActive={location.pathname === item.url}

@@ -16,8 +16,12 @@ import { TransactionList } from "@/components/transactions/TransactionList";
 import { GoalList } from "@/components/goals/GoalList";
 import { InvestmentList } from "@/components/investments/InvestmentList";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
+import { useThemes } from "@/hooks/useThemes";
 
 export default function FinancieApp() {
+  // Aplicar tema do usuário em todas as páginas
+  useThemes();
+  
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -26,7 +30,7 @@ export default function FinancieApp() {
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 md:hidden">
           <SidebarTrigger className="-ml-1" />
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold text-[#003f5c]">Plenne</h1>
+            <h1 className="text-lg font-semibold text-primary">Plenne</h1>
           </div>
         </header>
         <main className="p-4 md:p-6">

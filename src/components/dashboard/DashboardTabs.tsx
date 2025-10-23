@@ -35,7 +35,7 @@ export function DashboardTabs() {
     <div>
       {/* Removido o botão 'Exportar Resumo CSV' aqui */}
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="mb-6 shadow-md bg-[#f7fafd] hidden md:grid grid-cols-4 rounded-xl px-1 py-[6px]">
+        <TabsList className="mb-6 shadow-md bg-card/50 hidden md:grid grid-cols-4 rounded-xl px-1 py-[6px]">
           <TabsTrigger 
             value="dashboard" 
             className="flex gap-2 items-center font-display text-primary data-[state=active]:bg-secondary/10 data-[state=active]:text-primary rounded-lg transition-all"
