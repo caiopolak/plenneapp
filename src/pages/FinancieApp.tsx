@@ -16,12 +16,8 @@ import { TransactionList } from "@/components/transactions/TransactionList";
 import { GoalList } from "@/components/goals/GoalList";
 import { InvestmentList } from "@/components/investments/InvestmentList";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
-import { useThemes } from "@/hooks/useThemes";
 
 export default function FinancieApp() {
-  // Aplicar tema do usuário em todas as páginas
-  useThemes();
-  
   return (
     <SidebarProvider>
       <AppSidebar />

@@ -208,6 +208,13 @@ export function useThemes() {
     }
   }, [user]);
 
+  // Garantir que o tema seja aplicado sempre que o componente renderizar
+  useEffect(() => {
+    if (currentTheme) {
+      applyTheme(currentTheme);
+    }
+  }, [currentTheme]);
+
   return {
     themes: defaultThemes,
     currentTheme,
