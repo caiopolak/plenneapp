@@ -67,7 +67,7 @@
     /* Cores escuras do Plenne - preservar temas */
     --color-background: 240 10% 3.9%;
     --color-surface: 240 10% 8%;
-    --color-graphite: 0 0% 98%;
+    --color-foreground: 0 0% 98%;
     
     /* Sombras para modo escuro */
     --shadow-card: 0 4px 32px 0 rgba(0, 0, 0, 0.5);

@@ -15,72 +15,132 @@ const defaultThemes = [
     name: 'default',
     label: 'Padrão Verde',
     colors: {
-      primary: '216 87% 18%',
-      secondary: '142 76% 36%',
-      accent: '24 95% 53%',
-      background: '210 40% 98%',
-      surface: '0 0% 100%',
-      graphite: '240 10% 4%'
+      light: {
+        primary: '216 87% 18%',
+        secondary: '142 76% 36%',
+        accent: '24 95% 53%',
+        background: '210 40% 98%',
+        surface: '0 0% 100%',
+        foreground: '240 10% 4%'
+      },
+      dark: {
+        primary: '199 89% 65%',
+        secondary: '142 76% 55%',
+        accent: '24 95% 60%',
+        background: '240 10% 3.9%',
+        surface: '240 10% 8%',
+        foreground: '0 0% 98%'
+      }
     }
   },
   {
     name: 'blue',
     label: 'Azul Profissional',
     colors: {
-      primary: '217 91% 60%',
-      secondary: '220 91% 54%',
-      accent: '239 84% 67%',
-      background: '210 40% 98%',
-      surface: '0 0% 100%',
-      graphite: '217 33% 17%'
+      light: {
+        primary: '217 91% 60%',
+        secondary: '220 91% 54%',
+        accent: '239 84% 67%',
+        background: '210 40% 98%',
+        surface: '0 0% 100%',
+        foreground: '217 33% 17%'
+      },
+      dark: {
+        primary: '217 91% 70%',
+        secondary: '220 91% 65%',
+        accent: '239 84% 75%',
+        background: '240 10% 3.9%',
+        surface: '240 10% 8%',
+        foreground: '0 0% 98%'
+      }
     }
   },
   {
     name: 'purple',
     label: 'Roxo Moderno',
     colors: {
-      primary: '262 83% 58%',
-      secondary: '258 90% 66%',
-      accent: '330 81% 60%',
-      background: '300 20% 99%',
-      surface: '0 0% 100%',
-      graphite: '262 47% 25%'
+      light: {
+        primary: '262 83% 58%',
+        secondary: '258 90% 66%',
+        accent: '330 81% 60%',
+        background: '300 20% 99%',
+        surface: '0 0% 100%',
+        foreground: '262 47% 25%'
+      },
+      dark: {
+        primary: '262 83% 70%',
+        secondary: '258 90% 75%',
+        accent: '330 81% 70%',
+        background: '240 10% 3.9%',
+        surface: '240 10% 8%',
+        foreground: '0 0% 98%'
+      }
     }
   },
   {
     name: 'emerald',
     label: 'Verde Esmeralda',
     colors: {
-      primary: '158 64% 52%',
-      secondary: '160 84% 39%',
-      accent: '142 76% 36%',
-      background: '152 81% 96%',
-      surface: '0 0% 100%',
-      graphite: '158 36% 17%'
+      light: {
+        primary: '158 64% 52%',
+        secondary: '160 84% 39%',
+        accent: '142 76% 36%',
+        background: '152 81% 96%',
+        surface: '0 0% 100%',
+        foreground: '158 36% 17%'
+      },
+      dark: {
+        primary: '158 64% 65%',
+        secondary: '160 84% 55%',
+        accent: '142 76% 50%',
+        background: '240 10% 3.9%',
+        surface: '240 10% 8%',
+        foreground: '0 0% 98%'
+      }
     }
   },
   {
     name: 'sunset',
     label: 'Pôr do Sol',
     colors: {
-      primary: '25 95% 53%',
-      secondary: '45 93% 47%',
-      accent: '0 84% 60%',
-      background: '48 100% 96%',
-      surface: '0 0% 100%',
-      graphite: '25 47% 25%'
+      light: {
+        primary: '25 95% 53%',
+        secondary: '45 93% 47%',
+        accent: '0 84% 60%',
+        background: '48 100% 96%',
+        surface: '0 0% 100%',
+        foreground: '25 47% 25%'
+      },
+      dark: {
+        primary: '25 95% 65%',
+        secondary: '45 93% 60%',
+        accent: '0 84% 70%',
+        background: '240 10% 3.9%',
+        surface: '240 10% 8%',
+        foreground: '0 0% 98%'
+      }
     }
   },
   {
     name: 'ocean',
     label: 'Oceano',
     colors: {
-      primary: '199 89% 48%',
-      secondary: '188 86% 53%',
-      accent: '180 78% 60%',
-      background: '204 100% 97%',
-      surface: '0 0% 100%',
-      graphite: '199 43% 20%'
+      light: {
+        primary: '199 89% 48%',
+        secondary: '188 86% 53%',
+        accent: '180 78% 60%',
+        background: '204 100% 97%',
+        surface: '0 0% 100%',
+        foreground: '199 43% 20%'
+      },
+      dark: {
+        primary: '199 89% 65%',
+        secondary: '188 86% 65%',
+        accent: '180 78% 70%',
+        background: '240 10% 3.9%',
+        surface: '240 10% 8%',
+        foreground: '0 0% 98%'
+      }
     }
   }
 ];
@@ -104,6 +164,9 @@ export function useThemes() {
     const root = document.documentElement;
     const useDarkMode = darkMode !== undefined ? darkMode : isDarkMode;
     
+    // Selecionar cores baseadas no modo
+    const themeColors = useDarkMode ? theme.colors.dark : theme.colors.light;
+    
     // Aplicar ou remover classe dark
     if (useDarkMode) {
       root.classList.add('dark');
@@ -112,7 +175,7 @@ export function useThemes() {
     }
     
     // Aplicar cores usando valores HSL corretos
-    Object.entries(theme.colors).forEach(([key, value]) => {
+    Object.entries(themeColors).forEach(([key, value]) => {
       root.style.setProperty(`--color-${key}`, value);
       
       // Também aplicar nas variáveis CSS principais
@@ -121,11 +184,34 @@ export function useThemes() {
       if (key === 'accent') root.style.setProperty('--accent', value);
       if (key === 'background') root.style.setProperty('--background', value);
       if (key === 'surface') root.style.setProperty('--card', value);
+      if (key === 'foreground') {
+        root.style.setProperty('--foreground', value);
+        root.style.setProperty('--card-foreground', value);
+      }
     });
     
+    // Atualizar muted colors baseado no modo
+    if (useDarkMode) {
+      root.style.setProperty('--muted', '240 5% 15%');
+      root.style.setProperty('--muted-foreground', '240 5% 70%');
+      root.style.setProperty('--border', '240 5% 20%');
+      root.style.setProperty('--input', '240 5% 20%');
+      root.style.setProperty('--primary-foreground', '240 10% 10%');
+      root.style.setProperty('--secondary-foreground', '0 0% 98%');
+      root.style.setProperty('--accent-foreground', '0 0% 98%');
+    } else {
+      root.style.setProperty('--muted', '210 40% 96%');
+      root.style.setProperty('--muted-foreground', '240 3.8% 46.1%');
+      root.style.setProperty('--border', '240 5.9% 90%');
+      root.style.setProperty('--input', '240 5.9% 90%');
+      root.style.setProperty('--primary-foreground', '0 0% 98%');
+      root.style.setProperty('--secondary-foreground', '0 0% 98%');
+      root.style.setProperty('--accent-foreground', '0 0% 98%');
+    }
+    
     // Atualizar gradientes baseados nas novas cores
-    const gradientPrimary = `linear-gradient(120deg, hsl(${theme.colors.primary}) 0%, hsl(${theme.colors.secondary}) 100%)`;
-    const gradientAccent = `linear-gradient(98deg, hsl(${theme.colors.accent}) 15%, hsl(${theme.colors.primary}) 89%)`;
+    const gradientPrimary = `linear-gradient(120deg, hsl(${themeColors.primary}) 0%, hsl(${themeColors.secondary}) 100%)`;
+    const gradientAccent = `linear-gradient(98deg, hsl(${themeColors.accent}) 15%, hsl(${themeColors.primary}) 89%)`;
     
     root.style.setProperty('--gradient-primary', gradientPrimary);
     root.style.setProperty('--gradient-accent', gradientAccent);

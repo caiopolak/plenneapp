@@ -133,37 +133,40 @@ export default function SettingsPage() {
                 </p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {themes.map((theme) => (
-                  <Button
-                    key={theme.name}
-                    onClick={() => saveTheme(theme.name)}
-                    variant={currentTheme === theme.name ? "default" : "outline"}
-                    className={`h-16 flex flex-col gap-2 p-3 relative ${
-                      currentTheme === theme.name ? 'ring-2 ring-primary' : ''
-                    }`}
-                  >
-                    <div className="flex gap-1.5">
-                      <div
-                        className="w-4 h-4 rounded-full border"
-                        style={{ backgroundColor: `hsl(${theme.colors.primary})` }}
-                      />
-                      <div
-                        className="w-4 h-4 rounded-full border"
-                        style={{ backgroundColor: `hsl(${theme.colors.secondary})` }}
-                      />
-                      <div
-                        className="w-4 h-4 rounded-full border"
-                        style={{ backgroundColor: `hsl(${theme.colors.accent})` }}
-                      />
-                    </div>
-                    <span className="text-xs font-medium">{theme.label}</span>
-                    {currentTheme === theme.name && (
-                      <div className="absolute top-1 right-1">
-                        <CheckCircle className="h-4 w-4 text-primary" />
+                {themes.map((theme) => {
+                  const colors = isDarkMode ? theme.colors.dark : theme.colors.light;
+                  return (
+                    <Button
+                      key={theme.name}
+                      onClick={() => saveTheme(theme.name)}
+                      variant={currentTheme === theme.name ? "default" : "outline"}
+                      className={`h-16 flex flex-col gap-2 p-3 relative ${
+                        currentTheme === theme.name ? 'ring-2 ring-primary' : ''
+                      }`}
+                    >
+                      <div className="flex gap-1.5">
+                        <div
+                          className="w-4 h-4 rounded-full border"
+                          style={{ backgroundColor: `hsl(${colors.primary})` }}
+                        />
+                        <div
+                          className="w-4 h-4 rounded-full border"
+                          style={{ backgroundColor: `hsl(${colors.secondary})` }}
+                        />
+                        <div
+                          className="w-4 h-4 rounded-full border"
+                          style={{ backgroundColor: `hsl(${colors.accent})` }}
+                        />
                       </div>
-                    )}
-                  </Button>
-                ))}
+                      <span className="text-xs font-medium">{theme.label}</span>
+                      {currentTheme === theme.name && (
+                        <div className="absolute top-1 right-1">
+                          <CheckCircle className="h-4 w-4 text-primary" />
+                        </div>
+                      )}
+                    </Button>
+                  );
+                })}
               </div>
               <div className="text-xs text-muted-foreground">
                 💡 Os temas são aplicados instantaneamente e salvos automaticamente na sua conta
