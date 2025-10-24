@@ -192,21 +192,35 @@ export function useThemes() {
     
     // Atualizar muted colors baseado no modo
     if (useDarkMode) {
-      root.style.setProperty('--muted', '240 5% 15%');
-      root.style.setProperty('--muted-foreground', '240 5% 70%');
-      root.style.setProperty('--border', '240 5% 20%');
-      root.style.setProperty('--input', '240 5% 20%');
-      root.style.setProperty('--primary-foreground', '240 10% 10%');
+      root.style.setProperty('--muted', '240 5% 18%');
+      root.style.setProperty('--muted-foreground', '240 5% 65%');
+      root.style.setProperty('--border', '240 5% 25%');
+      root.style.setProperty('--input', '240 5% 18%');
+      root.style.setProperty('--primary-foreground', '0 0% 10%');
+      root.style.setProperty('--secondary', '240 5% 20%');
       root.style.setProperty('--secondary-foreground', '0 0% 98%');
-      root.style.setProperty('--accent-foreground', '0 0% 98%');
+      root.style.setProperty('--accent-foreground', '0 0% 10%');
+      root.style.setProperty('--popover', '240 10% 10%');
+      root.style.setProperty('--popover-foreground', '0 0% 98%');
+      
+      // Ajustar surface para cards
+      root.style.setProperty('--card', '240 10% 10%');
+      root.style.setProperty('--card-foreground', '0 0% 98%');
     } else {
       root.style.setProperty('--muted', '210 40% 96%');
       root.style.setProperty('--muted-foreground', '240 3.8% 46.1%');
       root.style.setProperty('--border', '240 5.9% 90%');
       root.style.setProperty('--input', '240 5.9% 90%');
       root.style.setProperty('--primary-foreground', '0 0% 98%');
+      root.style.setProperty('--secondary', '142 76% 36%');
       root.style.setProperty('--secondary-foreground', '0 0% 98%');
       root.style.setProperty('--accent-foreground', '0 0% 98%');
+      root.style.setProperty('--popover', '0 0% 100%');
+      root.style.setProperty('--popover-foreground', '240 10% 3.9%');
+      
+      // Restaurar surface para cards
+      root.style.setProperty('--card', themeColors.surface);
+      root.style.setProperty('--card-foreground', '240 10% 3.9%');
     }
     
     // Atualizar gradientes baseados nas novas cores

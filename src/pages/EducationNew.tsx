@@ -20,24 +20,24 @@ export default function EducationNew() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-white border border-[#eaf6ee] shadow-sm">
+        <TabsList className="grid w-full grid-cols-3 bg-card border border-border shadow-sm">
           <TabsTrigger 
             value="tips" 
-            className="flex items-center gap-2 data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c]"
+            className="flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
           >
             <Lightbulb className="w-4 h-4" />
             Dicas Personalizadas
           </TabsTrigger>
           <TabsTrigger 
             value="modules" 
-            className="flex items-center gap-2 data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c]"
+            className="flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
           >
             <BookOpen className="w-4 h-4" />
             Módulos de Curso
           </TabsTrigger>
           <TabsTrigger 
             value="challenges" 
-            className="flex items-center gap-2 data-[state=active]:bg-[#eaf6ee] data-[state=active]:text-[#003f5c]"
+            className="flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
           >
             <Trophy className="w-4 h-4" />
             Desafios
