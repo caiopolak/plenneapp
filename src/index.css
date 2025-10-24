@@ -49,46 +49,49 @@
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 240 12% 8%;
+    --card: 240 10% 8%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 12% 8%;
+    --popover: 240 10% 8%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
+    --primary-foreground: 240 10% 10%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 24 95% 53%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 70%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --border: 240 5% 20%;
+    --input: 240 5% 20%;
+    --ring: 240 5% 70%;
     
-    /* Cores escuras do Plenne */
-    --color-primary: 0 0% 85%;
-    --color-secondary: 142 76% 36%;
-    --color-accent: 24 95% 53%;
-    --color-background: 240 10% 4%;
-    --color-surface: 240 12% 8%;
+    /* Cores escuras do Plenne - preservar temas */
+    --color-background: 240 10% 3.9%;
+    --color-surface: 240 10% 8%;
     --color-graphite: 0 0% 98%;
     
-    /* Gradientes para modo escuro */
-    --gradient-primary: linear-gradient(120deg, hsl(var(--color-primary)) 0%, hsl(var(--color-secondary)) 100%);
-    --gradient-accent: linear-gradient(98deg, hsl(var(--color-accent)) 15%, hsl(var(--color-primary)) 89%);
+    /* Sombras para modo escuro */
+    --shadow-card: 0 4px 32px 0 rgba(0, 0, 0, 0.5);
+    --shadow-accent: 0 2px 16px 0 rgba(0, 0, 0, 0.3);
   }
 
   body {
-    @apply bg-background text-graphite min-h-screen font-text;
+    @apply bg-background text-foreground min-h-screen font-text;
     background-image: linear-gradient(90deg, #f4f4f4 0%, #eaf6ee 100%);
     background-repeat: no-repeat;
     background-size: cover;
   }
-  h1, h2, h3, h4 {
-    @apply font-display tracking-tight text-graphite;
+  
+  .dark body {
+    background-image: linear-gradient(90deg, hsl(240 10% 3.9%) 0%, hsl(240 10% 5%) 100%);
   }
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight text-foreground;
+  }
+  
+  .dark h1, .dark h2, .dark h3, .dark h4 {
+    @apply text-foreground;
+  }
+  
   strong, .font-highlight {
     font-family: 'Montserrat', 'IBM Plex Sans', 'sans-serif';
     @apply text-primary;

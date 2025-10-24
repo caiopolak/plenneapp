@@ -14,12 +14,16 @@ import {
   Calendar,
   GitBranch,
   User,
-  CheckCircle
+  CheckCircle,
+  Moon,
+  Sun
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useThemes } from "@/hooks/useThemes";
 import { toast } from "sonner";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface AppVersion {
   version: string;
@@ -30,7 +34,7 @@ interface AppVersion {
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const { themes, currentTheme, saveTheme } = useThemes();
+  const { themes, currentTheme, isDarkMode, saveTheme, toggleDarkMode } = useThemes();
   const [appVersion, setAppVersion] = useState<AppVersion>({
     version: "2.1.4",
     buildDate: new Date().toISOString().split('T')[0],
@@ -97,10 +101,35 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                <div className="flex items-center gap-3">
+                  {isDarkMode ? (
+                    <Moon className="h-5 w-5 text-primary" />
+                  ) : (
+                    <Sun className="h-5 w-5 text-primary" />
+                  )}
+                  <div>
+                    <Label htmlFor="dark-mode" className="font-medium cursor-pointer">
+                      Modo Escuro
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {isDarkMode ? 'Ativado' : 'Desativado'}
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  id="dark-mode"
+                  checked={isDarkMode}
+                  onCheckedChange={toggleDarkMode}
+                />
+              </div>
+
+              <Separator />
+
               <div>
-                <h4 className="font-medium">Tema da Aplicação</h4>
+                <h4 className="font-medium">Tema de Cores</h4>
                 <p className="text-sm text-muted-foreground">
-                  Personalize a aparência do aplicativo escolhendo um dos temas disponíveis
+                  Escolha um esquema de cores (funciona em modo claro e escuro)
                 </p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
