@@ -19,7 +19,7 @@ import {
   Sun
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useThemes } from "@/hooks/useThemes";
+import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { Switch } from "@/components/ui/switch";
@@ -34,7 +34,7 @@ interface AppVersion {
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const { themes, currentTheme, isDarkMode, saveTheme, toggleDarkMode } = useThemes();
+  const { themes, currentTheme, isDarkMode, saveTheme, toggleDarkMode } = useTheme();
   const [appVersion, setAppVersion] = useState<AppVersion>({
     version: "2.1.4",
     buildDate: new Date().toISOString().split('T')[0],

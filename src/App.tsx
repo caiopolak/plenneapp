@@ -8,14 +8,12 @@ import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import FinancieApp from "@/pages/FinancieApp";
 import NotFound from "./pages/NotFound";
-import { useThemes } from "@/hooks/useThemes";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
 function AppContent() {
-  // Aplicar tema globalmente para todas as páginas
-  useThemes();
   
   return (
     <Routes>
@@ -48,7 +46,9 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <WorkspaceProvider>
-            <AppContent />
+            <ThemeProvider>
+              <AppContent />
+            </ThemeProvider>
           </WorkspaceProvider>
         </AuthProvider>
       </BrowserRouter>
