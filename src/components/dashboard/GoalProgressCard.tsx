@@ -31,7 +31,7 @@ export const GoalProgressCard: React.FC<GoalProgressCardProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow border border-green-100 px-6 py-5 flex flex-col justify-between">
+    <div className="bg-card rounded-xl shadow border border-border px-6 py-5 flex flex-col justify-between">
       <div className="flex items-center gap-2 mb-3">
         <span className="text-2xl text-secondary">🎯</span>
         <span className="font-bold text-secondary">Progresso das Metas</span>

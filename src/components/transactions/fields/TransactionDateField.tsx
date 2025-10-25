@@ -31,13 +31,13 @@ export function TransactionDateField({ value, onChange, isMobile }: TransactionD
             {value ? format(value, "dd/MM/yyyy", { locale: ptBR }) : "Selecione uma data"}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 z-[2000] bg-white" align="start">
+        <PopoverContent className="w-auto p-0 z-[2000] bg-popover" align="start">
           <Calendar
             mode="single"
             selected={value}
             onSelect={d => d && onChange(d)}
             initialFocus
-            className="bg-white"
+            className="bg-background"
           />
         </PopoverContent>
       </Popover>

@@ -23,7 +23,7 @@ export function TrendsBarChart({ data }: TrendsBarChartProps) {
   }
 
   return (
-    <div className="w-full h-[320px] px-2 py-2 rounded-2xl bg-white/85 shadow border border-gray-50 animate-fade-in">
+    <div className="w-full h-[320px] px-2 py-2 rounded-2xl bg-card/80 shadow border border-border animate-fade-in">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
           <CartesianGrid stroke="#e5e7eb" strokeDasharray="3 3" />

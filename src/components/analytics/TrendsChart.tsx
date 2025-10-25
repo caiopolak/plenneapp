@@ -171,7 +171,7 @@ export function TrendsChart({ data }: TrendsChartProps) {
   }
 
   return (
-    <div className="w-full h-[320px] px-2 py-2 rounded-2xl bg-white/85 shadow border border-gray-50 animate-fade-in">
+    <div className="w-full h-[320px] px-2 py-2 rounded-2xl bg-card/80 shadow border border-border animate-fade-in">
       <Line data={generateChartData(data)} options={options} />
     </div>
   );

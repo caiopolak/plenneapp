@@ -196,10 +196,9 @@ export function useThemes() {
       root.style.setProperty('--muted-foreground', '240 5% 65%');
       root.style.setProperty('--border', '240 5% 25%');
       root.style.setProperty('--input', '240 5% 18%');
-      root.style.setProperty('--primary-foreground', '0 0% 10%');
-      root.style.setProperty('--secondary', '240 5% 20%');
+      root.style.setProperty('--primary-foreground', '0 0% 98%');
       root.style.setProperty('--secondary-foreground', '0 0% 98%');
-      root.style.setProperty('--accent-foreground', '0 0% 10%');
+      root.style.setProperty('--accent-foreground', '0 0% 98%');
       root.style.setProperty('--popover', '240 10% 10%');
       root.style.setProperty('--popover-foreground', '0 0% 98%');
       
@@ -212,7 +211,7 @@ export function useThemes() {
       root.style.setProperty('--border', '240 5.9% 90%');
       root.style.setProperty('--input', '240 5.9% 90%');
       root.style.setProperty('--primary-foreground', '0 0% 98%');
-      root.style.setProperty('--secondary', '142 76% 36%');
+      
       root.style.setProperty('--secondary-foreground', '0 0% 98%');
       root.style.setProperty('--accent-foreground', '0 0% 98%');
       root.style.setProperty('--popover', '0 0% 100%');
@@ -294,7 +293,7 @@ export function useThemes() {
           user_id: user.id,
           theme_name: themeName,
           is_active: true,
-          custom_colors: {}
+          custom_colors: { darkMode: isDarkMode }
         });
       
       toast({
@@ -334,14 +333,17 @@ export function useThemes() {
         .select('*')
         .eq('user_id', user.id)
         .eq('is_active', true)
-        .single();
+        .limit(1);
 
-      if (data) {
-        const customColors = data.custom_colors as { darkMode?: boolean } | null;
-        const darkModeFromDb = customColors?.darkMode || false;
+      const row = Array.isArray(data) ? data[0] : data;
+
+      if (row) {
+        const customColors = row.custom_colors as { darkMode?: boolean } | null;
+        const darkModeFromDb = customColors?.darkMode ?? savedDarkMode;
         setIsDarkMode(darkModeFromDb);
         localStorage.setItem(DARK_MODE_STORAGE_KEY, String(darkModeFromDb));
-        applyTheme(data.theme_name, darkModeFromDb);
+        localStorage.setItem(THEME_STORAGE_KEY, row.theme_name);
+        applyTheme(row.theme_name, darkModeFromDb);
       } else {
         // Tentar carregar do localStorage
         const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);

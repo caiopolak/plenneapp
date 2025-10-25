@@ -37,7 +37,7 @@ export function TransactionRow({
 }: Props) {
   return (
     <div
-      className="flex items-center justify-between p-4 border rounded-lg hover:bg-[#eaf6ee] bg-white"
+      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted bg-card"
     >
       <div className="flex-1">
         <div className="flex items-center gap-2">

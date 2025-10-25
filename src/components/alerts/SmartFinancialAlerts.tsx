@@ -182,7 +182,7 @@ export function SmartFinancialAlerts() {
   if (loading) return <div>Carregando alertas...</div>;
 
   return (
-    <Card className="bg-white border-[--primary]/10">
+    <Card className="bg-card border-primary/10">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[--primary] font-display">
           <Bell className="w-5 h-5" />
@@ -201,7 +201,7 @@ export function SmartFinancialAlerts() {
             {alerts.map((alert) => (
               <div
                 key={alert.id}
-                className="flex items-start gap-3 p-4 border rounded-lg hover:bg-[#eaf6ee]"
+                className="flex items-start gap-3 p-4 border rounded-lg hover:bg-muted"
               >
                 <div className="mt-1">
                   {getPriorityIcon(alert.priority)}

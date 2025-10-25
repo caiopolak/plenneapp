@@ -20,7 +20,7 @@ export function TransactionTypeField({ value, onChange, isMobile }: TransactionT
         <SelectTrigger className={cn("h-12", isMobile && "text-base")}>
           <SelectValue placeholder="Selecione o tipo" />
         </SelectTrigger>
-        <SelectContent className="z-[1000] bg-white">
+        <SelectContent className="z-[1000] bg-popover">
           <SelectItem value="income">Receita</SelectItem>
           <SelectItem value="expense">Despesa</SelectItem>
         </SelectContent>

@@ -52,7 +52,7 @@ export function TransactionRecurrenceFields({
               <SelectTrigger className={cn("h-10", isMobile && "text-base")}>
                 <SelectValue placeholder="Selecione o padrão" />
               </SelectTrigger>
-              <SelectContent className="bg-white z-[2000]">
+              <SelectContent className="bg-popover z-[2000]">
                 <SelectItem value="monthly">Mensal</SelectItem>
                 <SelectItem value="weekly">Semanal</SelectItem>
                 <SelectItem value="yearly">Anual</SelectItem>
