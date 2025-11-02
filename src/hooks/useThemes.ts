@@ -233,10 +233,13 @@ export function useThemes() {
     
     // Salvar no localStorage para persistência imediata
     localStorage.setItem(THEME_STORAGE_KEY, themeName);
+    if (darkMode !== undefined) {
+      localStorage.setItem(DARK_MODE_STORAGE_KEY, String(useDarkMode));
+    }
   };
 
-  const toggleDarkMode = async () => {
-    const newDarkMode = !isDarkMode;
+  const toggleDarkMode = async (next?: boolean) => {
+    const newDarkMode = typeof next === 'boolean' ? next : !isDarkMode;
     setIsDarkMode(newDarkMode);
     
     // Aplicar imediatamente
