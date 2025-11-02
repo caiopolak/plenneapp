@@ -253,14 +253,35 @@ export function useThemes() {
     // Salvar no banco se usuário estiver logado
     if (user) {
       try {
-        await supabase
+        // 1) Tentar atualizar a linha ativa existente (evita múltiplos registros ativos)
+        const { data: updated } = await supabase
           .from('user_themes')
-          .upsert({
-            user_id: user.id,
+          .update({
             theme_name: currentTheme,
             is_active: true,
-            custom_colors: { darkMode: newDarkMode }
-          });
+            custom_colors: { darkMode: newDarkMode },
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .select('id');
+
+        // 2) Se não havia linha ativa, desativa todas e cria uma nova ativa
+        if (!updated || updated.length === 0) {
+          await supabase
+            .from('user_themes')
+            .update({ is_active: false })
+            .eq('user_id', user.id);
+
+          await supabase
+            .from('user_themes')
+            .insert({
+              user_id: user.id,
+              theme_name: currentTheme,
+              is_active: true,
+              custom_colors: { darkMode: newDarkMode }
+            });
+        }
       } catch (error) {
         console.error('Erro ao salvar preferência de modo escuro:', error);
       }
@@ -333,6 +354,7 @@ export function useThemes() {
         .select('*')
         .eq('user_id', user.id)
         .eq('is_active', true)
+        .order('updated_at', { ascending: false })
         .limit(1);
 
       const row = Array.isArray(data) ? data[0] : data;
