@@ -829,6 +829,24 @@ export type Database = {
           },
         ]
       }
+      user_profiles: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_themes: {
         Row: {
           created_at: string | null
@@ -937,16 +955,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_plan_limits: {
-        Args:
-          | Record<PropertyKey, never>
-          | { resource_type: string; user_uuid: string }
-        Returns: boolean
-      }
-      create_recurring_transactions: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      check_plan_limits:
+        | {
+            Args: { resource_type: string; user_uuid: string }
+            Returns: boolean
+          }
+        | { Args: never; Returns: undefined }
+      check_user_active: { Args: { p_user: string }; Returns: boolean }
+      create_recurring_transactions: { Args: never; Returns: undefined }
       is_workspace_owner: {
         Args: { _user_id: string; _workspace_id: string }
         Returns: boolean
