@@ -372,6 +372,8 @@ export function useThemes() {
         .select('*')
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false })
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .limit(1);
 
       const row = Array.isArray(data) ? data[0] : data;
