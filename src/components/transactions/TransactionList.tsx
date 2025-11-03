@@ -9,6 +9,8 @@ import { TransactionSummaryCards } from './TransactionSummaryCards';
 import { TransactionListFilters } from './TransactionListFilters';
 import { TransactionRow } from './TransactionRow';
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 
 // type Transaction = ... já está explicitado no hook
 
@@ -21,6 +23,8 @@ export function TransactionList() {
   const [showForm, setShowForm] = useState(false);
 
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { current } = useWorkspace();
 
   // Filtros + memoização
   const filteredTransactions = useMemo(() => {

@@ -256,26 +256,27 @@ export function useThemes() {
     // Salvar no banco se usuário estiver logado
     if (user) {
       try {
-        // 1) Tentar atualizar a linha ativa existente (evita múltiplos registros ativos)
-        const { data: updated } = await supabase
+        // 1) Buscar a linha mais recente do usuário e atualizar; se não houver, criar
+        const { data: existing, error: fetchErr } = await supabase
           .from('user_themes')
-          .update({
-            theme_name: currentTheme,
-            is_active: true,
-            custom_colors: { darkMode: newDarkMode },
-            updated_at: new Date().toISOString()
-          })
+          .select('id')
           .eq('user_id', user.id)
-          .eq('is_active', true)
-          .select('id');
+          .order('updated_at', { ascending: false })
+          .limit(1);
 
-        // 2) Se não havia linha ativa, desativa todas e cria uma nova ativa
-        if (!updated || updated.length === 0) {
+        if (fetchErr) throw fetchErr;
+
+        if (existing && existing.length > 0) {
           await supabase
             .from('user_themes')
-            .update({ is_active: false })
-            .eq('user_id', user.id);
-
+            .update({
+              theme_name: currentTheme,
+              is_active: true,
+              custom_colors: { darkMode: newDarkMode },
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existing[0].id);
+        } else {
           await supabase
             .from('user_themes')
             .insert({
@@ -304,21 +305,35 @@ export function useThemes() {
     }
 
     try {
-      // Desativar tema atual
-      await supabase
+      // Persistir preferências do usuário com única linha por usuário (cria/atualiza)
+      const { data: existing, error: fetchErr } = await supabase
         .from('user_themes')
-        .update({ is_active: false })
-        .eq('user_id', user.id);
+        .select('id')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(1);
+      if (fetchErr) throw fetchErr;
 
-      // Ativar novo tema
-      await supabase
-        .from('user_themes')
-        .upsert({
-          user_id: user.id,
-          theme_name: themeName,
-          is_active: true,
-          custom_colors: { darkMode: isDarkMode }
-        });
+      if (existing && existing.length > 0) {
+        await supabase
+          .from('user_themes')
+          .update({
+            theme_name: themeName,
+            custom_colors: { darkMode: isDarkMode },
+            is_active: true,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existing[0].id);
+      } else {
+        await supabase
+          .from('user_themes')
+          .insert({
+            user_id: user.id,
+            theme_name: themeName,
+            is_active: true,
+            custom_colors: { darkMode: isDarkMode }
+          });
+      }
       
       toast({
         title: "Tema salvo!",
@@ -356,7 +371,6 @@ export function useThemes() {
         .from('user_themes')
         .select('*')
         .eq('user_id', user.id)
-        .eq('is_active', true)
         .order('updated_at', { ascending: false })
         .limit(1);
 
