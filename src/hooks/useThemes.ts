@@ -375,25 +375,62 @@ export function useThemes() {
         .limit(1);
 
       const row = Array.isArray(data) ? data[0] : data;
+      const savedThemeLS = localStorage.getItem(THEME_STORAGE_KEY) || undefined;
 
       if (row) {
         const customColors = row.custom_colors as { darkMode?: boolean } | null;
         const darkModeFromDb = customColors?.darkMode ?? savedDarkMode;
+
+        // Preferir o tema salvo no dispositivo caso exista e seja válido
+        const isValidLocal = savedThemeLS && defaultThemes.some(t => t.name === savedThemeLS);
+        const finalTheme = isValidLocal ? (savedThemeLS as string) : row.theme_name;
+
+        // Aplicar e persistir localmente
         setIsDarkMode(darkModeFromDb);
         localStorage.setItem(DARK_MODE_STORAGE_KEY, String(darkModeFromDb));
-        localStorage.setItem(THEME_STORAGE_KEY, row.theme_name);
-        applyTheme(row.theme_name, darkModeFromDb);
+        localStorage.setItem(THEME_STORAGE_KEY, finalTheme);
+        applyTheme(finalTheme, darkModeFromDb);
+
+        // Se o localStorage diverge do banco, sincronizar o banco em background
+        if (isValidLocal && savedThemeLS !== row.theme_name) {
+          try {
+            await supabase
+              .from('user_themes')
+              .update({
+                theme_name: finalTheme,
+                custom_colors: { darkMode: darkModeFromDb },
+                is_active: true,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', row.id);
+          } catch (e) {
+            console.warn('Falha ao sincronizar tema com o banco, mantendo local:', e);
+          }
+        }
       } else {
-        // Tentar carregar do localStorage
-        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-        if (savedTheme) {
-          applyTheme(savedTheme, savedDarkMode);
-        } else {
-          applyTheme('default', savedDarkMode);
+        // Sem linha no banco: usar localStorage e criar registro
+        const finalTheme = (savedThemeLS && defaultThemes.some(t => t.name === savedThemeLS))
+          ? (savedThemeLS as string)
+          : 'default';
+
+        localStorage.setItem(THEME_STORAGE_KEY, finalTheme);
+        applyTheme(finalTheme, savedDarkMode);
+
+        try {
+          await supabase
+            .from('user_themes')
+            .insert({
+              user_id: user.id,
+              theme_name: finalTheme,
+              is_active: true,
+              custom_colors: { darkMode: savedDarkMode }
+            });
+        } catch (e) {
+          console.warn('Não foi possível criar registro de tema. Continuando com configuração local.', e);
         }
       }
     } catch (error) {
-      // Se não há tema salvo, tentar localStorage
+      // Se ocorrer erro, tentar localStorage
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
       if (savedTheme) {
         applyTheme(savedTheme, savedDarkMode);
