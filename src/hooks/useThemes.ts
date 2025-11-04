@@ -383,9 +383,10 @@ export function useThemes() {
         const customColors = row.custom_colors as { darkMode?: boolean } | null;
         const darkModeFromDb = customColors?.darkMode ?? savedDarkMode;
 
-        // Preferir o tema salvo no dispositivo caso exista e seja válido
+        // Preferir SEMPRE o valor do banco para usuários logados
+        const isValidDb = defaultThemes.some(t => t.name === row.theme_name);
         const isValidLocal = savedThemeLS && defaultThemes.some(t => t.name === savedThemeLS);
-        const finalTheme = isValidLocal ? (savedThemeLS as string) : row.theme_name;
+        const finalTheme = isValidDb ? row.theme_name : (isValidLocal ? (savedThemeLS as string) : 'default');
 
         // Aplicar e persistir localmente
         setIsDarkMode(darkModeFromDb);
@@ -393,8 +394,8 @@ export function useThemes() {
         localStorage.setItem(THEME_STORAGE_KEY, finalTheme);
         applyTheme(finalTheme, darkModeFromDb);
 
-        // Se o localStorage diverge do banco, sincronizar o banco em background
-        if (isValidLocal && savedThemeLS !== row.theme_name) {
+        // Se o tema do banco for inválido, sincronizar com o tema final calculado
+        if (!isValidDb && finalTheme !== row.theme_name) {
           try {
             await supabase
               .from('user_themes')
@@ -450,14 +451,6 @@ export function useThemes() {
   }, [user?.id]);
 
   // Aplicar tema sempre que o componente renderizar (garantir persistência)
-  useEffect(() => {
-    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'default';
-    const savedDarkMode = localStorage.getItem(DARK_MODE_STORAGE_KEY) === 'true';
-    if (currentTheme !== savedTheme) {
-      applyTheme(savedTheme, savedDarkMode);
-    }
-  }, []);
-
   // Re-aplicar dark mode quando mudar
   useEffect(() => {
     applyTheme(currentTheme, isDarkMode);
