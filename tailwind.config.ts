@@ -55,6 +55,36 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+          success: {
+            bg: "hsl(var(--card-success-bg))",
+            border: "hsl(var(--card-success-border))",
+            text: "hsl(var(--card-success-text))",
+            accent: "hsl(var(--card-success-accent))",
+          },
+          error: {
+            bg: "hsl(var(--card-error-bg))",
+            border: "hsl(var(--card-error-border))",
+            text: "hsl(var(--card-error-text))",
+            accent: "hsl(var(--card-error-accent))",
+          },
+          info: {
+            bg: "hsl(var(--card-info-bg))",
+            border: "hsl(var(--card-info-border))",
+            text: "hsl(var(--card-info-text))",
+            accent: "hsl(var(--card-info-accent))",
+          },
+          warning: {
+            bg: "hsl(var(--card-warning-bg))",
+            border: "hsl(var(--card-warning-border))",
+            text: "hsl(var(--card-warning-text))",
+            accent: "hsl(var(--card-warning-accent))",
+          },
+          primary: {
+            bg: "hsl(var(--card-primary-bg))",
+            border: "hsl(var(--card-primary-border))",
+            text: "hsl(var(--card-primary-text))",
+            accent: "hsl(var(--card-primary-accent))",
+          },
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

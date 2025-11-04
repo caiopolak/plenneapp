@@ -37,6 +37,32 @@
     --color-background: 210 40% 98%;
     --color-graphite: 240 10% 4%;
     
+    /* Cards temáticos - Modo Claro */
+    --card-success-bg: 142 76% 96%;
+    --card-success-border: 142 76% 80%;
+    --card-success-text: 142 76% 20%;
+    --card-success-accent: 142 76% 36%;
+    
+    --card-error-bg: 0 84% 96%;
+    --card-error-border: 0 84% 80%;
+    --card-error-text: 0 84% 25%;
+    --card-error-accent: 0 84% 50%;
+    
+    --card-info-bg: 210 100% 96%;
+    --card-info-border: 210 100% 80%;
+    --card-info-text: 210 100% 25%;
+    --card-info-accent: 210 100% 50%;
+    
+    --card-warning-bg: 38 100% 96%;
+    --card-warning-border: 38 100% 75%;
+    --card-warning-text: 38 100% 25%;
+    --card-warning-accent: 38 100% 50%;
+    
+    --card-primary-bg: 262 80% 96%;
+    --card-primary-border: 262 80% 80%;
+    --card-primary-text: 262 80% 25%;
+    --card-primary-accent: 262 80% 55%;
+    
     /* Gradientes */
     --gradient-primary: linear-gradient(120deg, hsl(var(--color-primary)) 0%, hsl(var(--color-secondary)) 100%);
     --gradient-accent: linear-gradient(98deg, hsl(var(--color-accent)) 15%, hsl(var(--color-primary)) 89%);
@@ -69,6 +95,32 @@
     --color-background: 240 10% 3.9%;
     --color-surface: 240 10% 10%;
     --color-foreground: 0 0% 98%;
+    
+    /* Cards temáticos - Modo Escuro */
+    --card-success-bg: 142 50% 15%;
+    --card-success-border: 142 50% 25%;
+    --card-success-text: 142 70% 85%;
+    --card-success-accent: 142 70% 60%;
+    
+    --card-error-bg: 0 50% 15%;
+    --card-error-border: 0 50% 25%;
+    --card-error-text: 0 70% 85%;
+    --card-error-accent: 0 70% 60%;
+    
+    --card-info-bg: 210 50% 15%;
+    --card-info-border: 210 50% 25%;
+    --card-info-text: 210 70% 85%;
+    --card-info-accent: 210 70% 60%;
+    
+    --card-warning-bg: 38 60% 15%;
+    --card-warning-border: 38 60% 25%;
+    --card-warning-text: 38 90% 85%;
+    --card-warning-accent: 38 90% 65%;
+    
+    --card-primary-bg: 262 50% 15%;
+    --card-primary-border: 262 50% 25%;
+    --card-primary-text: 262 70% 85%;
+    --card-primary-accent: 262 70% 65%;
     
     /* Sombras para modo escuro */
     --shadow-card: 0 4px 32px 0 rgba(0, 0, 0, 0.5);

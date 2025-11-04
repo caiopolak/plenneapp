@@ -114,54 +114,54 @@ export function KPICards() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+      <Card className="bg-[hsl(var(--card-success-bg))] border-[hsl(var(--card-success-border))]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-green-800">Receitas do Mês</CardTitle>
-          <TrendingUp className="h-4 w-4 text-green-600" />
+          <CardTitle className="text-sm font-medium text-[hsl(var(--card-success-text))]">Receitas do Mês</CardTitle>
+          <TrendingUp className="h-4 w-4 text-[hsl(var(--card-success-accent))]" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-900">{formatCurrency(kpiData.totalIncome)}</div>
-          <p className="text-xs text-green-700">Entradas registradas</p>
+          <div className="text-2xl font-bold text-[hsl(var(--card-success-text))]">{formatCurrency(kpiData.totalIncome)}</div>
+          <p className="text-xs text-[hsl(var(--card-success-text))] opacity-70">Entradas registradas</p>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+      <Card className="bg-[hsl(var(--card-error-bg))] border-[hsl(var(--card-error-border))]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-red-800">Despesas do Mês</CardTitle>
-          <TrendingDown className="h-4 w-4 text-red-600" />
+          <CardTitle className="text-sm font-medium text-[hsl(var(--card-error-text))]">Despesas do Mês</CardTitle>
+          <TrendingDown className="h-4 w-4 text-[hsl(var(--card-error-accent))]" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-red-900">{formatCurrency(kpiData.totalExpenses)}</div>
-          <p className="text-xs text-red-700">Gastos registrados</p>
+          <div className="text-2xl font-bold text-[hsl(var(--card-error-text))]">{formatCurrency(kpiData.totalExpenses)}</div>
+          <p className="text-xs text-[hsl(var(--card-error-text))] opacity-70">Gastos registrados</p>
         </CardContent>
       </Card>
 
-      <Card className={`bg-gradient-to-br ${kpiData.savings >= 0 ? 'from-blue-50 to-blue-100 border-blue-200' : 'from-orange-50 to-orange-100 border-orange-200'}`}>
+      <Card className={`${kpiData.savings >= 0 ? 'bg-[hsl(var(--card-info-bg))] border-[hsl(var(--card-info-border))]' : 'bg-[hsl(var(--card-warning-bg))] border-[hsl(var(--card-warning-border))]'}`}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className={`text-sm font-medium ${kpiData.savings >= 0 ? 'text-blue-800' : 'text-orange-800'}`}>
+          <CardTitle className={`text-sm font-medium ${kpiData.savings >= 0 ? 'text-[hsl(var(--card-info-text))]' : 'text-[hsl(var(--card-warning-text))]'}`}>
             {kpiData.savings >= 0 ? 'Economia' : 'Déficit'}
           </CardTitle>
-          <PiggyBank className={`h-4 w-4 ${kpiData.savings >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
+          <PiggyBank className={`h-4 w-4 ${kpiData.savings >= 0 ? 'text-[hsl(var(--card-info-accent))]' : 'text-[hsl(var(--card-warning-accent))]'}`} />
         </CardHeader>
         <CardContent>
-          <div className={`text-2xl font-bold ${kpiData.savings >= 0 ? 'text-blue-900' : 'text-orange-900'}`}>
+          <div className={`text-2xl font-bold ${kpiData.savings >= 0 ? 'text-[hsl(var(--card-info-text))]' : 'text-[hsl(var(--card-warning-text))]'}`}>
             {formatCurrency(Math.abs(kpiData.savings))}
           </div>
-          <p className={`text-xs ${kpiData.savings >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+          <p className={`text-xs ${kpiData.savings >= 0 ? 'text-[hsl(var(--card-info-text))]' : 'text-[hsl(var(--card-warning-text))]'} opacity-70`}>
             {kpiData.monthlyTrend > 0 ? '↗' : kpiData.monthlyTrend < 0 ? '↘' : '→'} 
             {Math.abs(kpiData.monthlyTrend).toFixed(1)}% vs mês anterior
           </p>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+      <Card className="bg-[hsl(var(--card-primary-bg))] border-[hsl(var(--card-primary-border))]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-purple-800">Progresso das Metas</CardTitle>
-          <Target className="h-4 w-4 text-purple-600" />
+          <CardTitle className="text-sm font-medium text-[hsl(var(--card-primary-text))]">Progresso das Metas</CardTitle>
+          <Target className="h-4 w-4 text-[hsl(var(--card-primary-accent))]" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-purple-900">{kpiData.goalsProgress.toFixed(1)}%</div>
-          <p className="text-xs text-purple-700">Das metas concluídas</p>
+          <div className="text-2xl font-bold text-[hsl(var(--card-primary-text))]">{kpiData.goalsProgress.toFixed(1)}%</div>
+          <p className="text-xs text-[hsl(var(--card-primary-text))] opacity-70">Das metas concluídas</p>
         </CardContent>
       </Card>
     </div>

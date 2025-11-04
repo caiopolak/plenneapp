@@ -72,7 +72,7 @@ export function FinancialInsights() {
             icon: <CheckCircle className="h-4 w-4" />,
             title: 'Excelente economia!',
             message: `Você economizou ${savingsRate.toFixed(1)}% da sua renda este mês. Continue assim!`,
-            color: 'bg-green-100 text-green-800 border-green-200'
+            color: 'bg-[hsl(var(--card-success-bg))] text-[hsl(var(--card-success-text))] border-[hsl(var(--card-success-border))]'
           });
         } else if (savingsRate >= 10) {
           insights.push({
@@ -80,7 +80,7 @@ export function FinancialInsights() {
             icon: <TrendingUp className="h-4 w-4" />,
             title: 'Boa economia',
             message: `Taxa de economia de ${savingsRate.toFixed(1)}%. Tente chegar aos 20% recomendados.`,
-            color: 'bg-blue-100 text-blue-800 border-blue-200'
+            color: 'bg-[hsl(var(--card-info-bg))] text-[hsl(var(--card-info-text))] border-[hsl(var(--card-info-border))]'
           });
         }
       } else {
@@ -89,7 +89,7 @@ export function FinancialInsights() {
           icon: <AlertTriangle className="h-4 w-4" />,
           title: 'Atenção ao orçamento',
           message: `Suas despesas superaram as receitas em R$ ${Math.abs(savings).toFixed(2)} este mês.`,
-          color: 'bg-orange-100 text-orange-800 border-orange-200'
+          color: 'bg-[hsl(var(--card-warning-bg))] text-[hsl(var(--card-warning-text))] border-[hsl(var(--card-warning-border))]'
         });
       }
 
@@ -113,7 +113,7 @@ export function FinancialInsights() {
             icon: <Lightbulb className="h-4 w-4" />,
             title: 'Revise seus gastos',
             message: `${percentage.toFixed(1)}% dos seus gastos são com "${category}". Considere otimizar esta categoria.`,
-            color: 'bg-yellow-100 text-yellow-800 border-yellow-200'
+            color: 'bg-[hsl(var(--card-warning-bg))] text-[hsl(var(--card-warning-text))] border-[hsl(var(--card-warning-border))]'
           });
         }
       }
@@ -133,7 +133,7 @@ export function FinancialInsights() {
           icon: <AlertTriangle className="h-4 w-4" />,
           title: 'Metas próximas do prazo',
           message: `Você tem ${goalsNearDeadline.length} meta(s) com prazo nos próximos 30 dias.`,
-          color: 'bg-blue-100 text-blue-800 border-blue-200'
+          color: 'bg-[hsl(var(--card-info-bg))] text-[hsl(var(--card-info-text))] border-[hsl(var(--card-info-border))]'
         });
       }
 
@@ -147,7 +147,7 @@ export function FinancialInsights() {
             icon: <Lightbulb className="h-4 w-4" />,
             title: 'Considere investir mais',
             message: 'Experts recomendam investir pelo menos 10% da renda. Que tal aumentar seus investimentos?',
-            color: 'bg-yellow-100 text-yellow-800 border-yellow-200'
+            color: 'bg-[hsl(var(--card-warning-bg))] text-[hsl(var(--card-warning-text))] border-[hsl(var(--card-warning-border))]'
           });
         }
       }
