@@ -256,38 +256,27 @@ export function useThemes() {
     // Salvar no banco se usuário estiver logado
     if (user) {
       try {
-        // 1) Buscar a linha mais recente do usuário e atualizar; se não houver, criar
-        const { data: existing, error: fetchErr } = await supabase
+        // Garante que existe uma linha ativa para o tema atual e atualiza apenas o darkMode
+        const now = new Date().toISOString();
+
+        // 1) Upsert da linha do tema atual (chave única user_id, theme_name)
+        const { error: upsertErr } = await supabase
           .from('user_themes')
-          .select('id')
+          .upsert({
+            user_id: user.id,
+            theme_name: currentTheme,
+            is_active: true,
+            custom_colors: { darkMode: newDarkMode },
+            updated_at: now,
+          }, { onConflict: 'user_id,theme_name' });
+        if (upsertErr) throw upsertErr;
+
+        // 2) Opcional: garantir que outros temas fiquem inativos
+        await supabase
+          .from('user_themes')
+          .update({ is_active: false })
           .eq('user_id', user.id)
-          .order('updated_at', { ascending: false })
-          .limit(1);
-
-        if (fetchErr) throw fetchErr;
-
-        if (existing && existing.length > 0) {
-          const { error: updateErr } = await supabase
-            .from('user_themes')
-            .update({
-              theme_name: currentTheme,
-              is_active: true,
-              custom_colors: { darkMode: newDarkMode },
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', existing[0].id);
-          if (updateErr) throw updateErr;
-        } else {
-          const { error: insertErr } = await supabase
-            .from('user_themes')
-            .insert({
-              user_id: user.id,
-              theme_name: currentTheme,
-              is_active: true,
-              custom_colors: { darkMode: newDarkMode }
-            });
-          if (insertErr) throw insertErr;
-        }
+          .neq('theme_name', currentTheme);
       } catch (error) {
         console.error('Erro ao salvar preferência de modo escuro:', error);
       }
@@ -307,37 +296,27 @@ export function useThemes() {
     }
 
     try {
-      // Persistir preferências do usuário com única linha por usuário (cria/atualiza)
-      const { data: existing, error: fetchErr } = await supabase
-        .from('user_themes')
-        .select('id')
-        .eq('user_id', user.id)
-        .order('updated_at', { ascending: false })
-        .limit(1);
-      if (fetchErr) throw fetchErr;
+      // Persistir preferências do usuário garantindo exclusividade por (user_id, theme_name)
+      const now = new Date().toISOString();
 
-      if (existing && existing.length > 0) {
-        const { error: updateErr } = await supabase
-          .from('user_themes')
-          .update({
-            theme_name: themeName,
-            custom_colors: { darkMode: isDarkMode },
-            is_active: true,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existing[0].id);
-        if (updateErr) throw updateErr;
-      } else {
-        const { error: insertErr } = await supabase
-          .from('user_themes')
-          .insert({
-            user_id: user.id,
-            theme_name: themeName,
-            is_active: true,
-            custom_colors: { darkMode: isDarkMode }
-          });
-        if (insertErr) throw insertErr;
-      }
+      // 1) Desativar outros temas do usuário
+      const { error: deactivateErr } = await supabase
+        .from('user_themes')
+        .update({ is_active: false })
+        .eq('user_id', user.id);
+      if (deactivateErr) throw deactivateErr;
+
+      // 2) Upsert do tema escolhido como ativo
+      const { error: upsertErr } = await supabase
+        .from('user_themes')
+        .upsert({
+          user_id: user.id,
+          theme_name: themeName,
+          is_active: true,
+          custom_colors: { darkMode: isDarkMode },
+          updated_at: now,
+        }, { onConflict: 'user_id,theme_name' });
+      if (upsertErr) throw upsertErr;
       
       toast({
         title: "Tema salvo!",
@@ -375,6 +354,7 @@ export function useThemes() {
         .from('user_themes')
         .select('*')
         .eq('user_id', user.id)
+        .order('is_active', { ascending: false })
         .order('updated_at', { ascending: false })
         .order('created_at', { ascending: false })
         .order('id', { ascending: false })
