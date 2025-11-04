@@ -267,7 +267,7 @@ export function useThemes() {
         if (fetchErr) throw fetchErr;
 
         if (existing && existing.length > 0) {
-          await supabase
+          const { error: updateErr } = await supabase
             .from('user_themes')
             .update({
               theme_name: currentTheme,
@@ -276,8 +276,9 @@ export function useThemes() {
               updated_at: new Date().toISOString()
             })
             .eq('id', existing[0].id);
+          if (updateErr) throw updateErr;
         } else {
-          await supabase
+          const { error: insertErr } = await supabase
             .from('user_themes')
             .insert({
               user_id: user.id,
@@ -285,6 +286,7 @@ export function useThemes() {
               is_active: true,
               custom_colors: { darkMode: newDarkMode }
             });
+          if (insertErr) throw insertErr;
         }
       } catch (error) {
         console.error('Erro ao salvar preferência de modo escuro:', error);
@@ -315,7 +317,7 @@ export function useThemes() {
       if (fetchErr) throw fetchErr;
 
       if (existing && existing.length > 0) {
-        await supabase
+        const { error: updateErr } = await supabase
           .from('user_themes')
           .update({
             theme_name: themeName,
@@ -324,8 +326,9 @@ export function useThemes() {
             updated_at: new Date().toISOString()
           })
           .eq('id', existing[0].id);
+        if (updateErr) throw updateErr;
       } else {
-        await supabase
+        const { error: insertErr } = await supabase
           .from('user_themes')
           .insert({
             user_id: user.id,
@@ -333,6 +336,7 @@ export function useThemes() {
             is_active: true,
             custom_colors: { darkMode: isDarkMode }
           });
+        if (insertErr) throw insertErr;
       }
       
       toast({
@@ -397,7 +401,7 @@ export function useThemes() {
         // Se o tema do banco for inválido, sincronizar com o tema final calculado
         if (!isValidDb && finalTheme !== row.theme_name) {
           try {
-            await supabase
+            const { error: syncErr } = await supabase
               .from('user_themes')
               .update({
                 theme_name: finalTheme,
@@ -406,6 +410,7 @@ export function useThemes() {
                 updated_at: new Date().toISOString()
               })
               .eq('id', row.id);
+            if (syncErr) throw syncErr;
           } catch (e) {
             console.warn('Falha ao sincronizar tema com o banco, mantendo local:', e);
           }
@@ -420,7 +425,7 @@ export function useThemes() {
         applyTheme(finalTheme, savedDarkMode);
 
         try {
-          await supabase
+          const { error: insertErr } = await supabase
             .from('user_themes')
             .insert({
               user_id: user.id,
@@ -428,6 +433,7 @@ export function useThemes() {
               is_active: true,
               custom_colors: { darkMode: savedDarkMode }
             });
+          if (insertErr) throw insertErr;
         } catch (e) {
           console.warn('Não foi possível criar registro de tema. Continuando com configuração local.', e);
         }
