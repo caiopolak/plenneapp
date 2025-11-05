@@ -15,20 +15,23 @@ export function CategoryComparisonChart({
   data: ChartData[];
 }) {
   return (
-    <Card className="shadow rounded-xl border-0 bg-gradient-to-r from-yellow-50 via-blue-50 to-green-50">
+    <Card className="shadow-card rounded-xl border border-border bg-card">
       <CardHeader>
-        <CardTitle className="flex gap-2 items-center text-blue-900">
+        <CardTitle className="flex gap-2 items-center text-foreground">
           📊 Comparativo Geral por Categoria
         </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="2 2" />
-            <XAxis dataKey="name" />
-            <YAxis tickFormatter={(v) => `R$ ${v.toLocaleString()}`} />
-            <Tooltip formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`} />
-            <Bar dataKey="value" fill="#003f5c" />
+            <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" />
+            <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
+            <YAxis tickFormatter={(v) => `R$ ${v.toLocaleString()}`} stroke="hsl(var(--muted-foreground))" />
+            <Tooltip 
+              formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`}
+              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }}
+            />
+            <Bar dataKey="value" fill="hsl(var(--primary))" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

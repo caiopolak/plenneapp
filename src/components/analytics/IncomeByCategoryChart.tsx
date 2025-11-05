@@ -13,9 +13,9 @@ interface ChartData {
 
 export function IncomeByCategoryChart({ data }: { data: ChartData[] }) {
   return (
-    <Card className="shadow rounded-xl border-0 bg-gradient-to-br from-green-50 to-white/80">
+    <Card className="shadow-card rounded-xl border border-border bg-card">
       <CardHeader>
-        <CardTitle className="flex gap-2 items-center text-green-700">
+        <CardTitle className="flex gap-2 items-center text-foreground">
           🍀 Receitas por Categoria
         </CardTitle>
       </CardHeader>
@@ -30,14 +30,18 @@ export function IncomeByCategoryChart({ data }: { data: ChartData[] }) {
                 labelLine={false}
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 outerRadius={90}
-                fill="#2f9e44"
+                fill="hsl(var(--secondary))"
                 dataKey="value"
+                stroke="hsl(var(--card))"
               >
                 {data.map((entry, idx) => (
-                  <Cell key={`cell-income-${idx}`} fill={COLORS[idx % COLORS.length]} />
+                  <Cell key={`cell-income-${idx}`} fill={COLORS[idx % COLORS.length]} stroke="hsl(var(--card))" />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`} />
+              <Tooltip 
+                formatter={(value: number) => `R$ ${Number(value).toFixed(2)}`}
+                contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }}
+              />
             </PieChart>
           </ResponsiveContainer>
         ) : (

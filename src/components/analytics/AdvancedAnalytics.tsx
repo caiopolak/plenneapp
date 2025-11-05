@@ -214,40 +214,40 @@ export function AdvancedAnalytics({ period }: AdvancedAnalyticsProps) {
     <div className="space-y-6">
       {/* Cards de resumo financeiro */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+        <Card className="bg-[hsl(var(--card-success-bg))] border-[hsl(var(--card-success-border))]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-green-800">Receitas Totais</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium text-[hsl(var(--card-success-text))]">Receitas Totais</CardTitle>
+            <TrendingUp className="h-4 w-4 text-[hsl(var(--card-success-accent))]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-900">
+            <div className="text-2xl font-bold text-[hsl(var(--card-success-accent))]">
               R$ {analyticsData.totalIncome.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-red-50 to-rose-50 border-red-200">
+        <Card className="bg-[hsl(var(--card-error-bg))] border-[hsl(var(--card-error-border))]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-red-800">Despesas Totais</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-600" />
+            <CardTitle className="text-sm font-medium text-[hsl(var(--card-error-text))]">Despesas Totais</CardTitle>
+            <TrendingDown className="h-4 w-4 text-[hsl(var(--card-error-accent))]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-900">
+            <div className="text-2xl font-bold text-[hsl(var(--card-error-accent))]">
               R$ {analyticsData.totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="bg-[hsl(var(--card-info-bg))] border-[hsl(var(--card-info-border))]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-blue-800">Taxa de Poupança</CardTitle>
-            <Target className="h-4 w-4 text-blue-600" />
+            <CardTitle className="text-sm font-medium text-[hsl(var(--card-info-text))]">Taxa de Poupança</CardTitle>
+            <Target className="h-4 w-4 text-[hsl(var(--card-info-accent))]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-900">
+            <div className="text-2xl font-bold text-[hsl(var(--card-info-accent))]">
               {analyticsData.savingsRate.toFixed(1)}%
             </div>
-            <p className="text-xs text-blue-700 mt-1">
+            <p className="text-xs text-[hsl(var(--card-info-text))] mt-1">
               {analyticsData.savingsRate > 20 ? 'Excelente!' : 
                analyticsData.savingsRate > 10 ? 'Bom' : 'Precisa melhorar'}
             </p>
@@ -257,9 +257,9 @@ export function AdvancedAnalytics({ period }: AdvancedAnalyticsProps) {
 
       {/* Insights automáticos */}
       {analyticsData.insights.length > 0 && (
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <BarChart3 className="h-5 w-5" />
               Insights Financeiros
             </CardTitle>
@@ -270,28 +270,28 @@ export function AdvancedAnalytics({ period }: AdvancedAnalyticsProps) {
                 <div
                   key={index}
                   className={`flex items-start gap-3 p-3 rounded-lg ${
-                    insight.type === 'positive' ? 'bg-green-50 border border-green-200' :
-                    insight.type === 'warning' ? 'bg-yellow-50 border border-yellow-200' :
-                    'bg-red-50 border border-red-200'
+                    insight.type === 'positive' ? 'bg-[hsl(var(--card-success-bg))] border border-[hsl(var(--card-success-border))]' :
+                    insight.type === 'warning' ? 'bg-[hsl(var(--card-warning-bg))] border border-[hsl(var(--card-warning-border))]' :
+                    'bg-[hsl(var(--card-error-bg))] border border-[hsl(var(--card-error-border))]'
                   }`}
                 >
                   <insight.icon className={`h-5 w-5 mt-0.5 ${
-                    insight.type === 'positive' ? 'text-green-600' :
-                    insight.type === 'warning' ? 'text-yellow-600' :
-                    'text-red-600'
+                    insight.type === 'positive' ? 'text-[hsl(var(--card-success-accent))]' :
+                    insight.type === 'warning' ? 'text-[hsl(var(--card-warning-accent))]' :
+                    'text-[hsl(var(--card-error-accent))]'
                   }`} />
                   <div>
                     <h4 className={`font-medium ${
-                      insight.type === 'positive' ? 'text-green-800' :
-                      insight.type === 'warning' ? 'text-yellow-800' :
-                      'text-red-800'
+                      insight.type === 'positive' ? 'text-[hsl(var(--card-success-text))]' :
+                      insight.type === 'warning' ? 'text-[hsl(var(--card-warning-text))]' :
+                      'text-[hsl(var(--card-error-text))]'
                     }`}>
                       {insight.title}
                     </h4>
                     <p className={`text-sm ${
-                      insight.type === 'positive' ? 'text-green-700' :
-                      insight.type === 'warning' ? 'text-yellow-700' :
-                      'text-red-700'
+                      insight.type === 'positive' ? 'text-[hsl(var(--card-success-text))]' :
+                      insight.type === 'warning' ? 'text-[hsl(var(--card-warning-text))]' :
+                      'text-[hsl(var(--card-error-text))]'
                     }`}>
                       {insight.description}
                     </p>
@@ -344,9 +344,9 @@ export function AdvancedAnalytics({ period }: AdvancedAnalyticsProps) {
           <div className="grid gap-4 md:grid-cols-2">
             {analyticsData.budgetAnalysis.map((budget, index) => (
               <Card key={index} className={
-                budget.status === 'exceeded' ? 'border-red-200 bg-red-50' :
-                budget.status === 'warning' ? 'border-yellow-200 bg-yellow-50' :
-                'border-green-200 bg-green-50'
+                budget.status === 'exceeded' ? 'border-[hsl(var(--card-error-border))] bg-[hsl(var(--card-error-bg))]' :
+                budget.status === 'warning' ? 'border-[hsl(var(--card-warning-border))] bg-[hsl(var(--card-warning-bg))]' :
+                'border-[hsl(var(--card-success-border))] bg-[hsl(var(--card-success-bg))]'
               }>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
@@ -393,9 +393,9 @@ export function AdvancedAnalytics({ period }: AdvancedAnalyticsProps) {
           <div className="grid gap-4 md:grid-cols-2">
             {analyticsData.goalsAnalysis.map((goal, index) => (
               <Card key={index} className={
-                goal.status === 'completed' ? 'border-green-200 bg-green-50' :
-                goal.status === 'close' ? 'border-blue-200 bg-blue-50' :
-                'border-gray-200'
+                goal.status === 'completed' ? 'border-[hsl(var(--card-success-border))] bg-[hsl(var(--card-success-bg))]' :
+                goal.status === 'close' ? 'border-[hsl(var(--card-info-border))] bg-[hsl(var(--card-info-bg))]' :
+                'border-border bg-card'
               }>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">

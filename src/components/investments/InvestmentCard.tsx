@@ -38,12 +38,12 @@ export function InvestmentCard({
   return (
     <Card
       key={investment.id}
-      className="group border-none hover:ring-2 hover:ring-[#003f5c]/30 transition-all shadow-[0_4px_24px_0_rgba(0,63,92,0.13)] bg-gradient-to-tr from-[#f4f4f4] via-white to-[#eaf6ee]"
+      className="group border border-border hover:ring-2 hover:ring-primary/30 transition-all shadow-card bg-card"
     >
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg text-[#003f5c] font-display">{investment.name}</CardTitle>
+            <CardTitle className="text-lg text-foreground font-display">{investment.name}</CardTitle>
             <div
               className={`inline-block px-3 py-1 rounded-full text-xs font-bold shadow-sm mt-1
                 ${cat.bg} ${cat.text} font-display`}
@@ -64,9 +64,9 @@ export function InvestmentCard({
                   <Edit2 className="w-4 h-4" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-[#f4f4f4] rounded-2xl">
+              <DialogContent className="max-w-2xl bg-card rounded-2xl">
                 <DialogHeader>
-                  <DialogTitle className="text-[#003f5c] font-display">Editar Investimento</DialogTitle>
+                  <DialogTitle className="text-foreground font-display">Editar Investimento</DialogTitle>
                 </DialogHeader>
                 {editingInvestment && editingInvestment.id === investment.id && (
                   <InvestmentForm
@@ -94,29 +94,29 @@ export function InvestmentCard({
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex justify-between">
-          <span className="text-sm text-[#2b2b2b]">Valor Investido</span>
-          <span className="font-bold text-[#003f5c]">
+          <span className="text-sm text-muted-foreground">Valor Investido</span>
+          <span className="font-bold text-foreground">
             R$ {investment.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
           </span>
         </div>
         {investment.expected_return && (
           <div className="flex justify-between items-center">
-            <span className="text-sm text-[#2b2b2b]">Retorno Esperado</span>
+            <span className="text-sm text-muted-foreground">Retorno Esperado</span>
             <div className="flex items-center gap-1">
               {investment.expected_return > 0 ? (
-                <TrendingUp className="w-4 h-4 text-[#2f9e44]" />
+                <TrendingUp className="w-4 h-4 text-secondary" />
               ) : (
-                <TrendingDown className="w-4 h-4 text-[#d62828]" />
+                <TrendingDown className="w-4 h-4 text-destructive" />
               )}
-              <span className={`font-bold ${investment.expected_return > 0 ? 'text-[#2f9e44]' : 'text-[#d62828]'}`}>
+              <span className={`font-bold ${investment.expected_return > 0 ? 'text-secondary' : 'text-destructive'}`}>
                 {investment.expected_return}%
               </span>
             </div>
           </div>
         )}
         <div className="flex justify-between">
-          <span className="text-sm text-[#2b2b2b]">Data da Compra</span>
-          <span className="text-sm text-[#2b2b2b] font-mono">
+          <span className="text-sm text-muted-foreground">Data da Compra</span>
+          <span className="text-sm text-muted-foreground font-mono">
             {format(new Date(investment.purchase_date), "dd/MM/yyyy", { locale: ptBR })}
           </span>
         </div>

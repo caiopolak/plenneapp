@@ -222,7 +222,7 @@ export function GoalList() {
       </div>
 
       {filteredGoals.length === 0 ? (
-        <Card className="bg-[#f4f4f4] border border-[--primary]/10">
+        <Card className="bg-card border border-border">
           <CardContent className="p-8 text-center rounded-lg">
             <p className="text-muted-foreground font-text">Nenhuma meta criada ainda</p>
             <p className="text-sm text-muted-foreground mt-2 font-text">
@@ -239,7 +239,7 @@ export function GoalList() {
             const isCompleted = progress >= 100;
             
             return (
-              <Card key={goal.id} className={`bg-white border border-[--primary]/10 ${isCompleted ? 'border-[--secondary]' : ''}`}>
+              <Card key={goal.id} className={`bg-card border border-border ${isCompleted ? 'border-secondary' : ''}`}>
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
