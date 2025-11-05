@@ -149,14 +149,14 @@ export function InvestmentList() {
   // Paleta visual harmonizada conforme identidade (ajuste para combinar com estética e eliminar laranja em destaques/alertas!)
   const getTypeStyles = (type: string) => {
     const map: any = {
-      stocks:      { label: "Ações",       bg: "bg-[#003f5c]",   text: "text-white" },
-      bonds:       { label: "Títulos",     bg: "bg-[#2f9e44]",   text: "text-white" },
-      crypto:      { label: "Criptomoedas",bg: "bg-[#eaf6ee]",   text: "text-[#003f5c] dark:text-[#003f5c]" },
-      real_estate: { label: "Imóveis",     bg: "bg-[#f4f4f4] border border-[#003f5c]/20", text: "text-[#2f9e44]" },
-      funds:       { label: "Fundos",      bg: "bg-[#f4f4f4]",   text: "text-[#003f5c]" },
-      savings:     { label: "Poupança",    bg: "bg-white border border-[#2f9e44]/40", text: "text-[#2f9e44]" },
+      stocks:      { label: "Ações",       bg: "bg-primary",   text: "text-primary-foreground" },
+      bonds:       { label: "Títulos",     bg: "bg-secondary",   text: "text-secondary-foreground" },
+      crypto:      { label: "Criptomoedas",bg: "bg-accent/20",   text: "text-accent" },
+      real_estate: { label: "Imóveis",     bg: "bg-card border border-border", text: "text-secondary" },
+      funds:       { label: "Fundos",      bg: "bg-muted",   text: "text-foreground" },
+      savings:     { label: "Poupança",    bg: "bg-card border border-secondary/40", text: "text-secondary" },
     };
-    return map[type] || { label: type, bg: "bg-[#003f5c]", text: "text-white" };
+    return map[type] || { label: type, bg: "bg-primary", text: "text-primary-foreground" };
   };
 
   // Cartões analíticos e informativos — novo gradiente/principal
@@ -202,12 +202,12 @@ export function InvestmentList() {
 
       {/* Lista de investimentos */}
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-bold text-[#003f5c] font-display mb-2">Meus Investimentos</h2>
+        <h2 className="text-2xl font-bold text-foreground font-display mb-2">Meus Investimentos</h2>
         {investments.length === 0 ? (
-          <Card className="bg-[#f4f4f4] border-none shadow-[0_4px_32px_0_rgba(0,63,92,0.08)]">
+          <Card className="bg-card border border-border shadow-card">
             <CardContent className="p-8 text-center">
-              <p className="text-[#003f5c] font-bold font-display">Nenhum investimento registrado</p>
-              <p className="text-sm text-[#2b2b2b] mt-2">
+              <p className="text-foreground font-bold font-display">Nenhum investimento registrado</p>
+              <p className="text-sm text-muted-foreground mt-2">
                 Registre seus investimentos e acompanhe sua carteira financeira!
               </p>
             </CardContent>

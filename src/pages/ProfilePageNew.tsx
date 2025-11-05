@@ -77,16 +77,16 @@ const ProfilePageNew = () => {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Card de informações do usuário */}
         <div className="lg:col-span-1">
-          <Card className="bg-gradient-to-tr from-white via-[#f8fffe] to-[#eaf6ee] border-none shadow-[0_4px_24px_0_rgba(0,63,92,0.13)]">
+          <Card className="bg-card border border-border shadow-card">
             <CardContent className="p-6 text-center space-y-4">
-              <Avatar className="h-24 w-24 mx-auto border-4 border-white shadow-lg">
+              <Avatar className="h-24 w-24 mx-auto border-4 border-primary shadow-lg">
                 <AvatarImage src={avatarUrl || ''} alt={fullName || ''} />
-                <AvatarFallback className="bg-[#eaf6ee] text-[#003f5c] font-bold text-2xl">
+                <AvatarFallback className="bg-secondary/10 text-primary font-bold text-2xl">
                   {fullName?.charAt(0) || profile?.email?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="text-xl font-bold text-[#003f5c]">{fullName || 'Usuário'}</h3>
+                <h3 className="text-xl font-bold text-foreground">{fullName || 'Usuário'}</h3>
                 <p className="text-sm text-muted-foreground">{profile?.email}</p>
               </div>
               {subscription && (

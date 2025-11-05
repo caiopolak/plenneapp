@@ -59,7 +59,7 @@ export function InvestmentCard({
                   size="sm"
                   aria-label="Editar investimento"
                   onClick={() => setEditingInvestment(investment)}
-                  className="hover:bg-[#f8961e]/20 hover:text-[#f8961e]"
+                  className="hover:bg-accent/20 hover:text-accent"
                 >
                   <Edit2 className="w-4 h-4" />
                 </Button>

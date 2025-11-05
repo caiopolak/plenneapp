@@ -13,7 +13,7 @@ interface WelcomeCardProps {
 
 export function WelcomeCard({ name, plan, onViewReports }: WelcomeCardProps) {
   return (
-    <Card className="bg-gradient-to-tr from-card via-[#f8fffe] to-[#eaf6ee] border-none shadow-card animate-fade-in relative overflow-hidden">
+    <Card className="bg-card border border-border shadow-card animate-fade-in relative overflow-hidden">
       <CardContent className="flex flex-col md:flex-row items-center justify-between gap-6 py-7 px-8">
         <div>
           <h2 className="text-3xl font-bold flex items-center gap-1 font-display text-primary">

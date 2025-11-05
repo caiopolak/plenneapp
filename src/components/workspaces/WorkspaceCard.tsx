@@ -31,11 +31,11 @@ export function WorkspaceCard({
 }: WorkspaceCardProps) {
   return (
     <div
-      className={`relative rounded-2xl px-4 py-4 flex items-center gap-4 border shadow-card bg-gradient-to-tr from-green-50 via-white to-blue-100/60 transition-all 
+      className={`relative rounded-2xl px-4 py-4 flex items-center gap-4 border shadow-card bg-card transition-all 
         ${
           selected
-            ? "border-primary/80 shadow-lg bg-gradient-to-tr from-blue-100 via-green-100 to-blue-50"
-            : "border-muted"
+            ? "border-primary shadow-lg ring-2 ring-primary/20"
+            : "border-border"
         }
       `}
     >
