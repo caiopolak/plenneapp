@@ -187,7 +187,7 @@ export function GoalList() {
       {/* Dialog para Nova Meta */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent
-          className="max-w-xl w-full rounded-2xl p-4 md:p-6"
+          className="max-w-xl w-full rounded-2xl p-4 md:p-6 bg-card text-foreground"
           style={{
             maxWidth: "96vw",
             width: "100%",
@@ -195,7 +195,7 @@ export function GoalList() {
           }}
         >
           <DialogHeader>
-            <DialogTitle>Nova Meta</DialogTitle>
+            <DialogTitle className="text-foreground">Nova Meta</DialogTitle>
           </DialogHeader>
           <GoalForm
             onSuccess={() => {

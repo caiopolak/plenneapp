@@ -109,11 +109,11 @@ export function TransactionList() {
       {/* Nova Transação Modal */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent
-          className="max-w-xl w-full rounded-2xl p-4 md:p-6"
+          className="max-w-xl w-full rounded-2xl p-4 md:p-6 bg-card text-foreground"
           style={{ maxWidth: '96vw', width: '100%', margin: '0 auto' }}
         >
           <DlgHeader>
-            <DlgTitle>Nova Transação</DlgTitle>
+            <DlgTitle className="text-foreground">Nova Transação</DlgTitle>
           </DlgHeader>
           <TransactionForm
             onSuccess={() => {
@@ -131,7 +131,7 @@ export function TransactionList() {
         balance={balance}
       />
       {/* Filtros/actions */}
-      <Card className="bg-white border-[--primary]/10">
+      <Card className="bg-card border-border">
         <CardHeader>
           <TransactionListFilters
             searchTerm={searchTerm}
@@ -148,7 +148,7 @@ export function TransactionList() {
         </CardHeader>
         <CardContent>
           {filteredTransactions.length === 0 ? (
-            <div className="text-center py-8 font-text text-[--primary]">
+            <div className="text-center py-8">
               <p className="text-muted-foreground">Nenhuma transação encontrada</p>
             </div>
           ) : (

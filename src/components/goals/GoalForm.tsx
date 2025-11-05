@@ -123,9 +123,9 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
 
   return (
     <div className={cn("w-full", isMobile && "px-2")}>
-      <Card className={cn("border-0 shadow-none bg-white", isMobile ? "rounded-none" : "rounded-xl")}>
+      <Card className={cn("border-0 shadow-none bg-card", isMobile ? "rounded-none" : "rounded-xl")}>
         <CardHeader className={cn(isMobile ? "px-0 pt-0 pb-3" : "px-2 sm:px-6")}>
-          <CardTitle className={cn("text-lg sm:text-xl", isMobile && "text-base")}>
+          <CardTitle className={cn("text-lg sm:text-xl text-foreground", isMobile && "text-base")}>
             {goal ? 'Editar Meta' : 'Nova Meta Financeira'}
           </CardTitle>
         </CardHeader>
