@@ -89,9 +89,9 @@ export function IncomingTransactionForm({ onSuccess, onCancel }: IncomingTransac
   };
 
   return (
-    <Card className="bg-white">
+    <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle>Nova Transação Pendente</CardTitle>
+        <CardTitle className="text-foreground">Nova Transação Pendente</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">

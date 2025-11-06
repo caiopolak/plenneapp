@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Edit2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { TransactionForm } from './TransactionForm';
+import { UnifiedTransactionForm } from './UnifiedTransactionForm';
 
 type Transaction = {
   id: string;
@@ -86,12 +86,12 @@ export function TransactionRow({
                 <Edit2 className="w-4 h-4" />
               </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl bg-card text-foreground">
             <DialogHeader>
-              <DialogTitle>Editar Transação</DialogTitle>
+              <DialogTitle className="text-foreground">Editar Transação</DialogTitle>
             </DialogHeader>
             {isEditing && (
-              <TransactionForm
+              <UnifiedTransactionForm
                 transaction={transaction}
                 onSuccess={() => {
                   setEditingTransaction(null);

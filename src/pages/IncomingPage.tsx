@@ -33,9 +33,9 @@ export default function IncomingPage() {
               Nova Transação Pendente
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl bg-card text-foreground">
             <DialogHeader>
-              <DialogTitle>Criar Transação Pendente</DialogTitle>
+              <DialogTitle className="text-foreground">Criar Transação Pendente</DialogTitle>
             </DialogHeader>
             <IncomingTransactionForm 
               onSuccess={handleFormSuccess}

@@ -209,7 +209,7 @@ export function UnifiedTransactionForm({
       isMobile ? "px-3 py-4" : "px-0 py-0"
     )}>
       <Card className={cn(
-        "border-0 shadow-none bg-background",
+        "border-0 shadow-none bg-card",
         isMobile ? "rounded-none" : "rounded-xl"
       )}>
         <CardHeader className={cn(
@@ -285,12 +285,12 @@ export function UnifiedTransactionForm({
 
             {/* Informações sobre limites do plano */}
             {limits && limits.plan === 'free' && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="flex items-center gap-2 text-amber-800 text-sm">
+              <div className="p-3 bg-amber-100/50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200 text-sm">
                   <Crown className="w-4 h-4" />
                   <span className="font-medium">Plano Gratuito</span>
                 </div>
-                <p className="text-xs text-amber-700 mt-1">
+                <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
                   Você pode criar até {limits.transactions} transações por mês. 
                   {mode === 'scheduled' && ' Agendamento disponível apenas nos planos pagos.'}
                 </p>

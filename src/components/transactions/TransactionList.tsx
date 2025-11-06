@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader as DlgHeader, DialogTitle as DlgTitle } from '@/components/ui/dialog';
-import { TransactionForm } from './TransactionForm';
+import { UnifiedTransactionForm } from './UnifiedTransactionForm';
 import { ImportTransactionsCSV } from "./ImportTransactionsCSV";
 import { useToast } from '@/hooks/use-toast';
 import { useTransactions } from '@/hooks/useTransactions';
@@ -115,7 +115,7 @@ export function TransactionList() {
           <DlgHeader>
             <DlgTitle className="text-foreground">Nova Transação</DlgTitle>
           </DlgHeader>
-          <TransactionForm
+          <UnifiedTransactionForm
             onSuccess={() => {
               setShowForm(false);
               fetchTransactions();

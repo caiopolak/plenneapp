@@ -104,9 +104,9 @@ export function DashboardMain() {
 
       {/* Modal de Nova Transação */}
       <Dialog open={showTransactionForm} onOpenChange={setShowTransactionForm}>
-        <DialogContent className="max-w-xl w-full rounded-2xl p-4 md:p-6">
+        <DialogContent className="max-w-xl w-full rounded-2xl p-4 md:p-6 bg-card text-foreground">
           <DialogHeader>
-            <DialogTitle>Nova Transação</DialogTitle>
+            <DialogTitle className="text-foreground">Nova Transação</DialogTitle>
           </DialogHeader>
           <UnifiedTransactionForm
             onSuccess={() => setShowTransactionForm(false)}
