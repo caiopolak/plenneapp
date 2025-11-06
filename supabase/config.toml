@@ -1,1 +1,7 @@
 project_id = "kmejplnwnajjaxsqzmwz"
+
+[functions.financial-assistant-gemini]
+verify_jwt = false
+
+[functions.process-scheduled-transactions]
+verify_jwt = false
