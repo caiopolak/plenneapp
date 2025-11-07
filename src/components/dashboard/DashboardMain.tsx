@@ -3,6 +3,8 @@ import { WelcomeCard } from './WelcomeCard';
 import { KPICards } from './KPICards';
 import { UnifiedSmartAlerts } from '@/components/alerts/UnifiedSmartAlerts';
 import { IncomingTransactions } from '@/components/transactions/IncomingTransactions';
+import { UpcomingTransactionsCard } from './UpcomingTransactionsCard';
+import { ProjectedBalanceChart } from './ProjectedBalanceChart';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UnifiedTransactionForm } from '@/components/transactions/UnifiedTransactionForm';
@@ -96,6 +98,12 @@ export function DashboardMain() {
 
       {/* KPI Cards */}
       <KPICards />
+
+      {/* Próximas Transações e Saldo Projetado */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <UpcomingTransactionsCard />
+        <ProjectedBalanceChart />
+      </div>
 
       {/* Layout principal */}
       <div className="space-y-6">
