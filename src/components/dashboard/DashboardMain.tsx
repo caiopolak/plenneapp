@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { WelcomeCard } from './WelcomeCard';
 import { KPICards } from './KPICards';
-import { UnifiedSmartAlerts } from '@/components/alerts/UnifiedSmartAlerts';
-import { IncomingTransactions } from '@/components/transactions/IncomingTransactions';
 import { UpcomingTransactionsCard } from './UpcomingTransactionsCard';
 import { ProjectedBalanceChart } from './ProjectedBalanceChart';
 
@@ -103,11 +101,6 @@ export function DashboardMain() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <UpcomingTransactionsCard />
         <ProjectedBalanceChart />
-      </div>
-
-      {/* Layout principal */}
-      <div className="space-y-6">
-        <IncomingTransactions />
       </div>
 
       {/* Modal de Nova Transação */}
