@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useUpcomingTransactions } from "@/hooks/useUpcomingTransactions";
-import { Calendar, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
+import { Calendar, TrendingUp, TrendingDown, RefreshCw, ArrowRight } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 export function UpcomingTransactionsCard() {
   const { transactions, loading } = useUpcomingTransactions(7);
@@ -13,10 +15,18 @@ export function UpcomingTransactionsCard() {
     return (
       <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-foreground flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Próximas Transações (7 dias)
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Próximas Transações (7 dias)
+            </CardTitle>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/incoming" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+                Ver Todas
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
           {[1, 2, 3].map((i) => (
@@ -31,10 +41,18 @@ export function UpcomingTransactionsCard() {
     return (
       <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-foreground flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Próximas Transações (7 dias)
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Próximas Transações (7 dias)
+            </CardTitle>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/incoming" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+                Ver Todas
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm text-center py-6">
@@ -48,10 +66,18 @@ export function UpcomingTransactionsCard() {
   return (
     <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-foreground flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
-          Próximas Transações (7 dias)
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-foreground flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Próximas Transações (7 dias)
+          </CardTitle>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/incoming" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+              Ver Todas
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-3">
         {transactions.map((transaction) => (

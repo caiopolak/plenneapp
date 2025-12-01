@@ -1,10 +1,13 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Clock, Calendar } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Calendar, Crown } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { TransactionPendingForm } from '../TransactionPendingForm';
+import { UnifiedTransactionForm } from '../UnifiedTransactionForm';
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
+import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 interface TransactionFormActionsProps {
   loading: boolean;
@@ -23,10 +26,25 @@ export function TransactionFormActions({
   loading, isMobile, onCancel, isEdit, formData
 }: TransactionFormActionsProps) {
   const [showAgendamento, setShowAgendamento] = useState(false);
+  const { limits } = useSubscriptionLimits();
+  const { toast } = useToast();
+
+  const canUseScheduling = limits?.plan !== 'free';
+
+  const handleOpenAgendamento = () => {
+    if (!canUseScheduling) {
+      toast({
+        title: "Recurso Premium",
+        description: "Agendamento de transações está disponível apenas nos planos Pro e Business.",
+        action: <Badge variant="secondary" className="ml-2"><Crown className="w-3 h-3 mr-1" />Upgrade</Badge>
+      });
+      return;
+    }
+    setShowAgendamento(true);
+  };
 
   return (
     <div className="space-y-4">
-      {/* Botões de ação do formulário */}
       <div className={cn(
         "flex flex-col sm:flex-row gap-3 pt-4",
         isMobile && "space-y-2 sm:space-y-0"
@@ -42,16 +60,16 @@ export function TransactionFormActions({
           </Button>
         )}
         
-        {/* Botão para agendar (apenas se não for edição) */}
         {!isEdit && (
           <Button
             type="button"
             variant="outline"
-            onClick={() => setShowAgendamento(true)}
-            className="border-[#f8961e] text-[#f8961e] hover:bg-[#f8961e] hover:text-white h-12"
+            onClick={handleOpenAgendamento}
+            className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white h-12"
           >
             <Calendar className="w-4 h-4 mr-2" />
             {isMobile ? "Agendar" : "Agendar para Depois"}
+            {!canUseScheduling && <Crown className="w-4 h-4 ml-2" />}
           </Button>
         )}
         
@@ -64,16 +82,15 @@ export function TransactionFormActions({
         </Button>
       </div>
 
-      {/* Modal de agendamento */}
       <Dialog open={showAgendamento} onOpenChange={setShowAgendamento}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card">
           <DialogHeader>
             <DialogTitle>Agendar Transação</DialogTitle>
           </DialogHeader>
-          <TransactionPendingForm 
-            initialData={formData}
+          <UnifiedTransactionForm 
             onSuccess={() => setShowAgendamento(false)} 
             onCancel={() => setShowAgendamento(false)}
+            initialMode="scheduled"
           />
         </DialogContent>
       </Dialog>
