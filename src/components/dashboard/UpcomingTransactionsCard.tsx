@@ -20,12 +20,12 @@ export function UpcomingTransactionsCard() {
               <Calendar className="h-5 w-5" />
               Próximas Transações (7 dias)
             </CardTitle>
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/incoming" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
-                Ver Todas
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/app/incoming" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+              Ver Todas
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -47,7 +47,7 @@ export function UpcomingTransactionsCard() {
               Próximas Transações (7 dias)
             </CardTitle>
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/incoming" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+              <Link to="/app/incoming" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
                 Ver Todas
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -72,7 +72,7 @@ export function UpcomingTransactionsCard() {
             Próximas Transações (7 dias)
           </CardTitle>
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/incoming" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+            <Link to="/app/incoming" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
               Ver Todas
               <ArrowRight className="h-4 w-4" />
             </Link>

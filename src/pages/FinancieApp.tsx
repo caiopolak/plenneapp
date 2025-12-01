@@ -59,6 +59,7 @@ export default function FinancieApp() {
             <Route path="/subscription" element={<SubscriptionPlans />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/incoming" element={<IncomingPage />} />
+            <Route path="/alerts" element={<AlertsPage />} />
             <Route path="/transactions" element={<TransactionList />} />
             <Route path="/goals" element={<GoalList />} />
             <Route path="/investments" element={<InvestmentList />} />
