@@ -963,6 +963,10 @@ export type Database = {
         | { Args: never; Returns: undefined }
       check_user_active: { Args: { p_user: string }; Returns: boolean }
       create_recurring_transactions: { Args: never; Returns: undefined }
+      get_request_user: { Args: never; Returns: string }
+      get_user_role_from_jwt:
+        | { Args: { jwt_token: string }; Returns: string }
+        | { Args: never; Returns: string }
       is_workspace_owner: {
         Args: { _user_id: string; _workspace_id: string }
         Returns: boolean

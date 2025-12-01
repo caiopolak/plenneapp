@@ -155,28 +155,57 @@ export function UnifiedTransactionForm({
 
       } else {
         // Transação agendada
-        const incomingTransactionData = {
-          user_id: user.id,
-          workspace_id: workspaceId,
-          type,
-          amount: parseFloat(amount),
-          category,
-          description,
-          expected_date: format(expectedDate, 'yyyy-MM-dd'),
-          status: 'pending'
-        };
+        if (isRecurring && canUseFeature('recurring')) {
+          // Transação recorrente agendada - salva em transactions com data futura
+          const transactionData = {
+            user_id: user.id,
+            workspace_id: workspaceId,
+            type,
+            amount: parseFloat(amount),
+            category,
+            description,
+            date: format(expectedDate, 'yyyy-MM-dd'),
+            is_recurring: true,
+            recurrence_pattern: recurrencePattern || null,
+            recurrence_end_date: recurrenceEndDate || null
+          };
 
-        const { error } = await supabase
-          .from('incoming_transactions')
-          .insert([incomingTransactionData]);
+          const { error } = await supabase
+            .from('transactions')
+            .insert([transactionData]);
 
-        if (error) throw error;
+          if (error) throw error;
 
-        toast({
-          title: "Sucesso!",
-          description: "Transação agendada com sucesso!",
-          action: <Badge variant="outline"><Clock className="w-3 h-3 mr-1" />Agendada</Badge>
-        });
+          toast({
+            title: "Sucesso!",
+            description: "Transação recorrente agendada com sucesso!",
+            action: <Badge variant="outline"><Clock className="w-3 h-3 mr-1" />Recorrente</Badge>
+          });
+        } else {
+          // Transação única agendada - salva em incoming_transactions
+          const incomingTransactionData = {
+            user_id: user.id,
+            workspace_id: workspaceId,
+            type,
+            amount: parseFloat(amount),
+            category,
+            description,
+            expected_date: format(expectedDate, 'yyyy-MM-dd'),
+            status: 'pending'
+          };
+
+          const { error } = await supabase
+            .from('incoming_transactions')
+            .insert([incomingTransactionData]);
+
+          if (error) throw error;
+
+          toast({
+            title: "Sucesso!",
+            description: "Transação agendada com sucesso!",
+            action: <Badge variant="outline"><Clock className="w-3 h-3 mr-1" />Agendada</Badge>
+          });
+        }
       }
 
       if (onSuccess) onSuccess();
@@ -279,7 +308,7 @@ export function UnifiedTransactionForm({
               recurrenceEndDate={recurrenceEndDate} 
               setRecurrenceEndDate={setRecurrenceEndDate}
               isMobile={isMobile}
-              isScheduled={mode === 'scheduled'}
+              isScheduled={false}
               canUseRecurring={canUseFeature('recurring')}
             />
 
