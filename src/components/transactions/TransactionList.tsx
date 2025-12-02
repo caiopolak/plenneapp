@@ -59,25 +59,16 @@ export function TransactionList() {
     .reduce((sum, t) => sum + Number(t.amount), 0);
   const balance = totalIncome - totalExpense;
 
-  const exportTransactions = () => {
-    const csvContent = [
-      ['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor'],
-      ...filteredTransactions.map(t => [
-        new Date(t.date).toLocaleDateString('pt-BR'),
-        t.type === 'income' ? 'Receita' : 'Despesa',
-        t.category,
-        t.description || '',
-        t.amount.toString()
-      ])
-    ].map(row => row.join(',')).join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `transacoes_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-  };
+  // Mapear transações para formato de exportação
+  const transactionsForExport = filteredTransactions.map(t => ({
+    date: t.date,
+    type: t.type,
+    category: t.category,
+    description: t.description || '',
+    amount: Number(t.amount),
+    is_recurring: t.is_recurring || false,
+    recurrence_pattern: t.recurrence_pattern || null,
+  }));
 
   const deleteTransaction = async (id: string) => {
     try {
@@ -140,10 +131,10 @@ export function TransactionList() {
             setFilterType={setFilterType}
             filterMonth={filterMonth}
             setFilterMonth={setFilterMonth}
-            onExport={exportTransactions}
             onImportSuccess={fetchTransactions}
             showForm={showForm}
             setShowForm={setShowForm}
+            transactions={transactionsForExport}
           />
         </CardHeader>
         <CardContent>
