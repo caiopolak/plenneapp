@@ -6,35 +6,29 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { DataImportExportModal } from "@/components/data/DataImportExportModal";
-import { parseCSV, importData, transactionMappings, TransactionImport } from "@/utils/dataImport";
-import { exportTransactions, TransactionExport } from "@/utils/dataExport";
+import { parseCSV, importData, budgetMappings, BudgetImport } from "@/utils/dataImport";
+import { exportBudgets, BudgetExport } from "@/utils/dataExport";
 
-interface ImportTransactionsCSVProps {
-  onSuccess?: () => void;
-  transactions?: TransactionExport[];
+interface ImportBudgetsCSVProps {
+  onSuccess: () => void;
+  budgets?: BudgetExport[];
 }
 
 const templateColumns = [
-  'Data',
-  'Tipo',
   'Categoria',
-  'Descrição',
-  'Valor',
-  'Recorrente',
-  'Padrão Recorrência'
+  'Limite',
+  'Mês',
+  'Ano'
 ];
 
 const exampleData = [
-  '01/12/2024',
-  'Despesa',
   'Alimentação',
-  'Supermercado',
-  '350.00',
-  'Não',
-  ''
+  '1500',
+  '12',
+  '2024'
 ];
 
-export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTransactionsCSVProps) {
+export function ImportBudgetsCSV({ onSuccess, budgets = [] }: ImportBudgetsCSVProps) {
   const [showModal, setShowModal] = useState(false);
   const { user } = useAuth();
   const { current: workspace } = useWorkspace();
@@ -53,13 +47,7 @@ export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTr
         return { success: false, message: 'Arquivo vazio ou formato inválido' };
       }
 
-      const result = importData<TransactionImport>(csvData, transactionMappings, (item) => {
-        if (!item.amount || item.amount <= 0) return 'Valor inválido';
-        if (!item.category) return 'Categoria obrigatória';
-        if (!item.type || !['income', 'expense'].includes(item.type)) return 'Tipo inválido';
-        if (!item.date) return 'Data inválida';
-        return null;
-      });
+      const result = importData<BudgetImport>(csvData, budgetMappings);
 
       if (result.validRows === 0) {
         return {
@@ -71,42 +59,57 @@ export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTr
 
       // Registrar importação
       await supabase.from("data_imports").insert([{
-        type: "transactions",
+        type: "budgets",
         user_id: user.id,
         workspace_id: workspace.id,
         filename: file.name,
         status: "completed"
       }]);
 
-      // Inserir transações em lotes
-      const batchSize = 100;
+      // Inserir orçamentos (verificando duplicatas)
       let inserted = 0;
+      let skipped = 0;
 
-      for (let i = 0; i < result.data.length; i += batchSize) {
-        const batch = result.data.slice(i, i + batchSize);
-        const rows = batch.map(t => ({
+      for (const budget of result.data) {
+        // Verificar se já existe orçamento para essa categoria/mês/ano
+        const { data: existing } = await supabase
+          .from("budgets")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("workspace_id", workspace.id)
+          .eq("category", budget.category)
+          .eq("month", budget.month)
+          .eq("year", budget.year)
+          .single();
+
+        if (existing) {
+          skipped++;
+          continue;
+        }
+
+        const { error } = await supabase.from("budgets").insert({
           user_id: user.id,
           workspace_id: workspace.id,
-          amount: t.amount,
-          category: t.category,
-          type: t.type,
-          date: t.date,
-          description: t.description || null,
-          is_recurring: t.is_recurring || false,
-          recurrence_pattern: t.recurrence_pattern || null,
-          recurrence_end_date: t.recurrence_end_date || null
-        }));
+          category: budget.category,
+          amount_limit: budget.amount_limit,
+          month: budget.month,
+          year: budget.year
+        });
 
-        const { error } = await supabase.from("transactions").insert(rows);
         if (error) throw error;
-        inserted += batch.length;
+        inserted++;
       }
 
-      if (onSuccess) onSuccess();
+      onSuccess();
+
+      let message = `${inserted} orçamentos importados com sucesso!`;
+      if (skipped > 0) {
+        message += ` (${skipped} ignorados por já existirem)`;
+      }
 
       return {
         success: true,
-        message: `${inserted} transações importadas com sucesso!`,
+        message,
         errors: result.errors.length > 0 ? result.errors : undefined
       };
 
@@ -116,15 +119,15 @@ export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTr
   };
 
   const handleExport = () => {
-    if (transactions.length === 0) {
+    if (budgets.length === 0) {
       toast({
         variant: 'destructive',
         title: 'Sem dados',
-        description: 'Não há transações para exportar'
+        description: 'Não há orçamentos para exportar'
       });
       return;
     }
-    exportTransactions(transactions);
+    exportBudgets(budgets);
   };
 
   return (
@@ -142,7 +145,7 @@ export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTr
       <DataImportExportModal
         open={showModal}
         onOpenChange={setShowModal}
-        type="transactions"
+        type="budgets"
         onImport={handleImport}
         onExport={handleExport}
         templateColumns={templateColumns}

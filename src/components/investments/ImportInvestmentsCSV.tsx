@@ -6,35 +6,31 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { DataImportExportModal } from "@/components/data/DataImportExportModal";
-import { parseCSV, importData, transactionMappings, TransactionImport } from "@/utils/dataImport";
-import { exportTransactions, TransactionExport } from "@/utils/dataExport";
+import { parseCSV, importData, investmentMappings, InvestmentImport } from "@/utils/dataImport";
+import { exportInvestments, InvestmentExport } from "@/utils/dataExport";
 
-interface ImportTransactionsCSVProps {
-  onSuccess?: () => void;
-  transactions?: TransactionExport[];
+interface ImportInvestmentsCSVProps {
+  onSuccess: () => void;
+  investments?: InvestmentExport[];
 }
 
 const templateColumns = [
-  'Data',
+  'Nome',
   'Tipo',
-  'Categoria',
-  'Descrição',
   'Valor',
-  'Recorrente',
-  'Padrão Recorrência'
+  'Retorno Esperado',
+  'Data Compra'
 ];
 
 const exampleData = [
-  '01/12/2024',
-  'Despesa',
-  'Alimentação',
-  'Supermercado',
-  '350.00',
-  'Não',
-  ''
+  'Tesouro Selic 2029',
+  'Títulos',
+  '5000',
+  '12.5',
+  '15/01/2024'
 ];
 
-export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTransactionsCSVProps) {
+export function ImportInvestmentsCSV({ onSuccess, investments = [] }: ImportInvestmentsCSVProps) {
   const [showModal, setShowModal] = useState(false);
   const { user } = useAuth();
   const { current: workspace } = useWorkspace();
@@ -53,13 +49,7 @@ export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTr
         return { success: false, message: 'Arquivo vazio ou formato inválido' };
       }
 
-      const result = importData<TransactionImport>(csvData, transactionMappings, (item) => {
-        if (!item.amount || item.amount <= 0) return 'Valor inválido';
-        if (!item.category) return 'Categoria obrigatória';
-        if (!item.type || !['income', 'expense'].includes(item.type)) return 'Tipo inválido';
-        if (!item.date) return 'Data inválida';
-        return null;
-      });
+      const result = importData<InvestmentImport>(csvData, investmentMappings);
 
       if (result.validRows === 0) {
         return {
@@ -71,42 +61,39 @@ export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTr
 
       // Registrar importação
       await supabase.from("data_imports").insert([{
-        type: "transactions",
+        type: "investments",
         user_id: user.id,
         workspace_id: workspace.id,
         filename: file.name,
         status: "completed"
       }]);
 
-      // Inserir transações em lotes
-      const batchSize = 100;
+      // Inserir investimentos
+      const batchSize = 50;
       let inserted = 0;
 
       for (let i = 0; i < result.data.length; i += batchSize) {
         const batch = result.data.slice(i, i + batchSize);
-        const rows = batch.map(t => ({
+        const rows = batch.map(inv => ({
           user_id: user.id,
           workspace_id: workspace.id,
-          amount: t.amount,
-          category: t.category,
-          type: t.type,
-          date: t.date,
-          description: t.description || null,
-          is_recurring: t.is_recurring || false,
-          recurrence_pattern: t.recurrence_pattern || null,
-          recurrence_end_date: t.recurrence_end_date || null
+          name: inv.name,
+          type: inv.type,
+          amount: inv.amount,
+          expected_return: inv.expected_return || null,
+          purchase_date: inv.purchase_date || null
         }));
 
-        const { error } = await supabase.from("transactions").insert(rows);
+        const { error } = await supabase.from("investments").insert(rows);
         if (error) throw error;
         inserted += batch.length;
       }
 
-      if (onSuccess) onSuccess();
+      onSuccess();
 
       return {
         success: true,
-        message: `${inserted} transações importadas com sucesso!`,
+        message: `${inserted} investimentos importados com sucesso!`,
         errors: result.errors.length > 0 ? result.errors : undefined
       };
 
@@ -116,15 +103,15 @@ export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTr
   };
 
   const handleExport = () => {
-    if (transactions.length === 0) {
+    if (investments.length === 0) {
       toast({
         variant: 'destructive',
         title: 'Sem dados',
-        description: 'Não há transações para exportar'
+        description: 'Não há investimentos para exportar'
       });
       return;
     }
-    exportTransactions(transactions);
+    exportInvestments(investments);
   };
 
   return (
@@ -142,7 +129,7 @@ export function ImportTransactionsCSV({ onSuccess, transactions = [] }: ImportTr
       <DataImportExportModal
         open={showModal}
         onOpenChange={setShowModal}
-        type="transactions"
+        type="investments"
         onImport={handleImport}
         onExport={handleExport}
         templateColumns={templateColumns}

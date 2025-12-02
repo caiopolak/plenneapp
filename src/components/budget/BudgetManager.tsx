@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Edit2, Check, X } from "lucide-react";
 import { useBudgets } from "@/hooks/useBudgets";
 import { BudgetForm } from "./BudgetForm";
+import { ImportBudgetsCSV } from "./ImportBudgetsCSV";
+import { BudgetExport } from "@/utils/dataExport";
 
 const months = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -85,17 +87,34 @@ export function BudgetManager() {
   const totalSpent = budgets.reduce((sum, budget) => sum + budget.spent, 0);
   const totalPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
+  // Preparar dados para exportação
+  const budgetsForExport: BudgetExport[] = budgets.map(b => ({
+    category: b.category,
+    amount_limit: b.amount_limit,
+    spent: b.spent,
+    remaining: b.remaining,
+    percentage: b.percentage,
+    month: selectedMonth,
+    year: selectedYear,
+  }));
+
   return (
     <div className="space-y-6">
       {/* Controles de Período */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            Orçamentos Mensais
-            <Button onClick={() => setShowForm(true)} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Orçamento
-            </Button>
+          <CardTitle className="flex items-center justify-between flex-wrap gap-2">
+            <span>Orçamentos Mensais</span>
+            <div className="flex gap-2 flex-wrap">
+              <ImportBudgetsCSV 
+                onSuccess={() => fetchBudgets(selectedYear, selectedMonth)}
+                budgets={budgetsForExport}
+              />
+              <Button onClick={() => setShowForm(true)} size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Novo Orçamento
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
