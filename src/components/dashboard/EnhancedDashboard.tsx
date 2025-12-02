@@ -1,14 +1,10 @@
 
 import React, { useState } from 'react';
 import { KPICards } from './KPICards';
-import { FinancialInsights } from './FinancialInsights';
+import { DashboardOverview } from './DashboardOverview';
 import { PeriodFilter, PeriodOption } from './PeriodFilter';
 import { FinancialCharts } from '@/components/analytics/FinancialCharts';
 import { AdvancedAnalytics } from '@/components/analytics/AdvancedAnalytics';
-import { GoalProgressCard } from './GoalProgressCard';
-import { WelcomeCard } from './WelcomeCard';
-import { SmartFinancialAlerts } from '@/components/alerts/SmartFinancialAlerts';
-import { IncomingTransactions } from '@/components/transactions/IncomingTransactions';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useQuery } from '@tanstack/react-query';
@@ -74,14 +70,17 @@ export function EnhancedDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
-            Análises Financeiras
+            Dashboard Financeiro
           </h1>
           <p className="text-muted-foreground">
-            Visualize tendências e insights dos seus dados financeiros
+            Visão geral das suas finanças pessoais
           </p>
         </div>
         <PeriodFilter period={selectedPeriod} onPeriodChange={setSelectedPeriod} />
       </div>
+
+      {/* Resumo Geral Informativo */}
+      <DashboardOverview />
 
       {/* KPI Cards */}
       <KPICards />
