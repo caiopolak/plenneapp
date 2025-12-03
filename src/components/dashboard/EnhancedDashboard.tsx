@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { DashboardOverview } from './DashboardOverview';
 import { PeriodFilter, PeriodOption } from './PeriodFilter';
 import { FinancialCharts } from '@/components/analytics/FinancialCharts';
 import { AdvancedAnalytics } from '@/components/analytics/AdvancedAnalytics';
@@ -14,22 +13,19 @@ export function EnhancedDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
-            Dashboard Financeiro
+            Análises Financeiras
           </h1>
           <p className="text-muted-foreground">
-            Visão geral das suas finanças pessoais
+            Gráficos e análises detalhadas das suas finanças
           </p>
         </div>
         <PeriodFilter period={selectedPeriod} onPeriodChange={setSelectedPeriod} />
       </div>
 
-      {/* Resumo Geral Informativo */}
-      <DashboardOverview />
-
       {/* Gráficos Financeiros */}
       <FinancialCharts period={selectedPeriod} />
 
-      {/* Análises Detalhadas (sem cards de resumo duplicados) */}
+      {/* Análises Detalhadas */}
       <AdvancedAnalytics period={selectedPeriod} />
     </div>
   );

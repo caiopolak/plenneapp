@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { WelcomeCard } from './WelcomeCard';
-import { KPICards } from './KPICards';
+import { DashboardOverview } from './DashboardOverview';
 import { UpcomingTransactionsCard } from './UpcomingTransactionsCard';
 import { ProjectedBalanceChart } from './ProjectedBalanceChart';
 
@@ -94,8 +94,8 @@ export function DashboardMain() {
         plan={userProfile?.plan}
       />
 
-      {/* KPI Cards */}
-      <KPICards />
+      {/* Resumo Geral Informativo */}
+      <DashboardOverview />
 
       {/* Próximas Transações e Saldo Projetado */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
