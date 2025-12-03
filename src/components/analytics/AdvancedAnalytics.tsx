@@ -212,49 +212,6 @@ export function AdvancedAnalytics({ period }: AdvancedAnalyticsProps) {
 
   return (
     <div className="space-y-6">
-      {/* Cards de resumo financeiro */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-[hsl(var(--card-success-bg))] border-[hsl(var(--card-success-border))]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-[hsl(var(--card-success-text))]">Receitas Totais</CardTitle>
-            <TrendingUp className="h-4 w-4 text-[hsl(var(--card-success-accent))]" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[hsl(var(--card-success-accent))]">
-              R$ {analyticsData.totalIncome.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-[hsl(var(--card-error-bg))] border-[hsl(var(--card-error-border))]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-[hsl(var(--card-error-text))]">Despesas Totais</CardTitle>
-            <TrendingDown className="h-4 w-4 text-[hsl(var(--card-error-accent))]" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[hsl(var(--card-error-accent))]">
-              R$ {analyticsData.totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-[hsl(var(--card-info-bg))] border-[hsl(var(--card-info-border))]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-[hsl(var(--card-info-text))]">Taxa de Poupança</CardTitle>
-            <Target className="h-4 w-4 text-[hsl(var(--card-info-accent))]" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[hsl(var(--card-info-accent))]">
-              {analyticsData.savingsRate.toFixed(1)}%
-            </div>
-            <p className="text-xs text-[hsl(var(--card-info-text))] mt-1">
-              {analyticsData.savingsRate > 20 ? 'Excelente!' : 
-               analyticsData.savingsRate > 10 ? 'Bom' : 'Precisa melhorar'}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Insights automáticos */}
       {analyticsData.insights.length > 0 && (
         <Card className="bg-card border-border">
