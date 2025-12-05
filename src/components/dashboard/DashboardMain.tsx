@@ -3,6 +3,8 @@ import { WelcomeCard } from './WelcomeCard';
 import { DashboardOverview } from './DashboardOverview';
 import { UpcomingTransactionsCard } from './UpcomingTransactionsCard';
 import { ProjectedBalanceChart } from './ProjectedBalanceChart';
+import { FinancialHealthCard } from './FinancialHealthCard';
+import { MonthlyComparisonCard } from './MonthlyComparisonCard';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UnifiedTransactionForm } from '@/components/transactions/UnifiedTransactionForm';
@@ -96,6 +98,12 @@ export function DashboardMain() {
 
       {/* Resumo Geral Informativo */}
       <DashboardOverview />
+
+      {/* Saúde Financeira e Comparativo */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <FinancialHealthCard />
+        <MonthlyComparisonCard />
+      </div>
 
       {/* Próximas Transações e Saldo Projetado */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
