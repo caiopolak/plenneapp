@@ -1,54 +1,106 @@
 import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader as DlgHeader, DialogTitle as DlgTitle } from '@/components/ui/dialog';
 import { UnifiedTransactionForm } from './UnifiedTransactionForm';
-import { ImportTransactionsCSV } from "./ImportTransactionsCSV";
 import { useToast } from '@/hooks/use-toast';
 import { useTransactions } from '@/hooks/useTransactions';
 import { TransactionSummaryCards } from './TransactionSummaryCards';
-import { TransactionListFilters } from './TransactionListFilters';
 import { TransactionRow } from './TransactionRow';
+import { TransactionCategorySummary } from './TransactionCategorySummary';
+import { AdvancedTransactionFilters, TransactionFilters } from './AdvancedTransactionFilters';
+import { TransactionActionButtons } from './TransactionActionButtons';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { format, isWithinInterval, parseISO } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+import { List, LayoutGrid } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-// type Transaction = ... já está explicitado no hook
+const initialFilters: TransactionFilters = {
+  searchTerm: '',
+  type: 'all',
+  category: 'all',
+  minAmount: '',
+  maxAmount: '',
+  startDate: undefined,
+  endDate: undefined
+};
 
 export function TransactionList() {
   const { transactions, loading, fetchTransactions } = useTransactions();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [filterMonth, setFilterMonth] = useState('all');
+  const [filters, setFilters] = useState<TransactionFilters>(initialFilters);
   const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
+  const [showCategorySummary, setShowCategorySummary] = useState(true);
 
   const { toast } = useToast();
   const { user } = useAuth();
   const { current } = useWorkspace();
 
-  // Filtros + memoização
+  // Extrair categorias únicas
+  const categories = useMemo(() => {
+    const cats = new Set(transactions.map(t => t.category));
+    return Array.from(cats).sort();
+  }, [transactions]);
+
+  // Filtros avançados + memoização
   const filteredTransactions = useMemo(() => {
     let filtered = transactions;
 
-    if (searchTerm) {
+    // Busca por texto
+    if (filters.searchTerm) {
+      const search = filters.searchTerm.toLowerCase();
       filtered = filtered.filter(t =>
-        t.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.category.toLowerCase().includes(searchTerm.toLowerCase())
+        t.description?.toLowerCase().includes(search) ||
+        t.category.toLowerCase().includes(search)
       );
     }
-    if (filterType !== 'all') {
-      filtered = filtered.filter(t => t.type === filterType);
+
+    // Filtro por tipo
+    if (filters.type !== 'all') {
+      filtered = filtered.filter(t => t.type === filters.type);
     }
-    if (filterMonth !== 'all') {
-      const [year, month] = filterMonth.split('-');
+
+    // Filtro por categoria
+    if (filters.category !== 'all') {
+      filtered = filtered.filter(t => t.category === filters.category);
+    }
+
+    // Filtro por valor mínimo
+    if (filters.minAmount) {
+      const min = parseFloat(filters.minAmount);
+      filtered = filtered.filter(t => Number(t.amount) >= min);
+    }
+
+    // Filtro por valor máximo
+    if (filters.maxAmount) {
+      const max = parseFloat(filters.maxAmount);
+      filtered = filtered.filter(t => Number(t.amount) <= max);
+    }
+
+    // Filtro por período
+    if (filters.startDate || filters.endDate) {
       filtered = filtered.filter(t => {
-        const transactionDate = new Date(t.date);
-        return transactionDate.getFullYear() === parseInt(year) &&
-          transactionDate.getMonth() === parseInt(month) - 1;
+        const transactionDate = parseISO(t.date);
+        if (filters.startDate && filters.endDate) {
+          return isWithinInterval(transactionDate, {
+            start: filters.startDate,
+            end: filters.endDate
+          });
+        }
+        if (filters.startDate) {
+          return transactionDate >= filters.startDate;
+        }
+        if (filters.endDate) {
+          return transactionDate <= filters.endDate;
+        }
+        return true;
       });
     }
+
     return filtered;
-  }, [transactions, searchTerm, filterType, filterMonth]);
+  }, [transactions, filters]);
 
   // Cálculos de totais
   const totalIncome = filteredTransactions
@@ -81,7 +133,6 @@ export function TransactionList() {
         title: "Sucesso!",
         description: "Transação excluída com sucesso"
       });
-
       fetchTransactions();
     } catch (error) {
       console.error('Error deleting transaction:', error);
@@ -93,10 +144,44 @@ export function TransactionList() {
     }
   };
 
-  if (loading) return <div>Carregando transações...</div>;
+  const resetFilters = () => {
+    setFilters(initialFilters);
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-32 bg-muted rounded-lg" />
+          <div className="h-48 bg-muted rounded-lg" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
+            Transações
+          </h1>
+          <p className="text-muted-foreground">
+            {filteredTransactions.length} transações encontradas
+            {filteredTransactions.length !== transactions.length && (
+              <span className="text-xs ml-2">(de {transactions.length} no total)</span>
+            )}
+          </p>
+        </div>
+        <TransactionActionButtons
+          onImportSuccess={fetchTransactions}
+          showForm={showForm}
+          setShowForm={setShowForm}
+          transactions={transactionsForExport}
+        />
+      </div>
+
       {/* Nova Transação Modal */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent
@@ -115,32 +200,61 @@ export function TransactionList() {
           />
         </DialogContent>
       </Dialog>
+
       {/* Resumo cards */}
       <TransactionSummaryCards 
         totalIncome={totalIncome}
         totalExpense={totalExpense}
         balance={balance}
       />
-      {/* Filtros/actions */}
+
+      {/* Filtros Avançados */}
+      <Card className="bg-card border-border">
+        <CardContent className="pt-6">
+          <AdvancedTransactionFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            categories={categories}
+            onReset={resetFilters}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Resumo por Categoria (toggle) */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-foreground">Análise por Categoria</h2>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowCategorySummary(!showCategorySummary)}
+        >
+          {showCategorySummary ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+          {showCategorySummary ? 'Ocultar' : 'Mostrar'}
+        </Button>
+      </div>
+
+      {showCategorySummary && (
+        <TransactionCategorySummary 
+          transactions={filteredTransactions}
+          filterType={filters.type}
+        />
+      )}
+
+      {/* Lista de Transações */}
       <Card className="bg-card border-border">
         <CardHeader>
-          <TransactionListFilters
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            filterType={filterType}
-            setFilterType={setFilterType}
-            filterMonth={filterMonth}
-            setFilterMonth={setFilterMonth}
-            onImportSuccess={fetchTransactions}
-            showForm={showForm}
-            setShowForm={setShowForm}
-            transactions={transactionsForExport}
-          />
+          <CardTitle className="text-lg font-semibold text-foreground flex items-center justify-between">
+            <span>Lista de Transações</span>
+            <Badge variant="outline">{filteredTransactions.length}</Badge>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {filteredTransactions.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Nenhuma transação encontrada</p>
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">Nenhuma transação encontrada</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Tente ajustar os filtros ou adicione uma nova transação
+              </p>
             </div>
           ) : (
             <div className="space-y-2">
