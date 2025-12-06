@@ -15,10 +15,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { GoalForm } from './GoalForm';
 import { Tables } from '@/integrations/supabase/types';
 import { GoalDetailsModal } from "./GoalDetailsModal";
-import { GoalDepositsHistory } from './GoalDepositsHistory'; // NOVO
+import { GoalDepositsHistory } from './GoalDepositsHistory';
 import { exportGoalsCsv } from './utils/exportGoalsCsv';
-import { ImportGoalsCSV } from "./ImportGoalsCSV"; // Novo
+import { ImportGoalsCSV } from "./ImportGoalsCSV";
 import { GoalActionButtons } from "./GoalActionButtons";
+import { GoalProjectionCard } from "./GoalProjectionCard";
+import { GoalDeadlineAlerts } from "./GoalDeadlineAlerts";
 
 type Goal = Tables<'financial_goals'>;
 
@@ -220,6 +222,23 @@ export function GoalList() {
           setShowForm={setShowForm}
         />
       </div>
+
+      {/* Projeções Inteligentes e Alertas de Prazo */}
+      {goals.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <GoalProjectionCard goals={goals} />
+          <GoalDeadlineAlerts
+            goals={goals}
+            onGoalClick={(goalId) => {
+              const goal = goals.find((g) => g.id === goalId);
+              if (goal) {
+                setDetailsGoal(goal);
+                setShowDetailsModal(true);
+              }
+            }}
+          />
+        </div>
+      )}
 
       {filteredGoals.length === 0 ? (
         <Card className="bg-card border border-border">
