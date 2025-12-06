@@ -18,6 +18,8 @@ import { InvestmentCard } from "./InvestmentCard";
 import { InvestmentsAnalyticsCards } from "./InvestmentsAnalyticsCards";
 import { InvestmentsHeaderActions } from "./InvestmentsHeaderActions";
 import { InvestmentProfitabilityAnalysis } from "./InvestmentProfitabilityAnalysis";
+import { InvestmentCardSkeleton, AnalyticsCardSkeleton } from "@/components/ui/loading-skeletons";
+import { usePaginatedLoad } from "@/hooks/useLazyLoad";
 
 interface Investment {
   id: string;
@@ -143,8 +145,36 @@ export function InvestmentList() {
     }
   };
 
+  // Lazy loading para investimentos
+  const {
+    displayedItems: displayedInvestments,
+    hasMore,
+    loadMoreRef,
+  } = usePaginatedLoad({
+    items: investments,
+    pageSize: 6,
+    initialLoad: 6,
+  });
+
   if (loading) {
-    return <div>Carregando investimentos...</div>;
+    return (
+      <div className="space-y-8 animate-fade-in">
+        <div className="flex justify-between items-center gap-2 flex-wrap">
+          <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+          <div className="h-10 w-32 bg-muted animate-pulse rounded" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <AnalyticsCardSkeleton />
+          <AnalyticsCardSkeleton />
+          <AnalyticsCardSkeleton />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <InvestmentCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   // Paleta visual harmonizada conforme identidade (ajuste para combinar com estética e eliminar laranja em destaques/alertas!)
@@ -219,19 +249,40 @@ export function InvestmentList() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {investments.map((investment) => (
-              <InvestmentCard
-                key={investment.id}
-                investment={investment}
-                cat={getTypeStyles(investment.type)}
-                editingInvestment={editingInvestment}
-                setEditingInvestment={setEditingInvestment}
-                deleteInvestment={deleteInvestment}
-                fetchInvestments={fetchInvestments}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {displayedInvestments.map((investment, index) => (
+                <div
+                  key={investment.id}
+                  className="animate-fade-in opacity-0 transition-all duration-300 hover:scale-[1.02]"
+                  style={{
+                    animationDelay: `${index * 50}ms`,
+                    animationFillMode: 'forwards',
+                  }}
+                >
+                  <InvestmentCard
+                    investment={investment}
+                    cat={getTypeStyles(investment.type)}
+                    editingInvestment={editingInvestment}
+                    setEditingInvestment={setEditingInvestment}
+                    deleteInvestment={deleteInvestment}
+                    fetchInvestments={fetchInvestments}
+                  />
+                </div>
+              ))}
+            </div>
+            
+            {/* Load More Trigger */}
+            {hasMore && (
+              <div ref={loadMoreRef} className="flex justify-center py-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
+                  <InvestmentCardSkeleton />
+                  <InvestmentCardSkeleton />
+                  <InvestmentCardSkeleton />
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
       {/* Dicas & Alertas removidos daqui */}
