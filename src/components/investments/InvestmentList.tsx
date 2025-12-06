@@ -12,11 +12,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
 import { InvestmentPortfolioSummary } from "./InvestmentPortfolioSummary";
 import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
-import { ImportGoalsCSV } from "../goals/ImportGoalsCSV"; // Placeholder visual para CSV de investimentos
+import { ImportGoalsCSV } from "../goals/ImportGoalsCSV";
 import { InvestmentActionButtons } from "./InvestmentActionButtons";
 import { InvestmentCard } from "./InvestmentCard";
 import { InvestmentsAnalyticsCards } from "./InvestmentsAnalyticsCards";
 import { InvestmentsHeaderActions } from "./InvestmentsHeaderActions";
+import { InvestmentProfitabilityAnalysis } from "./InvestmentProfitabilityAnalysis";
 
 interface Investment {
   id: string;
@@ -193,12 +194,17 @@ export function InvestmentList() {
         setShowForm={setShowForm}
       />
 
-      {/* Cards informativos harmonizados agora SEM degradê em Nº Investimentos */}
+      {/* Cards informativos harmonizados */}
       <InvestmentsAnalyticsCards
         totalInvested={totalInvested}
         totalInvestments={investments.length}
         averageReturn={averageReturn}
       />
+
+      {/* Análise de Rentabilidade */}
+      {investments.length > 0 && (
+        <InvestmentProfitabilityAnalysis investments={investments} />
+      )}
 
       {/* Lista de investimentos */}
       <div className="flex flex-col gap-2">
