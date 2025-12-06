@@ -165,4 +165,52 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  
+  /* Animações de entrada para cards */
+  .animate-card-enter {
+    @apply animate-fade-in opacity-0;
+    animation-fill-mode: forwards;
+  }
+  
+  /* Efeito hover suave para cards */
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .card-hover:hover {
+    @apply shadow-lg -translate-y-1;
+    border-color: hsl(var(--primary) / 0.2);
+  }
+  
+  /* Shimmer loading effect */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  /* Transição suave para números */
+  .number-animate {
+    @apply animate-number-count;
+    animation-fill-mode: forwards;
+  }
+  
+  /* Skeleton pulse melhorado */
+  .skeleton-pulse {
+    @apply animate-pulse bg-muted rounded;
+  }
+}
+
+@layer utilities {
+  /* Delay classes para stagger animations */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
 }

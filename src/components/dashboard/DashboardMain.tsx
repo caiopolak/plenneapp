@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { WelcomeCard } from './WelcomeCard';
 import { DashboardOverview } from './DashboardOverview';
 import { UpcomingTransactionsCard } from './UpcomingTransactionsCard';
@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { DashboardCardSkeleton, ChartSkeleton } from '@/components/ui/loading-skeletons';
 
 export function DashboardMain() {
   const [showTransactionForm, setShowTransactionForm] = useState(false);
@@ -69,8 +70,10 @@ export function DashboardMain() {
     enabled: !!user && !!workspace
   });
 
+  const isLoading = !userProfile && !goalsData;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

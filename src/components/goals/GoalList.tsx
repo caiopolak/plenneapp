@@ -21,6 +21,8 @@ import { ImportGoalsCSV } from "./ImportGoalsCSV";
 import { GoalActionButtons } from "./GoalActionButtons";
 import { GoalProjectionCard } from "./GoalProjectionCard";
 import { GoalDeadlineAlerts } from "./GoalDeadlineAlerts";
+import { GoalCardSkeleton } from "@/components/ui/loading-skeletons";
+import { usePaginatedLoad } from "@/hooks/useLazyLoad";
 
 type Goal = Tables<'financial_goals'>;
 
@@ -180,8 +182,35 @@ export function GoalList() {
     return matchesPriority && matchesSearch;
   });
 
+  // Lazy loading para metas
+  const {
+    displayedItems: displayedGoals,
+    hasMore,
+    loadMoreRef,
+  } = usePaginatedLoad({
+    items: filteredGoals,
+    pageSize: 6,
+    initialLoad: 6,
+  });
+
   if (loading) {
-    return <div>Carregando metas...</div>;
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex justify-between items-center gap-2 flex-wrap">
+          <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+          <div className="h-10 w-32 bg-muted animate-pulse rounded" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <GoalCardSkeleton />
+          <GoalCardSkeleton />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <GoalCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -251,14 +280,21 @@ export function GoalList() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredGoals.map((goal) => {
+          {displayedGoals.map((goal, index) => {
             const currentAmount = goal.current_amount || 0;
             const targetAmount = goal.target_amount || 0;
             const progress = targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0;
             const isCompleted = progress >= 100;
             
             return (
-              <Card key={goal.id} className={`bg-card border border-border ${isCompleted ? 'border-secondary' : ''}`}>
+              <Card 
+                key={goal.id} 
+                className={`bg-card border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/20 animate-fade-in opacity-0 ${isCompleted ? 'border-secondary' : ''}`}
+                style={{ 
+                  animationDelay: `${index * 50}ms`,
+                  animationFillMode: 'forwards'
+                }}
+              >
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
@@ -423,6 +459,16 @@ export function GoalList() {
               </Card>
             );
           })}
+        </div>
+      )}
+      
+      {/* Load More Trigger */}
+      {hasMore && (
+        <div ref={loadMoreRef} className="flex justify-center py-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            <GoalCardSkeleton />
+            <GoalCardSkeleton />
+          </div>
         </div>
       )}
       <GoalDetailsModal

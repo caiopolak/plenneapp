@@ -16,6 +16,8 @@ import { format, isWithinInterval, parseISO } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { List, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TransactionRowSkeleton, AnalyticsCardSkeleton } from '@/components/ui/loading-skeletons';
+import { usePaginatedLoad } from '@/hooks/useLazyLoad';
 
 const initialFilters: TransactionFilters = {
   searchTerm: '',
@@ -148,13 +150,36 @@ export function TransactionList() {
     setFilters(initialFilters);
   };
 
+  // Lazy loading para transações
+  const {
+    displayedItems: displayedTransactions,
+    hasMore,
+    loadMoreRef,
+  } = usePaginatedLoad({
+    items: filteredTransactions,
+    pageSize: 20,
+    initialLoad: 20,
+  });
+
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-32 bg-muted rounded-lg" />
-          <div className="h-48 bg-muted rounded-lg" />
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex justify-between items-center">
+          <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+          <div className="h-10 w-32 bg-muted animate-pulse rounded" />
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <AnalyticsCardSkeleton />
+          <AnalyticsCardSkeleton />
+          <AnalyticsCardSkeleton />
+        </div>
+        <Card className="bg-card">
+          <CardContent className="p-0">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <TransactionRowSkeleton key={i} />
+            ))}
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -257,19 +282,38 @@ export function TransactionList() {
               </p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {filteredTransactions.map((transaction) => (
-                <TransactionRow
-                  key={transaction.id}
-                  transaction={transaction}
-                  onEdit={setEditingTransaction}
-                  isEditing={editingTransaction?.id === transaction.id}
-                  setEditingTransaction={setEditingTransaction}
-                  onDelete={deleteTransaction}
-                  refresh={fetchTransactions}
-                />
-              ))}
-            </div>
+            <>
+              <div className="space-y-2">
+                {displayedTransactions.map((transaction, index) => (
+                  <div
+                    key={transaction.id}
+                    className="animate-fade-in opacity-0"
+                    style={{
+                      animationDelay: `${Math.min(index * 30, 300)}ms`,
+                      animationFillMode: 'forwards',
+                    }}
+                  >
+                    <TransactionRow
+                      transaction={transaction}
+                      onEdit={setEditingTransaction}
+                      isEditing={editingTransaction?.id === transaction.id}
+                      setEditingTransaction={setEditingTransaction}
+                      onDelete={deleteTransaction}
+                      refresh={fetchTransactions}
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Load More Trigger */}
+              {hasMore && (
+                <div ref={loadMoreRef} className="py-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <TransactionRowSkeleton key={i} />
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
