@@ -238,8 +238,16 @@ export function GoalList() {
         </DialogContent>
       </Dialog>
       
-      <div className="flex justify-between items-center gap-2 flex-wrap">
-        <h2 className="text-2xl font-bold font-display text-primary">Metas Financeiras</h2>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
+            Metas Financeiras
+          </h1>
+          <p className="text-muted-foreground">
+            Planeje e acompanhe seus objetivos financeiros
+          </p>
+        </div>
         <GoalActionButtons
           goals={goals}
           onSearchChange={e => setSearch(e.target.value)}
@@ -252,21 +260,23 @@ export function GoalList() {
         />
       </div>
 
-      {/* Projeções Inteligentes e Alertas de Prazo */}
+      {/* 1. Alertas de Prazo - Importante no topo */}
       {goals.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <GoalProjectionCard goals={goals} />
-          <GoalDeadlineAlerts
-            goals={goals}
-            onGoalClick={(goalId) => {
-              const goal = goals.find((g) => g.id === goalId);
-              if (goal) {
-                setDetailsGoal(goal);
-                setShowDetailsModal(true);
-              }
-            }}
-          />
-        </div>
+        <GoalDeadlineAlerts
+          goals={goals}
+          onGoalClick={(goalId) => {
+            const goal = goals.find((g) => g.id === goalId);
+            if (goal) {
+              setDetailsGoal(goal);
+              setShowDetailsModal(true);
+            }
+          }}
+        />
+      )}
+
+      {/* 2. Projeções Inteligentes */}
+      {goals.length > 0 && (
+        <GoalProjectionCard goals={goals} />
       )}
 
       {filteredGoals.length === 0 ? (
