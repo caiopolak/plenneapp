@@ -1,30 +1,59 @@
-
 import React, { useState } from 'react';
 import { AuthBranding } from './AuthBranding';
 import { AuthTabs } from './AuthTabs';
 import { ResetPasswordForm } from './ResetPasswordForm';
-import { CheckCircle, Star, Activity, Users } from "lucide-react";
+import { 
+  Sparkles, 
+  Target, 
+  Users, 
+  Shield, 
+  TrendingUp,
+  PiggyBank,
+  BarChart3
+} from "lucide-react";
 
-const PLENNE_BENEFITS = [
+const PLENNE_FEATURES = [
   {
-    icon: <Activity className="text-green-700" />,
-    title: "Automatizado & Inteligente",
-    description: "Análise inteligente dos seus hábitos financeiros, dicas em tempo real e alertas personalizados.",
+    icon: <BarChart3 className="w-5 h-5" />,
+    title: "Dashboard Inteligente",
+    description: "Visualize suas finanças com gráficos e análises em tempo real.",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
   },
   {
-    icon: <Star className="text-primary" />,
-    title: "Metas & Objetivos",
-    description: "Defina suas metas e acompanhe seu progresso com clareza e motivação.",
+    icon: <Target className="w-5 h-5" />,
+    title: "Metas & Projeções",
+    description: "Defina objetivos e acompanhe o progresso com projeções inteligentes.",
+    color: "text-secondary",
+    bgColor: "bg-secondary/10",
   },
   {
-    icon: <Users className="text-graphite" />,
-    title: "Para todas as Famílias",
-    description: "Compartilhe planos e relatórios, organize orçamentos em grupo.",
+    icon: <TrendingUp className="w-5 h-5" />,
+    title: "Investimentos",
+    description: "Gerencie sua carteira e analise a rentabilidade dos seus ativos.",
+    color: "text-accent",
+    bgColor: "bg-accent/10",
   },
   {
-    icon: <CheckCircle className="text-green-700" />,
-    title: "Segurança & Privacidade",
-    description: "Dados protegidos com criptografia e privacidade total. Nunca compartilhados.",
+    icon: <PiggyBank className="w-5 h-5" />,
+    title: "Orçamentos",
+    description: "Controle seus gastos por categoria e evite surpresas no final do mês.",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
+  },
+  {
+    icon: <Users className="w-5 h-5" />,
+    title: "Workspaces Familiares",
+    description: "Compartilhe planos e gerencie finanças em família ou equipe.",
+    color: "text-secondary",
+    bgColor: "bg-secondary/10",
+  },
+  {
+    icon: <Shield className="w-5 h-5" />,
+    title: "Segurança Total",
+    description: "Dados criptografados e protegidos. Sua privacidade é prioridade.",
+    color: "text-accent",
+    bgColor: "bg-accent/10",
   },
 ];
 
@@ -32,61 +61,85 @@ export function AuthForm() {
   const [forgotPassword, setForgotPassword] = useState(false);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f4f4f4] via-[#eaf6ee] to-white px-2 py-14">
-      <div className="flex flex-col-reverse md:flex-row w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden border-2 border-[#2f9e44]/15 animate-scale-in relative bg-white/95">
-        {/* Branding & Informativo */}
-        <div className="w-full md:w-1/2 flex flex-col bg-[#f4f4f4] p-0 md:p-6 md:justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/30 to-background px-4 py-8">
+      <div className="flex flex-col lg:flex-row w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden border border-border/50 animate-scale-in bg-card">
+        
+        {/* Lado esquerdo - Branding e Features */}
+        <div className="w-full lg:w-1/2 flex flex-col bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-6 lg:p-8">
           <AuthBranding />
-          <div className="my-4" />
-          <div className="flex flex-col gap-4 md:gap-6 px-4 md:px-1 pb-8">
-            <span className="uppercase tracking-widest text-xs text-green-700 font-bold font-inter">
-              Por que usar a Plenne?
-            </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-              {PLENNE_BENEFITS.map(({ icon, title, description }) => (
+          
+          {/* Features Grid */}
+          <div className="mt-6 space-y-3">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-4 h-4 text-accent" />
+              <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground">
+                O que você pode fazer
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {PLENNE_FEATURES.map(({ icon, title, description, color, bgColor }) => (
                 <div
                   key={title}
-                  className="flex flex-col rounded-lg bg-white px-4 py-3 shadow-card border border-graphite/8 transition hover:scale-105 hover:shadow-lg hover:border-green-700/30"
+                  className="group flex flex-col rounded-xl bg-card/80 backdrop-blur-sm p-4 border border-border/50 transition-all duration-300 hover:shadow-lg hover:border-primary/30 hover:-translate-y-0.5"
                 >
-                  <div className="flex items-center mb-2 gap-2">
-                    {icon}
-                    <span className="font-bold text-graphite font-poppins">{title}</span>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`p-2 rounded-lg ${bgColor}`}>
+                      <span className={color}>{icon}</span>
+                    </div>
+                    <span className="font-semibold text-sm text-foreground">{title}</span>
                   </div>
-                  <span className="text-xs text-graphite/70 font-inter">{description}</span>
+                  <span className="text-xs text-muted-foreground leading-relaxed">{description}</span>
                 </div>
               ))}
             </div>
-            <div className="hidden md:block mt-6 text-center">
-              <span className="slogan drop-shadow-none text-xl font-display font-semibold text-green-700">
-                “Sua vida financeira, <strong>plena</strong>.”
-              </span>
-              <span className="block text-primary/90 font-inter font-medium text-sm mt-2">
-                Venha experimentar a inteligência financeira feita para pessoas e famílias de verdade.
-              </span>
-            </div>
-            <div className="flex flex-col gap-1 text-xs text-graphite/70 text-center mt-3">
-              <span>Sem custos ocultos. Não usamos laranja. Segurança em primeiro lugar.</span>
-              <span>
-                <span className="font-bold font-highlight text-green-700">Plenne</span>: atitude e clareza para você prosperar.
-              </span>
-            </div>
+          </div>
+
+          {/* Footer do lado esquerdo */}
+          <div className="mt-auto pt-6 text-center hidden lg:block">
+            <p className="text-xs text-muted-foreground">
+              Mais de <span className="font-bold text-primary">10.000 usuários</span> já transformaram suas finanças
+            </p>
           </div>
         </div>
-        {/* Form */}
-        <div className="w-full md:w-1/2 flex items-center justify-center px-5 py-10 bg-white bg-opacity-100">
-          <div className="w-full animate-fade-in">
+
+        {/* Lado direito - Formulário */}
+        <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 py-10 lg:px-10 bg-card">
+          <div className="w-full max-w-sm mx-auto animate-fade-in">
+            {/* Header do formulário */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-foreground font-display">
+                {forgotPassword ? 'Recuperar Senha' : 'Bem-vindo de volta!'}
+              </h2>
+              <p className="text-muted-foreground text-sm mt-2">
+                {forgotPassword 
+                  ? 'Digite seu email para recuperar o acesso'
+                  : 'Acesse sua conta ou crie uma nova para começar'
+                }
+              </p>
+            </div>
+
             {forgotPassword ? (
               <ResetPasswordForm onBack={() => setForgotPassword(false)} />
             ) : (
               <AuthTabs onForgot={() => setForgotPassword(true)} />
             )}
-            <div className="block md:hidden mt-7 text-center">
-              <span className="slogan drop-shadow-none text-lg font-display text-green-700">
-                “Sua vida financeira, <strong>plena</strong>.”
-              </span>
-              <span className="block text-primary/90 font-inter text-xs mt-1">
-                Inteligência financeira feita pra você e sua família.
-              </span>
+
+            {/* Termos e políticas */}
+            <div className="mt-8 text-center">
+              <p className="text-xs text-muted-foreground">
+                Ao continuar, você concorda com nossos{' '}
+                <a href="#" className="text-primary hover:underline">Termos de Uso</a>
+                {' '}e{' '}
+                <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
+              </p>
+            </div>
+
+            {/* Slogan mobile */}
+            <div className="block lg:hidden mt-8 text-center">
+              <p className="text-sm font-display text-primary font-semibold">
+                "Sua vida financeira, <span className="text-secondary">plena</span>."
+              </p>
             </div>
           </div>
         </div>
