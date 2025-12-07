@@ -193,10 +193,7 @@ export function TransactionList() {
             Transações
           </h1>
           <p className="text-muted-foreground">
-            {filteredTransactions.length} transações encontradas
-            {filteredTransactions.length !== transactions.length && (
-              <span className="text-xs ml-2">(de {transactions.length} no total)</span>
-            )}
+            Gerencie suas receitas e despesas
           </p>
         </div>
         <TransactionActionButtons
@@ -226,16 +223,40 @@ export function TransactionList() {
         </DialogContent>
       </Dialog>
 
-      {/* Resumo cards */}
+      {/* 1. Resumo cards - Visão geral no topo */}
       <TransactionSummaryCards 
         totalIncome={totalIncome}
         totalExpense={totalExpense}
         balance={balance}
       />
 
-      {/* Filtros Avançados */}
+      {/* 2. Resumo por Categoria - Análise visual */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground">Análise por Categoria</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowCategorySummary(!showCategorySummary)}
+          >
+            {showCategorySummary ? <List className="h-4 w-4 mr-1" /> : <LayoutGrid className="h-4 w-4 mr-1" />}
+            {showCategorySummary ? 'Ocultar' : 'Mostrar'}
+          </Button>
+        </div>
+        {showCategorySummary && (
+          <TransactionCategorySummary 
+            transactions={filteredTransactions}
+            filterType={filters.type}
+          />
+        )}
+      </div>
+
+      {/* 3. Filtros Avançados */}
       <Card className="bg-card border-border">
-        <CardContent className="pt-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-semibold text-foreground">Filtros</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
           <AdvancedTransactionFilters
             filters={filters}
             onFiltersChange={setFilters}
@@ -245,32 +266,14 @@ export function TransactionList() {
         </CardContent>
       </Card>
 
-      {/* Resumo por Categoria (toggle) */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Análise por Categoria</h2>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setShowCategorySummary(!showCategorySummary)}
-        >
-          {showCategorySummary ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-          {showCategorySummary ? 'Ocultar' : 'Mostrar'}
-        </Button>
-      </div>
-
-      {showCategorySummary && (
-        <TransactionCategorySummary 
-          transactions={filteredTransactions}
-          filterType={filters.type}
-        />
-      )}
-
-      {/* Lista de Transações */}
+      {/* 4. Lista de Transações */}
       <Card className="bg-card border-border">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground flex items-center justify-between">
             <span>Lista de Transações</span>
-            <Badge variant="outline">{filteredTransactions.length}</Badge>
+            <Badge variant="outline" className="font-normal">
+              {filteredTransactions.length} {filteredTransactions.length !== transactions.length && `de ${transactions.length}`}
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>

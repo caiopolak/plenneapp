@@ -72,6 +72,37 @@ export function DashboardMain() {
 
   const isLoading = !userProfile && !goalsData;
 
+  // Calcular saldo atual para o WelcomeCard
+  const { data: balanceData } = useQuery({
+    queryKey: ['current-balance', user?.id, workspace?.id],
+    queryFn: async () => {
+      if (!user || !workspace) return { balance: 0, savingsRate: 0 };
+
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const { data: transactions } = await supabase
+        .from('transactions')
+        .select('amount, type, date')
+        .eq('user_id', user.id)
+        .eq('workspace_id', workspace.id);
+
+      const income = transactions?.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0) || 0;
+      const expenses = transactions?.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0) || 0;
+      const balance = income - expenses;
+
+      // Taxa de economia do mês atual
+      const monthlyTransactions = transactions?.filter(t => new Date(t.date) >= startOfMonth) || [];
+      const monthlyIncome = monthlyTransactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
+      const monthlyExpenses = monthlyTransactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
+      const savingsRate = monthlyIncome > 0 ? ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100 : 0;
+
+      return { balance, savingsRate: Math.max(0, savingsRate) };
+    },
+    enabled: !!user && !!workspace
+  });
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -93,20 +124,23 @@ export function DashboardMain() {
         </Button>
       </div>
 
-      {/* Welcome Card */}
+      {/* Welcome Card - Topo com informações do usuário */}
       <WelcomeCard 
         name={userProfile?.name}
         plan={userProfile?.plan}
+        balance={balanceData?.balance}
+        goalsCount={goalsData?.totalGoals}
+        savingsRate={balanceData?.savingsRate}
       />
 
-      {/* Resumo Geral Informativo */}
-      <DashboardOverview />
-
-      {/* Saúde Financeira e Comparativo */}
+      {/* Saúde Financeira e Comparativo Mensal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <FinancialHealthCard />
         <MonthlyComparisonCard />
       </div>
+
+      {/* Resumo Geral Informativo */}
+      <DashboardOverview />
 
       {/* Próximas Transações e Saldo Projetado */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

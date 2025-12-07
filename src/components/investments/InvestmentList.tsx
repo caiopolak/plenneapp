@@ -190,13 +190,12 @@ export function InvestmentList() {
     return map[type] || { label: type, bg: "bg-primary", text: "text-primary-foreground" };
   };
 
-  // Cartões analíticos e informativos — novo gradiente/principal
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       {/* Modal/dialog de Novo Investimento */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent
-          className="max-w-xl w-full rounded-2xl p-4 md:p-6"
+          className="max-w-xl w-full rounded-2xl p-4 md:p-6 bg-card text-foreground"
           style={{
             maxWidth: "96vw",
             width: "100%",
@@ -204,7 +203,7 @@ export function InvestmentList() {
           }}
         >
           <DialogHeader>
-            <DialogTitle>Novo Investimento</DialogTitle>
+            <DialogTitle className="text-foreground">Novo Investimento</DialogTitle>
           </DialogHeader>
           <InvestmentForm
             onSuccess={() => {
@@ -215,30 +214,41 @@ export function InvestmentList() {
           />
         </DialogContent>
       </Dialog>
-      {/* Actions refatoradas */}
-      <InvestmentsHeaderActions
-        investments={investments}
-        onImportSuccess={fetchInvestments}
-        onCreateClick={() => setShowForm(true)}
-        showForm={showForm}
-        setShowForm={setShowForm}
-      />
 
-      {/* Cards informativos harmonizados */}
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
+            Investimentos
+          </h1>
+          <p className="text-muted-foreground">
+            Gerencie sua carteira e acompanhe a rentabilidade
+          </p>
+        </div>
+        <InvestmentsHeaderActions
+          investments={investments}
+          onImportSuccess={fetchInvestments}
+          onCreateClick={() => setShowForm(true)}
+          showForm={showForm}
+          setShowForm={setShowForm}
+        />
+      </div>
+
+      {/* 1. Cards informativos - Resumo no topo */}
       <InvestmentsAnalyticsCards
         totalInvested={totalInvested}
         totalInvestments={investments.length}
         averageReturn={averageReturn}
       />
 
-      {/* Análise de Rentabilidade */}
+      {/* 2. Análise de Rentabilidade */}
       {investments.length > 0 && (
         <InvestmentProfitabilityAnalysis investments={investments} />
       )}
 
-      {/* Lista de investimentos */}
-      <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-bold text-foreground font-display mb-2">Meus Investimentos</h2>
+      {/* 3. Lista de investimentos */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-foreground font-display">Meus Investimentos</h2>
         {investments.length === 0 ? (
           <Card className="bg-card border border-border shadow-card">
             <CardContent className="p-8 text-center">
@@ -285,7 +295,6 @@ export function InvestmentList() {
           </>
         )}
       </div>
-      {/* Dicas & Alertas removidos daqui */}
     </div>
   );
 }

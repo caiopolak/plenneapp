@@ -1,9 +1,6 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { PiggyBank, Plus, AlertTriangle, TrendingUp } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { PiggyBank, TrendingUp, Wallet } from "lucide-react";
 import { BudgetManager } from "./BudgetManager";
 import { BudgetAlerts } from "./BudgetAlerts";
 import { useBudgets } from "@/hooks/useBudgets";
@@ -11,8 +8,20 @@ import { useBudgets } from "@/hooks/useBudgets";
 export function BudgetPageStyled() {
   const { budgets, loading } = useBudgets();
 
+  const totalBudgeted = budgets.reduce((sum, b) => sum + Number(b.amount_limit), 0);
+
   if (loading) {
-    return <div className="flex justify-center p-8">Carregando...</div>;
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />
+          ))}
+        </div>
+        <div className="h-64 bg-muted animate-pulse rounded-xl" />
+      </div>
+    );
   }
 
   return (
@@ -20,8 +29,8 @@ export function BudgetPageStyled() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight brand-gradient-text flex items-center gap-2">
-            <PiggyBank className="w-8 h-8 text-[#2f9e44]" />
+          <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text flex items-center gap-2">
+            <PiggyBank className="w-7 h-7 text-primary" />
             Orçamentos
           </h1>
           <p className="text-muted-foreground">
@@ -30,61 +39,67 @@ export function BudgetPageStyled() {
         </div>
       </div>
 
-      {/* Grid principal */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Gerenciador de orçamento */}
-        <div className="lg:col-span-3">
-          <Card className="bg-gradient-to-br from-white to-[#eaf6ee]/30 border-[#2f9e44]/20 shadow-lg">
-            <CardContent className="p-6">
-              <BudgetManager />
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      {/* 1. Alertas de orçamento - Importante no topo */}
+      <BudgetAlerts />
 
-      {/* Cards de resumo */}
+      {/* 2. Cards de resumo */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-gradient-to-br from-[#003f5c] to-[#2f9e44] text-white">
-          <CardContent className="p-6">
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white/80 text-sm">Total Orçado</p>
-                <p className="text-2xl font-bold">
-                  R$ {budgets.reduce((sum, b) => sum + Number(b.amount_limit), 0).toFixed(2)}
+                <p className="text-muted-foreground text-sm">Total Orçado</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalBudgeted)}
                 </p>
               </div>
-              <PiggyBank className="w-10 h-10 text-white/80" />
+              <div className="p-3 rounded-xl bg-primary/10">
+                <Wallet className="w-6 h-6 text-primary" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-[#2f9e44] to-[#f8961e] text-white">
-          <CardContent className="p-6">
+        <Card className="bg-gradient-to-br from-secondary/10 to-secondary/5 border-secondary/20">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white/80 text-sm">Categorias Ativas</p>
-                <p className="text-2xl font-bold">{budgets.length}</p>
+                <p className="text-muted-foreground text-sm">Categorias Ativas</p>
+                <p className="text-2xl font-bold text-foreground">{budgets.length}</p>
               </div>
-              <TrendingUp className="w-10 h-10 text-white/80" />
+              <div className="p-3 rounded-xl bg-secondary/10">
+                <TrendingUp className="w-6 h-6 text-secondary" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-[#f8961e] to-[#003f5c] text-white">
-          <CardContent className="p-6">
+        <Card className="bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white/80 text-sm">Economia Potencial</p>
-                <p className="text-2xl font-bold">R$ 450,00</p>
+                <p className="text-muted-foreground text-sm">Média por Categoria</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {budgets.length > 0 
+                    ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalBudgeted / budgets.length)
+                    : 'R$ 0,00'
+                  }
+                </p>
               </div>
-              <AlertTriangle className="w-10 h-10 text-white/80" />
+              <div className="p-3 rounded-xl bg-accent/10">
+                <PiggyBank className="w-6 h-6 text-accent" />
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Alertas de orçamento */}
-      <BudgetAlerts />
+      {/* 3. Gerenciador de orçamento */}
+      <Card className="bg-card border-border">
+        <CardContent className="p-6">
+          <BudgetManager />
+        </CardContent>
+      </Card>
     </div>
   );
 }
