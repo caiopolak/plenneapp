@@ -17,6 +17,7 @@ import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns';
+import { InfoTooltip, tooltips } from '@/components/ui/info-tooltip';
 
 interface HealthMetrics {
   score: number;
@@ -189,6 +190,7 @@ export function FinancialHealthCard() {
           <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
             <Heart className={`h-5 w-5 ${config.color}`} />
             Saúde Financeira
+            <InfoTooltip content={tooltips.financialHealth} />
           </CardTitle>
           <Badge variant="outline" className={`${config.color} border-current`}>
             <StatusIcon className="h-3 w-3 mr-1" />
