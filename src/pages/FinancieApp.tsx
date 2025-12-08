@@ -1,4 +1,3 @@
-
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Routes, Route } from "react-router-dom";
@@ -16,11 +15,33 @@ import { TransactionList } from "@/components/transactions/TransactionList";
 import { GoalList } from "@/components/goals/GoalList";
 import { InvestmentList } from "@/components/investments/InvestmentList";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
+import { GuidedTour } from "@/components/onboarding/GuidedTour";
+import { useOnboarding } from "@/hooks/useOnboarding";
+import { useConfetti } from "@/hooks/useConfetti";
+import { useEffect } from "react";
 
 export default function FinancieApp() {
+  const { 
+    showOnboarding, 
+    showTour, 
+    completeOnboarding, 
+    completeTour, 
+    skipTour 
+  } = useOnboarding();
+  const { fireCelebration } = useConfetti();
+
+  // Fire celebration when completing onboarding
+  const handleOnboardingComplete = () => {
+    completeOnboarding();
+    fireCelebration();
+  };
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <div data-tour="sidebar">
+        <AppSidebar />
+      </div>
       <SidebarInset>
         {/* Header móvel */}
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 md:hidden">
@@ -66,6 +87,19 @@ export default function FinancieApp() {
           </Routes>
         </main>
       </SidebarInset>
+
+      {/* Onboarding Modal */}
+      <OnboardingModal 
+        open={showOnboarding} 
+        onComplete={handleOnboardingComplete} 
+      />
+
+      {/* Guided Tour */}
+      <GuidedTour 
+        active={showTour} 
+        onComplete={completeTour} 
+        onSkip={skipTour} 
+      />
     </SidebarProvider>
   );
 }

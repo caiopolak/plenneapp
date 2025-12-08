@@ -15,6 +15,7 @@ import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { DashboardCardSkeleton, ChartSkeleton } from '@/components/ui/loading-skeletons';
+import { InfoTooltip, tooltips } from '@/components/ui/info-tooltip';
 
 export function DashboardMain() {
   const [showTransactionForm, setShowTransactionForm] = useState(false);
@@ -118,6 +119,7 @@ export function DashboardMain() {
         <Button 
           onClick={() => setShowTransactionForm(true)}
           className="bg-[#2f9e44] hover:bg-[#2f9e44]/90 text-white"
+          data-tour="add-transaction"
         >
           <Plus className="w-4 h-4 mr-2" />
           Nova Transação
@@ -125,22 +127,28 @@ export function DashboardMain() {
       </div>
 
       {/* Welcome Card - Topo com informações do usuário */}
-      <WelcomeCard 
-        name={userProfile?.name}
-        plan={userProfile?.plan}
-        balance={balanceData?.balance}
-        goalsCount={goalsData?.totalGoals}
-        savingsRate={balanceData?.savingsRate}
-      />
+      <div data-tour="welcome-card">
+        <WelcomeCard 
+          name={userProfile?.name}
+          plan={userProfile?.plan}
+          balance={balanceData?.balance}
+          goalsCount={goalsData?.totalGoals}
+          savingsRate={balanceData?.savingsRate}
+        />
+      </div>
 
       {/* Saúde Financeira e Comparativo Mensal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <FinancialHealthCard />
+        <div data-tour="health-card">
+          <FinancialHealthCard />
+        </div>
         <MonthlyComparisonCard />
       </div>
 
       {/* Resumo Geral Informativo */}
-      <DashboardOverview />
+      <div data-tour="overview">
+        <DashboardOverview />
+      </div>
 
       {/* Próximas Transações e Saldo Projetado */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

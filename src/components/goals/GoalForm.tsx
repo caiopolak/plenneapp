@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSelect } from "../common/WorkspaceSelect";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { useConfetti } from '@/hooks/useConfetti';
 
 import { GoalNameField } from './fields/GoalNameField';
 import { GoalAmountsFields } from './fields/GoalAmountsFields';
@@ -37,6 +37,7 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
   const { user } = useAuth();
   const { current, workspaces } = useWorkspace();
   const isMobile = useIsMobile();
+  const { fireGoalComplete } = useConfetti();
   
   const [workspaceId, setWorkspaceId] = useState(
     goal?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "")
@@ -84,6 +85,13 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
           title: "Sucesso!",
           description: "Meta atualizada com sucesso"
         });
+
+        // Check if goal was just completed
+        const wasCompleted = goal?.current_amount < goal?.target_amount;
+        const isNowCompleted = (parseFloat(currentAmount) || 0) >= parseFloat(targetAmount);
+        if (wasCompleted && isNowCompleted) {
+          fireGoalComplete();
+        }
       } else {
         const { error } = await supabase
           .from('financial_goals')
