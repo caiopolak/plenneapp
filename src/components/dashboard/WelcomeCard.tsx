@@ -35,9 +35,12 @@ export function WelcomeCard({ name, plan, balance = 0, goalsCount = 0, savingsRa
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold font-display text-foreground">
-              Olá, <span className="text-primary">{name || "Usuário"}</span>!
+              Olá, <span className="text-primary">{name || "Usuário"}</span>! 👋
             </h2>
-            <div className="flex items-center gap-2 mt-1 text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-1">
+              Veja como suas finanças estão evoluindo hoje
+            </p>
+            <div className="flex items-center gap-2 mt-2 text-muted-foreground">
               <Calendar className="w-4 h-4" />
               <span className="text-sm">{capitalizedDate}</span>
             </div>
@@ -54,9 +57,12 @@ export function WelcomeCard({ name, plan, balance = 0, goalsCount = 0, savingsRa
               <Wallet className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Saldo Atual</p>
+              <p className="text-xs text-muted-foreground">Saldo Total</p>
               <p className={`text-sm font-bold ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 {formatCurrency(balance)}
+              </p>
+              <p className="text-[10px] text-muted-foreground/70">
+                {balance >= 0 ? 'Você está no azul!' : 'Atenção ao saldo'}
               </p>
             </div>
           </div>
@@ -66,8 +72,11 @@ export function WelcomeCard({ name, plan, balance = 0, goalsCount = 0, savingsRa
               <Target className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Metas Ativas</p>
-              <p className="text-sm font-bold text-foreground">{goalsCount} metas</p>
+              <p className="text-xs text-muted-foreground">Metas em Andamento</p>
+              <p className="text-sm font-bold text-foreground">{goalsCount} {goalsCount === 1 ? 'meta' : 'metas'}</p>
+              <p className="text-[10px] text-muted-foreground/70">
+                Continue focado!
+              </p>
             </div>
           </div>
 
@@ -76,8 +85,11 @@ export function WelcomeCard({ name, plan, balance = 0, goalsCount = 0, savingsRa
               <TrendingUp className="w-5 h-5 text-secondary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Taxa de Economia</p>
+              <p className="text-xs text-muted-foreground">Taxa de Poupança</p>
               <p className="text-sm font-bold text-foreground">{savingsRate.toFixed(1)}%</p>
+              <p className="text-[10px] text-muted-foreground/70">
+                {savingsRate >= 20 ? 'Excelente!' : savingsRate >= 10 ? 'Bom ritmo' : 'Tente poupar mais'}
+              </p>
             </div>
           </div>
         </div>

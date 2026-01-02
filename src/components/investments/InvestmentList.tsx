@@ -222,7 +222,7 @@ export function InvestmentList() {
             Investimentos
           </h1>
           <p className="text-muted-foreground">
-            Gerencie sua carteira e acompanhe a rentabilidade
+            Construa seu patrimônio com inteligência. Acompanhe cada ativo, analise a rentabilidade e tome decisões informadas.
           </p>
         </div>
         <InvestmentsHeaderActions
@@ -252,9 +252,9 @@ export function InvestmentList() {
         {investments.length === 0 ? (
           <Card className="bg-card border border-border shadow-card">
             <CardContent className="p-8 text-center">
-              <p className="text-foreground font-bold font-display">Nenhum investimento registrado</p>
+              <p className="text-lg font-bold text-foreground font-display">Hora de fazer seu dinheiro trabalhar! 📈</p>
               <p className="text-sm text-muted-foreground mt-2">
-                Registre seus investimentos e acompanhe sua carteira financeira!
+                Cadastre seus investimentos para ter uma visão completa do seu patrimônio. Ações, fundos, renda fixa, cripto - organize tudo em um só lugar.
               </p>
             </CardContent>
           </Card>

@@ -38,75 +38,88 @@ import { Badge } from "@/components/ui/badge";
 
 const mainItems = [
   {
-    title: "Dashboard",
+    title: "Visão Geral",
     url: "/app",
     icon: Home,
+    description: "Seu painel financeiro completo"
   },
   {
     title: "Transações",
     url: "/app/transactions",
     icon: BarChart3,
+    description: "Receitas e despesas"
   },
   {
     title: "Metas",
     url: "/app/goals",
     icon: Target,
+    description: "Seus objetivos financeiros"
   },
   {
     title: "Investimentos", 
     url: "/app/investments",
     icon: TrendingUp,
+    description: "Sua carteira de ativos"
   },
   {
     title: "Orçamentos",
     url: "/app/budgets",
     icon: PiggyBank,
+    description: "Controle por categoria"
   },
   {
     title: "Análises",
     url: "/app/analytics",
     icon: BarChart3,
+    description: "Gráficos e insights"
   },
 ];
 
 const educationItems = [
   {
-    title: "Educação",
+    title: "Aprender",
     url: "/app/education",
     icon: GraduationCap,
+    description: "Educação financeira"
   },
   {
-    title: "Assistente",
+    title: "Assistente IA",
     url: "/app/assistant",
     icon: MessageCircle,
+    description: "Tire suas dúvidas"
   },
   {
-    title: "Alertas Financeiros",
+    title: "Alertas",
     url: "/app/alerts",
     icon: Bell,
+    description: "Notificações inteligentes"
   },
 ];
 
 const configItems = [
   {
-    title: "Perfil",
+    title: "Meu Perfil",
     url: "/app/profile",
     icon: User,
+    description: "Seus dados pessoais"
   },
   {
     title: "Workspaces",
     url: "/app/workspaces",
     icon: Building2,
+    description: "Ambientes separados"
   },
   {
-    title: "Assinatura",
+    title: "Planos",
     url: "/app/subscription",
     icon: CreditCard,
+    description: "Sua assinatura"
   },
   {
     title: "Configurações",
     url: "/app/settings",
     icon: Settings,
+    description: "Preferências do app"
   },
 ];
 
@@ -127,7 +140,7 @@ export function AppSidebar() {
       <SidebarContent className="space-y-1 bg-background">
         {/* Menu Principal - Financeiro */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-primary font-semibold">Financeiro</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-primary font-semibold">💰 Finanças</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
@@ -150,7 +163,7 @@ export function AppSidebar() {
 
         {/* Menu Educação */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-secondary font-semibold">Educação & Alertas</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-secondary font-semibold">📚 Aprendizado</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {educationItems.map((item) => (
@@ -173,7 +186,7 @@ export function AppSidebar() {
 
         {/* Menu Configurações */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground font-semibold">Configurações</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground font-semibold">⚙️ Conta</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {configItems.map((item) => (
