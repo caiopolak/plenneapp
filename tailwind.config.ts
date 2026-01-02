@@ -156,6 +156,48 @@ export default {
         "number-count": {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" }
+        },
+        // Micro-animations
+        "press": {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(0.97)" },
+          "100%": { transform: "scale(1)" }
+        },
+        "wiggle": {
+          "0%, 100%": { transform: "rotate(0deg)" },
+          "25%": { transform: "rotate(-2deg)" },
+          "75%": { transform: "rotate(2deg)" }
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-8px)" }
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 5px rgba(47, 158, 68, 0.3)" },
+          "50%": { boxShadow: "0 0 20px rgba(47, 158, 68, 0.5)" }
+        },
+        "pop": {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.05)" },
+          "100%": { transform: "scale(1)" }
+        },
+        "shake": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-2px)" },
+          "20%, 40%, 60%, 80%": { transform: "translateX(2px)" }
+        },
+        "slide-up-fade": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        },
+        "icon-bounce": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-3px)" }
+        },
+        "success-check": {
+          "0%": { transform: "scale(0) rotate(-45deg)", opacity: "0" },
+          "50%": { transform: "scale(1.2) rotate(0deg)" },
+          "100%": { transform: "scale(1) rotate(0deg)", opacity: "1" }
         }
       },
       animation: {
@@ -169,7 +211,17 @@ export default {
         "bounce-subtle": "bounce-subtle 2s ease-in-out infinite",
         "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
         "shimmer": "shimmer 2s linear infinite",
-        "number-count": "number-count 0.5s ease-out forwards"
+        "number-count": "number-count 0.5s ease-out forwards",
+        // Micro-animations
+        "press": "press 0.15s ease-out",
+        "wiggle": "wiggle 0.5s ease-in-out",
+        "float": "float 3s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "pop": "pop 0.3s ease-out",
+        "shake": "shake 0.5s ease-in-out",
+        "slide-up-fade": "slide-up-fade 0.3s ease-out forwards",
+        "icon-bounce": "icon-bounce 0.4s ease-out",
+        "success-check": "success-check 0.4s ease-out forwards"
       },
     }
   },
