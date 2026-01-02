@@ -956,17 +956,17 @@ export type Database = {
     }
     Functions: {
       check_plan_limits:
+        | { Args: never; Returns: undefined }
         | {
             Args: { resource_type: string; user_uuid: string }
             Returns: boolean
           }
-        | { Args: never; Returns: undefined }
       check_user_active: { Args: { p_user: string }; Returns: boolean }
       create_recurring_transactions: { Args: never; Returns: undefined }
       get_request_user: { Args: never; Returns: string }
       get_user_role_from_jwt:
-        | { Args: { jwt_token: string }; Returns: string }
         | { Args: never; Returns: string }
+        | { Args: { jwt_token: string }; Returns: string }
       is_workspace_owner: {
         Args: { _user_id: string; _workspace_id: string }
         Returns: boolean

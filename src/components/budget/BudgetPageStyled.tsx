@@ -34,7 +34,7 @@ export function BudgetPageStyled() {
             Orçamentos
           </h1>
           <p className="text-muted-foreground">
-            Controle seus gastos e mantenha suas finanças organizadas
+            Defina limites por categoria e mantenha seus gastos sob controle. Receba alertas antes de ultrapassar o planejado.
           </p>
         </div>
       </div>
@@ -48,10 +48,11 @@ export function BudgetPageStyled() {
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-muted-foreground text-sm">Total Orçado</p>
+                <p className="text-muted-foreground text-sm">Total Planejado</p>
                 <p className="text-2xl font-bold text-foreground">
                   {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalBudgeted)}
                 </p>
+                <p className="text-xs text-muted-foreground/70">Limite mensal definido</p>
               </div>
               <div className="p-3 rounded-xl bg-primary/10">
                 <Wallet className="w-6 h-6 text-primary" />
@@ -66,6 +67,7 @@ export function BudgetPageStyled() {
               <div>
                 <p className="text-muted-foreground text-sm">Categorias Ativas</p>
                 <p className="text-2xl font-bold text-foreground">{budgets.length}</p>
+                <p className="text-xs text-muted-foreground/70">Sendo monitoradas</p>
               </div>
               <div className="p-3 rounded-xl bg-secondary/10">
                 <TrendingUp className="w-6 h-6 text-secondary" />
@@ -82,9 +84,9 @@ export function BudgetPageStyled() {
                 <p className="text-2xl font-bold text-foreground">
                   {budgets.length > 0 
                     ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalBudgeted / budgets.length)
-                    : 'R$ 0,00'
-                  }
+                    : 'R$ 0,00'}
                 </p>
+                <p className="text-xs text-muted-foreground/70">Distribuição equilibrada</p>
               </div>
               <div className="p-3 rounded-xl bg-accent/10">
                 <PiggyBank className="w-6 h-6 text-accent" />

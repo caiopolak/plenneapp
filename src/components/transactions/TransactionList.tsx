@@ -193,7 +193,7 @@ export function TransactionList() {
             Transações
           </h1>
           <p className="text-muted-foreground">
-            Gerencie suas receitas e despesas
+            Acompanhe cada entrada e saída do seu dinheiro. Use filtros para encontrar transações específicas.
           </p>
         </div>
         <TransactionActionButtons
@@ -279,9 +279,9 @@ export function TransactionList() {
         <CardContent>
           {filteredTransactions.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">Nenhuma transação encontrada</p>
+              <p className="text-muted-foreground text-lg">Nenhuma transação por aqui ainda</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Tente ajustar os filtros ou adicione uma nova transação
+                Registre sua primeira transação clicando em "Nova Transação" ou ajuste os filtros de busca.
               </p>
             </div>
           ) : (

@@ -178,19 +178,22 @@ export function DashboardOverview() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
             <Wallet className="h-5 w-5 text-primary" />
-            Resumo Geral
+            Resumo do Mês
           </CardTitle>
           <Badge variant="outline" className="text-muted-foreground capitalize">
-            {currentMonth}
+            📅 {currentMonth}
           </Badge>
         </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Visão geral das suas finanças neste período
+        </p>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Saldo e Fluxo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-lg bg-background/50 border border-border">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Saldo do Mês</span>
+              <span className="text-sm text-muted-foreground">Balanço Mensal</span>
               {data.balance >= 0 ? (
                 <CheckCircle2 className="h-4 w-4 text-[hsl(var(--chart-2))]" />
               ) : (
@@ -225,42 +228,46 @@ export function DashboardOverview() {
           <div className="p-3 rounded-lg bg-background/50 border border-border">
             <div className="flex items-center gap-2 mb-2">
               <Target className="h-4 w-4 text-primary" />
-              <span className="text-xs font-medium text-muted-foreground">Metas</span>
+              <span className="text-xs font-medium text-muted-foreground">Suas Metas</span>
             </div>
             <p className="text-lg font-bold text-foreground">
               {data.completedGoals}/{data.totalGoals}
             </p>
-            <p className="text-xs text-muted-foreground">concluídas</p>
+            <p className="text-xs text-muted-foreground">
+              {data.completedGoals === data.totalGoals && data.totalGoals > 0 
+                ? '🎉 Todas concluídas!' 
+                : 'em andamento'}
+            </p>
           </div>
 
           {/* Investimentos */}
           <div className="p-3 rounded-lg bg-background/50 border border-border">
             <div className="flex items-center gap-2 mb-2">
               <PieChart className="h-4 w-4 text-[hsl(var(--chart-4))]" />
-              <span className="text-xs font-medium text-muted-foreground">Investimentos</span>
+              <span className="text-xs font-medium text-muted-foreground">Patrimônio Investido</span>
             </div>
             <p className="text-lg font-bold text-foreground">{formatCurrency(data.totalInvested)}</p>
-            <p className="text-xs text-muted-foreground">{data.investmentsCount} ativos</p>
+            <p className="text-xs text-muted-foreground">{data.investmentsCount} {data.investmentsCount === 1 ? 'ativo' : 'ativos'}</p>
           </div>
 
           {/* Orçamentos */}
           <div className="p-3 rounded-lg bg-background/50 border border-border">
             <div className="flex items-center gap-2 mb-2">
               <Wallet className="h-4 w-4 text-[hsl(var(--chart-3))]" />
-              <span className="text-xs font-medium text-muted-foreground">Orçamentos</span>
+              <span className="text-xs font-medium text-muted-foreground">Orçamentos Ativos</span>
             </div>
             <p className="text-lg font-bold text-foreground">{data.totalBudgets}</p>
-            <p className="text-xs text-muted-foreground">configurados</p>
+            <p className="text-xs text-muted-foreground">{data.totalBudgets === 1 ? 'categoria monitorada' : 'categorias monitoradas'}</p>
           </div>
 
           {/* Próximas Transações */}
           <div className="p-3 rounded-lg bg-background/50 border border-border">
             <div className="flex items-center gap-2 mb-2">
               <Clock className="h-4 w-4 text-[hsl(var(--chart-5))]" />
-              <span className="text-xs font-medium text-muted-foreground">Próximos 7 dias</span>
+              <span className="text-xs font-medium text-muted-foreground">Próximos 7 Dias</span>
             </div>
             <p className="text-lg font-bold text-foreground">{data.upcomingCount}</p>
-            <p className="text-xs text-muted-foreground">transações pendentes</p>
+            <p className="text-xs text-muted-foreground">{data.upcomingCount === 1 ? 'transação agendada' : 'transações agendadas'}</p>
           </div>
         </div>
 
@@ -270,7 +277,7 @@ export function DashboardOverview() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">Próxima Meta</span>
+                <span className="text-sm font-medium text-foreground">Meta em Destaque</span>
               </div>
               {data.nearestGoal.targetDate && (
                 <Badge variant="secondary" className="text-xs">

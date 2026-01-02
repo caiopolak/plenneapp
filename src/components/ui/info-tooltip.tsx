@@ -58,56 +58,88 @@ export function InfoTooltip({
 export const tooltips = {
   financialHealth: (
     <div className="space-y-2">
-      <p className="font-medium">Pontuação de Saúde Financeira</p>
-      <p>Calculada com base em:</p>
-      <ul className="list-disc pl-4 space-y-1">
-        <li>Taxa de poupança mensal</li>
-        <li>Progresso das metas</li>
-        <li>Diversificação de investimentos</li>
-        <li>Controle de gastos</li>
+      <p className="font-medium">📊 Pontuação de Saúde Financeira</p>
+      <p className="text-muted-foreground">Um score de 0 a 100 que avalia sua situação financeira com base em:</p>
+      <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+        <li><strong>Taxa de poupança</strong> - quanto você guarda por mês</li>
+        <li><strong>Progresso das metas</strong> - objetivos alcançados</li>
+        <li><strong>Diversificação</strong> - variedade de investimentos</li>
+        <li><strong>Controle de gastos</strong> - disciplina no orçamento</li>
       </ul>
+      <p className="text-xs text-primary mt-2">💡 Acima de 70 pontos é considerado excelente!</p>
     </div>
   ),
   savingsRate: (
-    <div className="space-y-1">
-      <p className="font-medium">Taxa de Poupança</p>
-      <p>Percentual da sua renda que você consegue guardar. O ideal é poupar pelo menos 20% da renda mensal.</p>
+    <div className="space-y-2">
+      <p className="font-medium">💰 Taxa de Poupança</p>
+      <p className="text-muted-foreground">
+        Percentual da sua renda mensal que você consegue guardar após todas as despesas.
+      </p>
+      <div className="text-xs space-y-1 mt-2">
+        <p className="text-green-600">✓ Acima de 20% - Excelente</p>
+        <p className="text-yellow-600">○ 10% a 20% - Bom, pode melhorar</p>
+        <p className="text-red-600">✗ Abaixo de 10% - Atenção necessária</p>
+      </div>
     </div>
   ),
   monthlyBalance: (
-    <div className="space-y-1">
-      <p className="font-medium">Saldo do Mês</p>
-      <p>Diferença entre suas receitas e despesas no mês atual. Um saldo positivo indica que você está gastando menos do que ganha.</p>
+    <div className="space-y-2">
+      <p className="font-medium">📈 Saldo do Mês</p>
+      <p className="text-muted-foreground">
+        Diferença entre suas receitas e despesas no mês atual.
+      </p>
+      <p className="text-xs text-muted-foreground mt-1">
+        Um saldo positivo significa que você está gastando menos do que ganha - continue assim!
+      </p>
     </div>
   ),
   goalProgress: (
-    <div className="space-y-1">
-      <p className="font-medium">Progresso das Metas</p>
-      <p>Mostra quanto você já guardou em relação ao objetivo total de cada meta financeira.</p>
+    <div className="space-y-2">
+      <p className="font-medium">🎯 Progresso das Metas</p>
+      <p className="text-muted-foreground">
+        Acompanhe quanto já guardou em relação ao objetivo total. O sistema calcula automaticamente 
+        quanto você precisa poupar por dia/mês para atingir cada meta no prazo.
+      </p>
     </div>
   ),
   upcomingTransactions: (
-    <div className="space-y-1">
-      <p className="font-medium">Próximas Transações</p>
-      <p>Transações agendadas ou recorrentes previstas para os próximos 7 dias.</p>
+    <div className="space-y-2">
+      <p className="font-medium">📅 Próximas Transações</p>
+      <p className="text-muted-foreground">
+        Transações agendadas ou recorrentes previstas para os próximos 7 dias. 
+        Planeje-se para não ser pego de surpresa!
+      </p>
     </div>
   ),
   projectedBalance: (
-    <div className="space-y-1">
-      <p className="font-medium">Saldo Projetado</p>
-      <p>Estimativa do seu saldo nos próximos 30 dias, considerando transações agendadas e padrões de gastos.</p>
+    <div className="space-y-2">
+      <p className="font-medium">🔮 Saldo Projetado</p>
+      <p className="text-muted-foreground">
+        Estimativa inteligente do seu saldo nos próximos 30 dias, considerando:
+      </p>
+      <ul className="list-disc pl-4 space-y-1 text-muted-foreground text-xs">
+        <li>Transações agendadas</li>
+        <li>Despesas recorrentes</li>
+        <li>Padrões históricos de gastos</li>
+      </ul>
     </div>
   ),
   investmentReturn: (
-    <div className="space-y-1">
-      <p className="font-medium">Retorno Esperado</p>
-      <p>Projeção de rentabilidade anual baseada no tipo de investimento e histórico de mercado.</p>
+    <div className="space-y-2">
+      <p className="font-medium">📊 Retorno Esperado</p>
+      <p className="text-muted-foreground">
+        Projeção de rentabilidade anual baseada no tipo de investimento. 
+        Valores são estimativas e podem variar conforme o mercado.
+      </p>
     </div>
   ),
   budgetLimit: (
-    <div className="space-y-1">
-      <p className="font-medium">Limite de Orçamento</p>
-      <p>Valor máximo que você definiu para gastar nesta categoria durante o mês.</p>
+    <div className="space-y-2">
+      <p className="font-medium">🎯 Limite de Orçamento</p>
+      <p className="text-muted-foreground">
+        Valor máximo definido para gastar nesta categoria durante o mês. 
+        Você receberá alertas ao atingir 80% do limite.
+      </p>
     </div>
   )
 };

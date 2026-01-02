@@ -245,7 +245,7 @@ export function GoalList() {
             Metas Financeiras
           </h1>
           <p className="text-muted-foreground">
-            Planeje e acompanhe seus objetivos financeiros
+            Defina objetivos claros, acompanhe seu progresso e celebre cada conquista no caminho da independência financeira.
           </p>
         </div>
         <GoalActionButtons
@@ -282,9 +282,9 @@ export function GoalList() {
       {filteredGoals.length === 0 ? (
         <Card className="bg-card border border-border">
           <CardContent className="p-8 text-center rounded-lg">
-            <p className="text-muted-foreground font-text">Nenhuma meta criada ainda</p>
+            <p className="text-lg font-semibold text-foreground font-text">Comece a sonhar grande! 🎯</p>
             <p className="text-sm text-muted-foreground mt-2 font-text">
-              Crie sua primeira meta financeira para começar a planejar seu futuro!
+              Criar metas é o primeiro passo para transformar seus sonhos em realidade. Seja uma viagem, um carro novo ou sua reserva de emergência - defina, acompanhe e conquiste!
             </p>
           </CardContent>
         </Card>
