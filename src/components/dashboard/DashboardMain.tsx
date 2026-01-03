@@ -105,9 +105,9 @@ export function DashboardMain() {
   });
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
             Dashboard Financeiro
@@ -127,7 +127,7 @@ export function DashboardMain() {
       </div>
 
       {/* Welcome Card - Topo com informações do usuário */}
-      <div data-tour="welcome-card">
+      <div data-tour="welcome-card" className="animate-fade-in stagger-1">
         <WelcomeCard 
           name={userProfile?.name}
           plan={userProfile?.plan}
@@ -139,21 +139,27 @@ export function DashboardMain() {
 
       {/* Saúde Financeira e Comparativo Mensal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div data-tour="health-card">
+        <div data-tour="health-card" className="animate-fade-in stagger-2">
           <FinancialHealthCard />
         </div>
-        <MonthlyComparisonCard />
+        <div className="animate-fade-in stagger-3">
+          <MonthlyComparisonCard />
+        </div>
       </div>
 
       {/* Resumo Geral Informativo */}
-      <div data-tour="overview">
+      <div data-tour="overview" className="animate-fade-in stagger-4">
         <DashboardOverview />
       </div>
 
       {/* Próximas Transações e Saldo Projetado */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <UpcomingTransactionsCard />
-        <ProjectedBalanceChart />
+        <div className="animate-fade-in stagger-5">
+          <UpcomingTransactionsCard />
+        </div>
+        <div className="animate-fade-in stagger-6">
+          <ProjectedBalanceChart />
+        </div>
       </div>
 
       {/* Modal de Nova Transação */}
