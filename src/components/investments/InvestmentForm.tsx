@@ -14,6 +14,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSelect } from "../common/WorkspaceSelect";
+import { investmentSchema, validateInput, requireAuth, requireWorkspace, isValidationError } from '@/lib/validation';
+import { checkRateLimit, safeLog } from '@/lib/security';
 
 interface InvestmentFormProps {
   onSuccess?: () => void;
@@ -55,12 +57,46 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !type || !amount || !user || !workspaceId) {
+    // Rate limiting
+    if (!checkRateLimit(`investment_submit_${user?.id}`, 20, 60000)) {
+      toast({
+        variant: "destructive",
+        title: "Muitas tentativas",
+        description: "Aguarde um momento antes de tentar novamente"
+      });
+      return;
+    }
+
+    // Auth validation
+    try {
+      requireAuth(user?.id);
+      requireWorkspace(workspaceId);
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Preencha todos os campos obrigatórios"
+        description: error instanceof Error ? error.message : "Erro de autenticação"
       });
+      return;
+    }
+
+    // Validate with Zod schema
+    const validation = validateInput(investmentSchema, {
+      name,
+      type,
+      amount,
+      expected_return: expectedReturn || null,
+      purchase_date: purchaseDate
+    });
+
+    if (isValidationError(validation)) {
+      const firstError = Object.values(validation.errors)[0];
+      toast({
+        variant: "destructive",
+        title: "Dados inválidos",
+        description: firstError || "Verifique os campos do formulário"
+      });
+      safeLog('warn', 'Investment validation failed', validation.errors);
       return;
     }
 

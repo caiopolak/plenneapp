@@ -10,6 +10,8 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { cn } from '@/lib/utils';
+import { transactionSchema, validateInput, requireAuth, requireWorkspace, isValidationError } from '@/lib/validation';
+import { checkRateLimit, safeLog } from '@/lib/security';
 import { TransactionFieldsGroup } from "./fields/TransactionFieldsGroup";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, CreditCard, Crown } from 'lucide-react';
@@ -93,21 +95,49 @@ export function UnifiedTransactionForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!workspaceId) {
+    // Rate limiting check
+    if (!checkRateLimit(`transaction_submit_${user?.id}`, 30, 60000)) {
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: "Nenhum workspace selecionado."
+        title: "Muitas tentativas",
+        description: "Aguarde um momento antes de tentar novamente"
       });
       return;
     }
 
-    if (!amount || !category || !user) {
+    // Auth and workspace validation
+    try {
+      requireAuth(user?.id);
+      requireWorkspace(workspaceId);
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Preencha todos os campos obrigatórios"
+        description: error instanceof Error ? error.message : "Erro de autenticação"
       });
+      return;
+    }
+
+    // Validate input with Zod schema
+    const validation = validateInput(transactionSchema, {
+      type,
+      amount,
+      category,
+      description,
+      date: mode === 'immediate' ? date : expectedDate,
+      is_recurring: isRecurring && canUseFeature('recurring'),
+      recurrence_pattern: isRecurring && canUseFeature('recurring') ? recurrencePattern : null,
+      recurrence_end_date: isRecurring && canUseFeature('recurring') ? recurrenceEndDate : null
+    });
+
+    if (isValidationError(validation)) {
+      const firstError = Object.values(validation.errors)[0];
+      toast({
+        variant: "destructive",
+        title: "Dados inválidos",
+        description: firstError || "Verifique os campos do formulário"
+      });
+      safeLog('warn', 'Transaction validation failed', validation.errors);
       return;
     }
 
