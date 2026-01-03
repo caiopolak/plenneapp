@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { GoalsProgressBar } from "./GoalsProgressBar";
+import { useConfetti } from "@/hooks/useConfetti";
 
 interface GoalProgressCardProps {
   completedGoals: number;
@@ -12,6 +13,20 @@ export const GoalProgressCard: React.FC<GoalProgressCardProps> = ({
   totalGoals,
   goalsProgress,
 }) => {
+  const { fireCelebration } = useConfetti();
+  const hasCelebrated = useRef(false);
+
+  // Celebrate when all goals are completed
+  useEffect(() => {
+    if (goalsProgress === 100 && totalGoals > 0 && !hasCelebrated.current) {
+      hasCelebrated.current = true;
+      fireCelebration();
+    }
+    // Reset if progress drops
+    if (goalsProgress < 100) {
+      hasCelebrated.current = false;
+    }
+  }, [goalsProgress, totalGoals, fireCelebration]);
   let stateLabel;
   const stateClass =
     "inline-block rounded px-3 py-1 text-xs font-bold";
