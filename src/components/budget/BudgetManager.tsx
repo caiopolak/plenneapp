@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,8 @@ import { useBudgets } from "@/hooks/useBudgets";
 import { BudgetForm } from "./BudgetForm";
 import { ImportBudgetsCSV } from "./ImportBudgetsCSV";
 import { BudgetExport } from "@/utils/dataExport";
+import { useConfetti } from "@/hooks/useConfetti";
+import { useToast } from "@/hooks/use-toast";
 
 const months = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -30,6 +31,26 @@ export function BudgetManager() {
   const [showForm, setShowForm] = useState(false);
   const [editingBudget, setEditingBudget] = useState<string | null>(null);
   const [editAmount, setEditAmount] = useState("");
+  const { fireSubtle } = useConfetti();
+  const { toast } = useToast();
+  const celebratedBudgets = useRef<Set<string>>(new Set());
+
+  // Check for budgets that are under limit and celebrate
+  useEffect(() => {
+    budgets.forEach(budget => {
+      // If budget is under 80% and we haven't celebrated yet
+      if (budget.percentage <= 80 && budget.percentage > 0 && !celebratedBudgets.current.has(budget.id)) {
+        // Only celebrate if they had good spending control
+        if (budget.spent > 0 && budget.remaining > budget.amount_limit * 0.2) {
+          celebratedBudgets.current.add(budget.id);
+        }
+      }
+      // Reset celebration if budget gets exceeded
+      if (budget.percentage >= 100) {
+        celebratedBudgets.current.delete(budget.id);
+      }
+    });
+  }, [budgets]);
 
   const handlePeriodChange = () => {
     fetchBudgets(selectedYear, selectedMonth);
@@ -64,10 +85,23 @@ export function BudgetManager() {
     return "bg-green-500";
   };
 
-  const getStatusBadge = (percentage: number) => {
+  const getStatusBadge = (percentage: number, budgetId?: string) => {
     if (percentage >= 100) return <Badge variant="destructive">Estourado</Badge>;
     if (percentage >= 80) return <Badge variant="secondary">Atenção</Badge>;
+    if (percentage > 0 && percentage <= 50) return <Badge variant="default" className="bg-green-500">Excelente!</Badge>;
     return <Badge variant="default">No limite</Badge>;
+  };
+
+  // Celebrate when all budgets are under control
+  const handleCelebrateBudgetSuccess = () => {
+    const allUnderControl = budgets.length > 0 && budgets.every(b => b.percentage < 80);
+    if (allUnderControl && budgets.some(b => b.spent > 0)) {
+      fireSubtle();
+      toast({
+        title: "🎯 Ótimo controle!",
+        description: "Todos os seus orçamentos estão sob controle este mês!"
+      });
+    }
   };
 
   React.useEffect(() => {

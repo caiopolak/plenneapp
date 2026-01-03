@@ -13,6 +13,7 @@ import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAutoChallenges } from "@/hooks/useAutoChallenges";
+import { useConfetti } from '@/hooks/useConfetti';
 
 export function FinancialChallenges() {
   const [challenges, setChallenges] = useState<any[]>([]);
@@ -28,6 +29,7 @@ export function FinancialChallenges() {
   
   const { toast } = useToast();
   const { user } = useAuth();
+  const { fireAchievement } = useConfetti();
 
   useEffect(() => {
     setChallenges([...autoChallenges]); // exibe as automáticas primeiro
@@ -71,9 +73,16 @@ export function FinancialChallenges() {
         : challenge
     ));
 
+    // Fire confetti when completing a challenge
+    if (status === 'completed') {
+      fireAchievement();
+    }
+
     toast({
-      title: "Sucesso!",
-      description: `Desafio ${status === 'completed' ? 'concluído' : 'atualizado'} com sucesso`
+      title: status === 'completed' ? "🎉 Parabéns!" : "Sucesso!",
+      description: status === 'completed' 
+        ? "Desafio concluído! Continue assim!" 
+        : "Desafio atualizado com sucesso"
     });
   };
 
