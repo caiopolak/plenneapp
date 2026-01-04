@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useBudgets } from "@/hooks/useBudgets";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { budgetSchema, validateInput, isValidationError, requireAuth } from "@/lib/validation";
+import { checkRateLimit } from "@/lib/security";
 
 interface BudgetFormProps {
   year: number;
@@ -22,6 +25,8 @@ const months = [
 
 export function BudgetForm({ year, month, categories, onClose, onSuccess }: BudgetFormProps) {
   const { createBudget } = useBudgets();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,14 +34,49 @@ export function BudgetForm({ year, month, categories, onClose, onSuccess }: Budg
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!category || !amount) return;
-    
-    const numericAmount = parseFloat(amount);
-    if (isNaN(numericAmount) || numericAmount <= 0) return;
+    // Rate limiting check
+    if (!checkRateLimit(`budget_submit_${user?.id}`, 5, 60000)) {
+      toast({
+        variant: "destructive",
+        title: "Muitas tentativas",
+        description: "Aguarde um momento antes de tentar novamente"
+      });
+      return;
+    }
+
+    // Authentication validation
+    try {
+      requireAuth(user?.id);
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Usuário não autenticado"
+      });
+      return;
+    }
+
+    // Input validation using Zod schema
+    const validationResult = validateInput(budgetSchema, {
+      category,
+      amount_limit: amount,
+      year,
+      month
+    });
+
+    if (isValidationError(validationResult)) {
+      toast({
+        variant: "destructive",
+        title: "Dados inválidos",
+        description: validationResult.errors[0]
+      });
+      return;
+    }
 
     setLoading(true);
     try {
-      const success = await createBudget(category, numericAmount, year, month);
+      const validated = validationResult.data;
+      const success = await createBudget(validated.category, Number(validated.amount_limit), validated.year, validated.month);
       if (success) {
         onSuccess();
       }
