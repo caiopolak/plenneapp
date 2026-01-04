@@ -31,51 +31,10 @@ export function DashboardTabs() {
 
   // Removido botão "Exportar Resumo CSV" pois funções individuais já existem nas abas
 
+  // Agora renderiza apenas o DashboardMain, sem as abas de navegação
   return (
     <div>
-      {/* Removido o botão 'Exportar Resumo CSV' aqui */}
-      <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="mb-6 shadow-md bg-card hidden md:grid grid-cols-4 rounded-xl px-1 py-[6px]">
-          <TabsTrigger 
-            value="dashboard" 
-            className="flex gap-2 items-center font-display text-foreground data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg transition-all"
-          >
-            <Home className="w-5 h-5" /> Dashboard
-          </TabsTrigger>
-          <TabsTrigger 
-            value="transactions" 
-            className="flex gap-2 items-center font-display text-foreground data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg transition-all"
-          >
-            <BarChart3 className="w-5 h-5" /> Transações
-          </TabsTrigger>
-          <TabsTrigger 
-            value="goals" 
-            className="flex gap-2 items-center font-display text-foreground data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg transition-all"
-          >
-            <Target className="w-5 h-5" /> Metas
-          </TabsTrigger>
-          <TabsTrigger 
-            value="investments" 
-            className="flex gap-2 items-center font-display text-foreground data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg transition-all"
-          >
-            <TrendingUp className="w-5 h-5" /> Investimentos
-          </TabsTrigger>
-          {/* REMOVIDO: Orçamentos */}
-        </TabsList>
-        <TabsContent value="dashboard" className="animate-fade-in">
-          <DashboardMain />
-        </TabsContent>
-        <TabsContent value="transactions" className="animate-fade-in">
-          <TransactionList />
-        </TabsContent>
-        <TabsContent value="goals" className="animate-fade-in">
-          <GoalList />
-        </TabsContent>
-        <TabsContent value="investments" className="animate-fade-in">
-          <InvestmentList />
-        </TabsContent>
-        {/* REMOVIDO: <TabsContent value="budgets"> */}
-      </Tabs>
+      <DashboardMain />
     </div>
   );
 }
