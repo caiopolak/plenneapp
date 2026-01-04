@@ -137,22 +137,22 @@ export function AppSidebar() {
 
   return (
     <Sidebar variant="inset" className="bg-background border-r">
-      <SidebarContent className="space-y-1 bg-background">
+      <SidebarContent className="space-y-2 bg-background overflow-y-auto">
         {/* Menu Principal - Financeiro */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-primary font-semibold">💰 Finanças</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-primary font-semibold text-sm md:text-xs px-3 py-2">💰 Finanças</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {mainItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild
                     isActive={location.pathname === item.url}
-                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary"
+                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary min-h-[44px] md:min-h-[36px] px-3"
                   >
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                    <a href={item.url} className="flex items-center gap-3">
+                      <item.icon className="h-5 w-5 md:h-4 md:w-4 shrink-0" />
+                      <span className="text-base md:text-sm">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -163,19 +163,19 @@ export function AppSidebar() {
 
         {/* Menu Educação */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-secondary font-semibold">📚 Aprendizado</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-secondary font-semibold text-sm md:text-xs px-3 py-2">📚 Aprendizado</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {educationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild
                     isActive={location.pathname === item.url}
-                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary"
+                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary min-h-[44px] md:min-h-[36px] px-3"
                   >
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                    <a href={item.url} className="flex items-center gap-3">
+                      <item.icon className="h-5 w-5 md:h-4 md:w-4 shrink-0" />
+                      <span className="text-base md:text-sm">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -186,19 +186,19 @@ export function AppSidebar() {
 
         {/* Menu Configurações */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground font-semibold">⚙️ Conta</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground font-semibold text-sm md:text-xs px-3 py-2">⚙️ Conta</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {configItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild
                     isActive={location.pathname === item.url}
-                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary"
+                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary min-h-[44px] md:min-h-[36px] px-3"
                   >
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                    <a href={item.url} className="flex items-center gap-3">
+                      <item.icon className="h-5 w-5 md:h-4 md:w-4 shrink-0" />
+                      <span className="text-base md:text-sm">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -207,7 +207,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-4 space-y-4 bg-background">
+      <SidebarFooter className="p-3 space-y-3 bg-background">
         {/* Logo com slogan aleatório */}
         <div className="flex flex-col items-center space-y-2 p-3 bg-gradient-to-r from-primary to-secondary rounded-lg">
           <LogoPlenne />
@@ -238,10 +238,10 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={handleSignOut}
-              className="hover:bg-destructive/10 hover:text-destructive justify-center"
+              className="hover:bg-destructive/10 hover:text-destructive justify-center min-h-[44px] md:min-h-[36px]"
             >
-              <LogOut />
-              <span>Sair</span>
+              <LogOut className="h-5 w-5 md:h-4 md:w-4" />
+              <span className="text-base md:text-sm">Sair</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
