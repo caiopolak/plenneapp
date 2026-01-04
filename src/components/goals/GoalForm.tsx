@@ -9,6 +9,8 @@ import { WorkspaceSelect } from "../common/WorkspaceSelect";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { useConfetti } from '@/hooks/useConfetti';
+import { goalSchema, validateInput, isValidationError, requireAuth, requireWorkspace } from '@/lib/validation';
+import { checkRateLimit } from '@/lib/security';
 
 import { GoalNameField } from './fields/GoalNameField';
 import { GoalAmountsFields } from './fields/GoalAmountsFields';
@@ -50,11 +52,44 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !targetAmount || !user || !workspaceId) {
+    // Rate limiting check
+    if (!checkRateLimit(`goal_submit_${user?.id}`, 5, 60000)) {
+      toast({
+        variant: "destructive",
+        title: "Muitas tentativas",
+        description: "Aguarde um momento antes de tentar novamente"
+      });
+      return;
+    }
+
+    // Authentication and workspace validation
+    try {
+      requireAuth(user?.id);
+      requireWorkspace(workspaceId);
+    } catch {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Preencha todos os campos obrigatórios"
+        description: "Usuário ou workspace não identificado"
+      });
+      return;
+    }
+
+    // Input validation using Zod schema
+    const validationResult = validateInput(goalSchema, {
+      name,
+      target_amount: targetAmount,
+      current_amount: currentAmount || '0',
+      target_date: targetDate ? targetDate.toISOString().split("T")[0] : undefined,
+      priority,
+      note: note || undefined
+    });
+
+    if (isValidationError(validationResult)) {
+      toast({
+        variant: "destructive",
+        title: "Dados inválidos",
+        description: validationResult.errors[0]
       });
       return;
     }
@@ -62,15 +97,19 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
     setLoading(true);
 
     try {
+      const validated = validationResult.data;
+      const targetDateStr = validated.target_date 
+        ? (typeof validated.target_date === 'string' ? validated.target_date : validated.target_date.toISOString().split('T')[0])
+        : null;
       const goalData = {
-        user_id: user.id,
+        user_id: user!.id,
         workspace_id: workspaceId,
-        name,
-        target_amount: parseFloat(targetAmount),
-        current_amount: parseFloat(currentAmount) || 0,
-        target_date: targetDate ? targetDate.toISOString().split("T")[0] : null,
-        priority,
-        note: note || null
+        name: validated.name,
+        target_amount: Number(validated.target_amount),
+        current_amount: Number(validated.current_amount),
+        target_date: targetDateStr,
+        priority: validated.priority,
+        note: validated.note || null
       };
 
       if (goal) {

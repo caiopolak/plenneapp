@@ -66,18 +66,18 @@ const amountField = z
     const num = typeof val === 'string' ? parseFloat(val) : val;
     return !isNaN(num) && num > 0;
   }, { message: "Valor deve ser maior que zero" })
-  .transform((val) => sanitizeAmount(val));
+  .transform((val): number => sanitizeAmount(val));
 
 const optionalAmountField = z
   .union([z.string(), z.number(), z.null(), z.undefined()])
-  .transform((val) => {
+  .transform((val): number => {
     if (val === null || val === undefined || val === '') return 0;
     return sanitizeAmount(val);
   });
 
 const dateField = z
   .union([z.date(), z.string()])
-  .transform((val) => {
+  .transform((val): Date => {
     if (val instanceof Date) return val;
     const date = new Date(val);
     if (isNaN(date.getTime())) throw new Error("Data inválida");
@@ -86,12 +86,12 @@ const dateField = z
 
 const optionalDateField = z
   .union([z.date(), z.string(), z.null(), z.undefined()])
-  .transform((val) => {
+  .transform((val): string | null => {
     if (!val) return null;
-    if (val instanceof Date) return val;
+    if (val instanceof Date) return val.toISOString().split('T')[0];
     const date = new Date(val);
     if (isNaN(date.getTime())) return null;
-    return date;
+    return date.toISOString().split('T')[0];
   });
 
 // ============================================
