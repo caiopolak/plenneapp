@@ -61,72 +61,76 @@ export function AdvancedTransactionFilters({
   return (
     <div className="space-y-4">
       {/* Linha principal de filtros */}
-      <div className="flex flex-col md:flex-row gap-3">
-        {/* Busca */}
-        <div className="relative flex-1">
+      <div className="flex flex-col gap-3">
+        {/* Busca - sempre visível */}
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar por descrição ou categoria..."
             value={filters.searchTerm}
             onChange={(e) => updateFilter('searchTerm', e.target.value)}
-            className="pl-9 w-full"
+            className="pl-9 w-full min-h-[44px] sm:min-h-[40px]"
           />
           {filters.searchTerm && (
             <Button
               variant="ghost"
               size="sm"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
               onClick={() => updateFilter('searchTerm', '')}
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </Button>
           )}
         </div>
 
-        {/* Filtro de Tipo */}
-        <Select value={filters.type} onValueChange={(v) => updateFilter('type', v)}>
-          <SelectTrigger className="w-full md:w-36">
-            <SelectValue placeholder="Tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="income">Receitas</SelectItem>
-            <SelectItem value="expense">Despesas</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* Linha com tipo e botões */}
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          {/* Filtro de Tipo */}
+          <Select value={filters.type} onValueChange={(v) => updateFilter('type', v)}>
+            <SelectTrigger className="flex-1 sm:flex-none sm:w-36 min-h-[44px] sm:min-h-[40px]">
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="income">Receitas</SelectItem>
+              <SelectItem value="expense">Despesas</SelectItem>
+            </SelectContent>
+          </Select>
 
-        {/* Botão Filtros Avançados */}
-        <Button
-          variant={showAdvanced ? "secondary" : "outline"}
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className="gap-2"
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          Filtros
-          {activeFiltersCount > 0 && (
-            <Badge variant="default" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
-              {activeFiltersCount}
-            </Badge>
-          )}
-        </Button>
-
-        {/* Botão Reset */}
-        {hasActiveFilters && (
-          <Button variant="ghost" onClick={onReset} className="gap-2">
-            <RotateCcw className="h-4 w-4" />
-            Limpar
+          {/* Botão Filtros Avançados */}
+          <Button
+            variant={showAdvanced ? "secondary" : "outline"}
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="gap-2 flex-1 sm:flex-none min-h-[44px] sm:min-h-[40px]"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            <span className="hidden sm:inline">Filtros</span>
+            <span className="sm:hidden">Mais</span>
+            {activeFiltersCount > 0 && (
+              <Badge variant="default" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                {activeFiltersCount}
+              </Badge>
+            )}
           </Button>
-        )}
+
+          {/* Botão Reset */}
+          {hasActiveFilters && (
+            <Button variant="ghost" onClick={onReset} className="gap-2 min-h-[44px] sm:min-h-[40px]">
+              <RotateCcw className="h-4 w-4" />
+              <span className="hidden sm:inline">Limpar</span>
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Filtros Avançados */}
       {showAdvanced && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg border border-border">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg border border-border animate-fade-in">
           {/* Categoria */}
           <div className="space-y-2">
             <Label className="text-xs text-muted-foreground">Categoria</Label>
             <Select value={filters.category} onValueChange={(v) => updateFilter('category', v)}>
-              <SelectTrigger>
+              <SelectTrigger className="min-h-[44px] sm:min-h-[40px]">
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
               <SelectContent>
@@ -146,6 +150,7 @@ export function AdvancedTransactionFilters({
               placeholder="R$ 0,00"
               value={filters.minAmount}
               onChange={(e) => updateFilter('minAmount', e.target.value)}
+              className="min-h-[44px] sm:min-h-[40px]"
             />
           </div>
 
@@ -157,6 +162,7 @@ export function AdvancedTransactionFilters({
               placeholder="R$ 0,00"
               value={filters.maxAmount}
               onChange={(e) => updateFilter('maxAmount', e.target.value)}
+              className="min-h-[44px] sm:min-h-[40px]"
             />
           </div>
 
@@ -169,7 +175,7 @@ export function AdvancedTransactionFilters({
                   <Button
                     variant="outline"
                     className={cn(
-                      "flex-1 justify-start text-left font-normal",
+                      "flex-1 justify-start text-left font-normal min-h-[44px] sm:min-h-[40px]",
                       !filters.startDate && "text-muted-foreground"
                     )}
                   >
@@ -177,7 +183,7 @@ export function AdvancedTransactionFilters({
                     {filters.startDate ? format(filters.startDate, "dd/MM", { locale: ptBR }) : "Início"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={filters.startDate}
@@ -192,7 +198,7 @@ export function AdvancedTransactionFilters({
                   <Button
                     variant="outline"
                     className={cn(
-                      "flex-1 justify-start text-left font-normal",
+                      "flex-1 justify-start text-left font-normal min-h-[44px] sm:min-h-[40px]",
                       !filters.endDate && "text-muted-foreground"
                     )}
                   >
@@ -200,7 +206,7 @@ export function AdvancedTransactionFilters({
                     {filters.endDate ? format(filters.endDate, "dd/MM", { locale: ptBR }) : "Fim"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={filters.endDate}

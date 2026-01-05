@@ -144,14 +144,39 @@ export function ChartSkeleton({ className }: { className?: string }) {
 export function AnalyticsCardSkeleton() {
   return (
     <Card className="animate-pulse">
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-8 w-32" />
-            <Skeleton className="h-3 w-20" />
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-4 w-20 sm:w-24" />
+            <Skeleton className="h-6 sm:h-8 w-24 sm:w-32" />
+            <Skeleton className="h-3 w-16 sm:w-20 hidden sm:block" />
           </div>
-          <Skeleton className="h-12 w-12 rounded-full" />
+          <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-full" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Budget Card Skeleton
+export function BudgetCardSkeleton() {
+  return (
+    <Card className="animate-pulse">
+      <CardContent className="p-4 sm:py-5">
+        <div className="flex items-start sm:items-center justify-between gap-3">
+          <div className="flex-1 space-y-3">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-5 w-24 sm:w-32" />
+              <Skeleton className="h-5 w-16 rounded-full" />
+            </div>
+            <div className="flex justify-between">
+              <Skeleton className="h-4 w-32 sm:w-48" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+            <Skeleton className="h-2 sm:h-3 w-full rounded-full" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+          <Skeleton className="h-10 w-10 rounded" />
         </div>
       </CardContent>
     </Card>
@@ -187,16 +212,16 @@ export function PageSkeleton() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="space-y-2">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-64" />
+          <Skeleton className="h-7 sm:h-8 w-40 sm:w-48" />
+          <Skeleton className="h-4 w-56 sm:w-64" />
         </div>
-        <Skeleton className="h-10 w-32" />
+        <Skeleton className="h-10 w-28 sm:w-32" />
       </div>
       
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <AnalyticsCardSkeleton key={i} />
         ))}
