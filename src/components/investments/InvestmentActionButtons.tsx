@@ -32,17 +32,19 @@ export function InvestmentActionButtons({
   }));
 
   return (
-    <div className="flex gap-2 flex-wrap w-full">
+    <div className="flex gap-2 flex-wrap w-full sm:w-auto">
       <ImportInvestmentsCSV 
         onSuccess={onImportSuccess} 
         investments={investmentsForExport}
       />
       <Button
         size="sm"
-        className={`${buttonGradient} font-display flex gap-2 min-w-[170px] w-full sm:w-auto`}
+        className={`${buttonGradient} font-display flex gap-2 flex-1 sm:flex-none min-h-[44px] sm:min-h-[36px]`}
         onClick={() => setShowForm(true)}
       >
-        <Plus className="w-4 h-4 mr-2" /> Novo Investimento
+        <Plus className="w-4 h-4" />
+        <span className="hidden sm:inline">Novo Investimento</span>
+        <span className="sm:hidden">Novo</span>
       </Button>
     </div>
   );

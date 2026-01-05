@@ -40,16 +40,16 @@ export function GoalActionButtons({
   }));
 
   return (
-    <div className="flex gap-2 items-center flex-wrap w-full">
+    <div className="flex gap-2 items-center flex-wrap w-full sm:w-auto">
       <Input
         type="text"
         value={search}
         onChange={onSearchChange}
         placeholder="Buscar..."
-        className="h-9 w-full sm:w-auto"
+        className="min-h-[44px] sm:min-h-[36px] flex-1 sm:flex-none sm:w-40"
       />
       <select
-        className="rounded-md border border-input bg-background h-9 px-2 text-sm w-full sm:w-auto"
+        className="rounded-md border border-input bg-background min-h-[44px] sm:min-h-[36px] px-3 text-sm flex-1 sm:flex-none sm:w-28"
         value={priorityFilter}
         onChange={onPriorityChange}
       >
@@ -64,11 +64,12 @@ export function GoalActionButtons({
       />
       <Button
         size="sm"
-        className={`${buttonGradient} font-display flex gap-2 min-w-[170px] w-full sm:w-auto`}
+        className={`${buttonGradient} font-display flex gap-2 flex-1 sm:flex-none min-h-[44px] sm:min-h-[36px]`}
         onClick={() => setShowForm(true)}
       >
-        <Plus className="w-4 h-4 mr-2" />
-        Nova Meta
+        <Plus className="w-4 h-4" />
+        <span className="hidden sm:inline">Nova Meta</span>
+        <span className="sm:hidden">Nova</span>
       </Button>
     </div>
   );

@@ -289,7 +289,7 @@ export function GoalList() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {displayedGoals.map((goal, index) => {
             const currentAmount = goal.current_amount || 0;
             const targetAmount = goal.target_amount || 0;
@@ -299,32 +299,34 @@ export function GoalList() {
             return (
               <Card 
                 key={goal.id} 
-                className={`bg-card border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/20 animate-fade-in opacity-0 ${isCompleted ? 'border-secondary' : ''}`}
+                className={`bg-card border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/20 animate-fade-in opacity-0 ${isCompleted ? 'border-secondary ring-1 ring-secondary/30' : ''}`}
                 style={{ 
                   animationDelay: `${index * 50}ms`,
                   animationFillMode: 'forwards'
                 }}
               >
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg font-display text-primary">{goal.name}</CardTitle>
-                      <div className="flex gap-2 mt-2">
-                        <Badge variant={getPriorityColor(goal.priority)} className="font-display">
+                <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-3">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="text-base sm:text-lg font-display text-primary truncate">
+                        {goal.name}
+                      </CardTitle>
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
+                        <Badge variant={getPriorityColor(goal.priority)} className="font-display text-xs">
                           {getPriorityLabel(goal.priority)}
                         </Badge>
                         {isCompleted && (
-                          <Badge variant="default" className="bg-secondary text-secondary-foreground font-display">
-                            Concluída!
+                          <Badge variant="default" className="bg-secondary text-secondary-foreground font-display text-xs">
+                            ✓ Concluída!
                           </Badge>
                         )}
                       </div>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 shrink-0 self-start">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="font-display border-secondary text-primary"
+                        className="font-display border-secondary text-primary min-h-[40px] sm:min-h-[32px] text-xs sm:text-sm px-2 sm:px-3"
                         onClick={() => {
                           setDetailsGoal(goal);
                           setShowDetailsModal(true);
@@ -337,13 +339,13 @@ export function GoalList() {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            className="text-primary"
+                            className="text-primary min-h-[40px] min-w-[40px] sm:min-h-[32px] sm:min-w-[32px]"
                             onClick={() => setEditingGoal(goal)}
                           >
                             <Edit2 className="w-4 h-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl">
+                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
                             <DialogTitle className="font-display text-primary">Editar Meta</DialogTitle>
                           </DialogHeader>
@@ -363,7 +365,7 @@ export function GoalList() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-destructive"
+                        className="text-destructive hover:bg-destructive/10 min-h-[40px] min-w-[40px] sm:min-h-[32px] sm:min-w-[32px]"
                         onClick={() => deleteGoal(goal.id)}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -372,55 +374,72 @@ export function GoalList() {
                   </div>
                 </CardHeader>
                 
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+                  {/* Progress Bar */}
                   <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="font-text">Progresso</span>
-                      <span className="font-text">{progress.toFixed(1)}%</span>
+                    <div className="flex justify-between text-xs sm:text-sm mb-1.5 sm:mb-2">
+                      <span className="font-text text-muted-foreground">Progresso</span>
+                      <span className={`font-bold ${
+                        progress >= 100 ? 'text-secondary' :
+                        progress >= 75 ? 'text-[hsl(var(--card-success-accent))]' :
+                        'text-foreground'
+                      }`}>
+                        {progress.toFixed(1)}%
+                      </span>
                     </div>
-                    <Progress value={Math.min(progress, 100)} className="h-2 bg-primary/10" />
+                    <Progress 
+                      value={Math.min(progress, 100)} 
+                      className={`h-2 sm:h-3 ${
+                        progress >= 100 ? '[&>div]:bg-secondary' :
+                        progress >= 75 ? '[&>div]:bg-[hsl(var(--card-success-accent))]' :
+                        '[&>div]:bg-primary'
+                      }`} 
+                    />
                   </div>
                   
-                  <div className="flex justify-between">
-                    <div>
-                      <div className="text-sm text-muted-foreground font-text">Atual</div>
-                      <div className="font-bold text-secondary font-display">
-                        R$ {currentAmount.toFixed(2).replace('.', ',')}
+                  {/* Values Grid */}
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+                    <div className="p-2 sm:p-3 rounded-lg bg-muted/50">
+                      <div className="text-[10px] sm:text-xs text-muted-foreground font-text uppercase tracking-wide">Atual</div>
+                      <div className="font-bold text-secondary font-display text-xs sm:text-sm mt-0.5">
+                        R$ {currentAmount.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </div>
                     </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground font-text">Meta</div>
-                      <div className="font-bold text-primary font-display">
-                        R$ {targetAmount.toFixed(2).replace('.', ',')}
+                    <div className="p-2 sm:p-3 rounded-lg bg-muted/50">
+                      <div className="text-[10px] sm:text-xs text-muted-foreground font-text uppercase tracking-wide">Meta</div>
+                      <div className="font-bold text-primary font-display text-xs sm:text-sm mt-0.5">
+                        R$ {targetAmount.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </div>
                     </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground font-text">Faltam</div>
-                      <div className="font-bold text-primary font-display">
-                        R$ {Math.max(0, targetAmount - currentAmount).toFixed(2).replace('.', ',')}
+                    <div className="p-2 sm:p-3 rounded-lg bg-muted/50">
+                      <div className="text-[10px] sm:text-xs text-muted-foreground font-text uppercase tracking-wide">Faltam</div>
+                      <div className="font-bold text-foreground font-display text-xs sm:text-sm mt-0.5">
+                        R$ {Math.max(0, targetAmount - currentAmount).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </div>
                     </div>
                   </div>
                   
+                  {/* Date and Note */}
                   {goal.target_date && (
-                    <div className="text-sm text-muted-foreground font-text">
-                      Data limite: {format(new Date(goal.target_date), "dd/MM/yyyy", { locale: ptBR })}
+                    <div className="text-xs sm:text-sm text-muted-foreground font-text flex items-center gap-1.5">
+                      <span>📅</span>
+                      <span>Prazo: {format(new Date(goal.target_date), "dd/MM/yyyy", { locale: ptBR })}</span>
                     </div>
                   )}
 
-                  {/* EXIBIR OBSERVAÇÃO, se existir */}
                   {goal.note && (
-                    <div className="text-xs text-muted-foreground italic mt-2">
-                      <span className="font-medium">Observações:</span> {goal.note}
+                    <div className="text-xs text-muted-foreground italic p-2 bg-muted/30 rounded-md">
+                      <span className="font-medium not-italic">📝 </span>{goal.note}
                     </div>
                   )}
                   
+                  {/* Add Value Button */}
                   {!isCompleted && (
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button 
                           variant="outline" 
-                          className="w-full font-display border-secondary text-primary hover:bg-secondary/10"
+                          className="w-full font-display border-secondary text-primary hover:bg-secondary/10 min-h-[44px] sm:min-h-[40px]"
                           onClick={() => setSelectedGoalId(goal.id)}
                         >
                           <TrendingUp className="w-4 h-4 mr-2 text-secondary" />
@@ -441,18 +460,20 @@ export function GoalList() {
                               value={addingAmount}
                               onChange={(e) => setAddingAmount(e.target.value)}
                               placeholder="0,00"
+                              className="min-h-[44px]"
                             />
                           </div>
                           <div className="flex gap-2">
                             <Button 
                               onClick={() => addAmountToGoal(goal.id, parseFloat(addingAmount))}
                               disabled={!addingAmount || parseFloat(addingAmount) <= 0}
-                              className="flex-1"
+                              className="flex-1 min-h-[44px]"
                             >
                               Adicionar
                             </Button>
                             <Button 
                               variant="outline" 
+                              className="min-h-[44px]"
                               onClick={() => {
                                 setAddingAmount('');
                                 setSelectedGoalId(null);

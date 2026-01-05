@@ -110,9 +110,52 @@ export function BudgetManager() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
-        <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+      <div className="space-y-6 animate-fade-in">
+        <Card className="animate-pulse">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="h-6 w-40 bg-muted rounded" />
+              <div className="flex gap-2">
+                <div className="h-9 w-24 bg-muted rounded" />
+                <div className="h-9 w-32 bg-muted rounded" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4">
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-12 bg-muted rounded" />
+                <div className="h-10 w-full bg-muted rounded" />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-12 bg-muted rounded" />
+                <div className="h-10 w-full bg-muted rounded" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <div className="grid gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-5 w-24 bg-muted rounded" />
+                      <div className="h-5 w-16 bg-muted rounded-full" />
+                    </div>
+                    <div className="h-2 w-full bg-muted rounded-full" />
+                    <div className="flex justify-between">
+                      <div className="h-4 w-32 bg-muted rounded" />
+                      <div className="h-4 w-12 bg-muted rounded" />
+                    </div>
+                  </div>
+                  <div className="h-8 w-8 bg-muted rounded ml-4" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
@@ -134,29 +177,37 @@ export function BudgetManager() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
+            Orçamentos
+          </h1>
+          <p className="text-muted-foreground">
+            Controle seus gastos por categoria e mantenha suas finanças equilibradas mês a mês.
+          </p>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <ImportBudgetsCSV 
+            onSuccess={() => fetchBudgets(selectedYear, selectedMonth)}
+            budgets={budgetsForExport}
+          />
+          <Button onClick={() => setShowForm(true)} size="sm" className="min-h-[44px] sm:min-h-[36px]">
+            <Plus className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Novo Orçamento</span>
+            <span className="sm:hidden">Novo</span>
+          </Button>
+        </div>
+      </div>
+
       {/* Controles de Período */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between flex-wrap gap-2">
-            <span>Orçamentos Mensais</span>
-            <div className="flex gap-2 flex-wrap">
-              <ImportBudgetsCSV 
-                onSuccess={() => fetchBudgets(selectedYear, selectedMonth)}
-                budgets={budgetsForExport}
-              />
-              <Button onClick={() => setShowForm(true)} size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Novo Orçamento
-              </Button>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4 items-end">
+      <Card className="bg-card border-border">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
             <div className="flex-1">
-              <Label htmlFor="year">Ano</Label>
+              <Label htmlFor="year" className="text-foreground">Ano</Label>
               <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
-                <SelectTrigger>
+                <SelectTrigger className="min-h-[44px] sm:min-h-[40px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -167,9 +218,9 @@ export function BudgetManager() {
               </Select>
             </div>
             <div className="flex-1">
-              <Label htmlFor="month">Mês</Label>
+              <Label htmlFor="month" className="text-foreground">Mês</Label>
               <Select value={selectedMonth.toString()} onValueChange={(value) => setSelectedMonth(parseInt(value))}>
-                <SelectTrigger>
+                <SelectTrigger className="min-h-[44px] sm:min-h-[40px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -183,121 +234,177 @@ export function BudgetManager() {
         </CardContent>
       </Card>
 
-      {/* Resumo Geral */}
+      {/* Resumo Geral - Cards Estilizados */}
       {budgets.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Resumo do Período</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Total Orçado</span>
-                <span className="font-semibold">R$ {totalBudget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="bg-[hsl(var(--card-info-bg))] border-[hsl(var(--card-info-border))] card-hover">
+            <CardContent className="p-4">
+              <div className="text-sm text-[hsl(var(--card-info-text))] font-medium">Total Orçado</div>
+              <div className="text-xl sm:text-2xl font-bold text-[hsl(var(--card-info-accent))] font-display truncate">
+                R$ {totalBudget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Total Gasto</span>
-                <span className="font-semibold">R$ {totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+            </CardContent>
+          </Card>
+          <Card className="bg-[hsl(var(--card-warning-bg))] border-[hsl(var(--card-warning-border))] card-hover">
+            <CardContent className="p-4">
+              <div className="text-sm text-[hsl(var(--card-warning-text))] font-medium">Total Gasto</div>
+              <div className="text-xl sm:text-2xl font-bold text-[hsl(var(--card-warning-accent))] font-display truncate">
+                R$ {totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Saldo Restante</span>
-                <span className={`font-semibold ${totalBudget - totalSpent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  R$ {(totalBudget - totalSpent).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </CardContent>
+          </Card>
+          <Card className={`card-hover ${totalBudget - totalSpent >= 0 
+            ? 'bg-[hsl(var(--card-success-bg))] border-[hsl(var(--card-success-border))]' 
+            : 'bg-[hsl(var(--card-error-bg))] border-[hsl(var(--card-error-border))]'
+          }`}>
+            <CardContent className="p-4">
+              <div className={`text-sm font-medium ${totalBudget - totalSpent >= 0 
+                ? 'text-[hsl(var(--card-success-text))]' 
+                : 'text-[hsl(var(--card-error-text))]'
+              }`}>
+                Saldo Restante
+              </div>
+              <div className={`text-xl sm:text-2xl font-bold font-display truncate ${totalBudget - totalSpent >= 0 
+                ? 'text-[hsl(var(--card-success-accent))]' 
+                : 'text-[hsl(var(--card-error-accent))]'
+              }`}>
+                R$ {(totalBudget - totalSpent).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card border-border card-hover">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm text-muted-foreground font-medium">Uso Geral</span>
+                <span className={`text-sm font-bold ${
+                  totalPercentage >= 100 ? 'text-destructive' : 
+                  totalPercentage >= 80 ? 'text-[hsl(var(--card-warning-accent))]' : 
+                  'text-[hsl(var(--card-success-accent))]'
+                }`}>
+                  {totalPercentage.toFixed(1)}%
                 </span>
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Progresso Geral</span>
-                  <span className="text-sm font-medium">{totalPercentage.toFixed(1)}%</span>
-                </div>
-                <Progress value={Math.min(totalPercentage, 100)} className="h-2" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              <Progress 
+                value={Math.min(totalPercentage, 100)} 
+                className={`h-3 ${
+                  totalPercentage >= 100 ? '[&>div]:bg-destructive' : 
+                  totalPercentage >= 80 ? '[&>div]:bg-[hsl(var(--card-warning-accent))]' : 
+                  '[&>div]:bg-[hsl(var(--card-success-accent))]'
+                }`} 
+              />
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Lista de Orçamentos */}
-      <div className="grid gap-4">
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Orçamentos por Categoria</h2>
         {budgets.length === 0 ? (
-          <Card>
-            <CardContent className="py-8">
-              <div className="text-center text-gray-500">
-                <p>Nenhum orçamento encontrado para {months[selectedMonth - 1]} de {selectedYear}</p>
-                <Button onClick={() => setShowForm(true)} className="mt-4">
+          <Card className="bg-card border-border">
+            <CardContent className="py-8 sm:py-12">
+              <div className="text-center">
+                <p className="text-lg font-semibold text-foreground">Comece a controlar seus gastos! 📊</p>
+                <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+                  Nenhum orçamento encontrado para {months[selectedMonth - 1]} de {selectedYear}. 
+                  Crie orçamentos por categoria para ter controle total do seu dinheiro.
+                </p>
+                <Button onClick={() => setShowForm(true)} className="mt-4 min-h-[44px]">
+                  <Plus className="h-4 w-4 mr-2" />
                   Criar Primeiro Orçamento
                 </Button>
               </div>
             </CardContent>
           </Card>
         ) : (
-          budgets.map((budget) => (
-            <Card key={budget.id}>
-              <CardContent className="py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-medium">{budget.category}</h3>
-                      {getStatusBadge(budget.percentage)}
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">
-                          R$ {budget.spent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} de{' '}
-                          {editingBudget === budget.id ? (
-                            <span className="inline-flex items-center gap-1">
-                              R$
-                              <Input
-                                value={editAmount}
-                                onChange={(e) => setEditAmount(e.target.value)}
-                                className="w-20 h-6 text-xs"
-                                type="number"
-                                step="0.01"
-                              />
-                              <Button size="sm" variant="ghost" onClick={handleSaveEdit} className="h-6 w-6 p-0">
-                                <Check className="h-3 w-3" />
-                              </Button>
-                              <Button size="sm" variant="ghost" onClick={handleCancelEdit} className="h-6 w-6 p-0">
-                                <X className="h-3 w-3" />
-                              </Button>
+          <div className="grid gap-3 sm:gap-4">
+            {budgets.map((budget, index) => (
+              <Card 
+                key={budget.id} 
+                className="bg-card border-border card-hover animate-fade-in opacity-0"
+                style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards' }}
+              >
+                <CardContent className="p-4 sm:py-5">
+                  <div className="flex items-start sm:items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
+                        <h3 className="font-semibold text-foreground text-base sm:text-lg truncate">{budget.category}</h3>
+                        {getStatusBadge(budget.percentage)}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-sm">
+                          <span className="text-muted-foreground flex flex-wrap items-center gap-1">
+                            <span className="font-medium text-foreground">
+                              R$ {budget.spent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </span>
-                          ) : (
-                            <>
-                              R$ {budget.amount_limit.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleEdit(budget.id, budget.amount_limit)}
-                                className="h-4 w-4 p-0 ml-1"
-                              >
-                                <Edit2 className="h-3 w-3" />
-                              </Button>
-                            </>
-                          )}
-                        </span>
-                        <span className="text-sm font-medium">{budget.percentage.toFixed(1)}%</span>
-                      </div>
-                      <Progress 
-                        value={Math.min(budget.percentage, 100)} 
-                        className={`h-2 ${getStatusColor(budget.percentage)}`}
-                      />
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>Restante: R$ {budget.remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            <span>de</span>
+                            {editingBudget === budget.id ? (
+                              <span className="inline-flex items-center gap-1 flex-wrap">
+                                R$
+                                <Input
+                                  value={editAmount}
+                                  onChange={(e) => setEditAmount(e.target.value)}
+                                  className="w-24 h-8 text-sm"
+                                  type="number"
+                                  step="0.01"
+                                />
+                                <Button size="sm" variant="ghost" onClick={handleSaveEdit} className="h-8 w-8 p-0 min-h-[32px]">
+                                  <Check className="h-4 w-4 text-[hsl(var(--card-success-accent))]" />
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={handleCancelEdit} className="h-8 w-8 p-0 min-h-[32px]">
+                                  <X className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </span>
+                            ) : (
+                              <>
+                                <span className="font-medium text-foreground">
+                                  R$ {budget.amount_limit.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleEdit(budget.id, budget.amount_limit)}
+                                  className="h-6 w-6 p-0 min-h-[24px]"
+                                >
+                                  <Edit2 className="h-3 w-3 text-muted-foreground" />
+                                </Button>
+                              </>
+                            )}
+                          </span>
+                          <span className={`text-sm font-bold ${
+                            budget.percentage >= 100 ? 'text-destructive' :
+                            budget.percentage >= 80 ? 'text-[hsl(var(--card-warning-accent))]' :
+                            'text-[hsl(var(--card-success-accent))]'
+                          }`}>
+                            {budget.percentage.toFixed(1)}%
+                          </span>
+                        </div>
+                        <Progress 
+                          value={Math.min(budget.percentage, 100)} 
+                          className={`h-2 sm:h-3 ${
+                            budget.percentage >= 100 ? '[&>div]:bg-destructive' :
+                            budget.percentage >= 80 ? '[&>div]:bg-[hsl(var(--card-warning-accent))]' :
+                            '[&>div]:bg-[hsl(var(--card-success-accent))]'
+                          }`}
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>Restante: <span className="font-medium">R$ {budget.remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></span>
+                        </div>
                       </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteBudget(budget.id)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px]"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteBudget(budget.id)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
 
