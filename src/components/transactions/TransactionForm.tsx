@@ -170,6 +170,7 @@ export function TransactionForm({ onSuccess, transaction, onCancel }: Transactio
               recurrencePattern={recurrencePattern} setRecurrencePattern={setRecurrencePattern}
               recurrenceEndDate={recurrenceEndDate} setRecurrenceEndDate={setRecurrenceEndDate}
               isMobile={isMobile}
+              mode="immediate"
             />
 
             <TransactionFormActions

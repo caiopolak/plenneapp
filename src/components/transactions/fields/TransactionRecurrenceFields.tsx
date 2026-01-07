@@ -14,6 +14,8 @@ interface TransactionRecurrenceFieldsProps {
   setRecurrenceEndDate: (v: string) => void;
   isMobile?: boolean;
   canUseRecurring?: boolean;
+  /** Current form mode - affects how recurrence options are presented */
+  mode?: 'immediate' | 'scheduled';
 }
 
 export function TransactionRecurrenceFields({
@@ -23,8 +25,15 @@ export function TransactionRecurrenceFields({
   setRecurrencePattern,
   recurrenceEndDate,
   setRecurrenceEndDate,
-  isMobile
+  isMobile,
+  canUseRecurring = true,
+  mode = 'immediate'
 }: TransactionRecurrenceFieldsProps) {
+  // In immediate mode, recurring means "start now and repeat"
+  // In scheduled mode, recurring means "start on date and repeat"
+  const recurringLabel = mode === 'scheduled' 
+    ? "Repetir periodicamente" 
+    : "Transação recorrente";
   return (
     <div className="space-y-3">
       <div className={cn(
@@ -36,9 +45,18 @@ export function TransactionRecurrenceFields({
           checked={isRecurring}
           onCheckedChange={setIsRecurring}
           className={isMobile ? "scale-110" : ""}
+          disabled={!canUseRecurring}
         />
-        <Label htmlFor="recurring" className={cn("text-sm font-medium", isMobile && "text-base")}>
-          Transação recorrente
+        <Label 
+          htmlFor="recurring" 
+          className={cn(
+            "text-sm font-medium", 
+            isMobile && "text-base",
+            !canUseRecurring && "text-muted-foreground"
+          )}
+        >
+          {recurringLabel}
+          {!canUseRecurring && " (Premium)"}
         </Label>
       </div>
       {isRecurring && (
