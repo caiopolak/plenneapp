@@ -35,9 +35,16 @@ export function TransactionRow({
   onDelete,
   refresh
 }: Props) {
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+  const transactionDate = new Date(transaction.date);
+  const isFutureTransaction = transactionDate > today;
+
   return (
     <div
-      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-muted/50 bg-card gap-3 sm:gap-4 transition-colors"
+      className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-muted/50 bg-card gap-3 sm:gap-4 transition-colors ${
+        isFutureTransaction ? 'border-amber-500/30 bg-amber-500/5' : ''
+      }`}
     >
       {/* Info Section */}
       <div className="flex-1 min-w-0">
@@ -57,6 +64,11 @@ export function TransactionRow({
               Recorrente
             </Badge>
           )}
+          {isFutureTransaction && (
+            <Badge variant="outline" className="font-text text-xs text-amber-500 border-amber-500/30 bg-amber-500/10">
+              Agendada
+            </Badge>
+          )}
         </div>
         <div className="font-text truncate">
           <span className="font-medium text-foreground text-sm sm:text-base">{transaction.category}</span>
@@ -68,6 +80,9 @@ export function TransactionRow({
         </div>
         <div className="text-xs sm:text-sm text-muted-foreground font-text mt-0.5">
           {format(new Date(transaction.date), "dd/MM/yyyy", { locale: ptBR })}
+          {isFutureTransaction && (
+            <span className="ml-2 text-amber-500">(não afeta o saldo atual)</span>
+          )}
         </div>
       </div>
 

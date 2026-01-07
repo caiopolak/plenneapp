@@ -50,11 +50,13 @@ export function DashboardOverview() {
       if (!user || !workspace) throw new Error('Not authenticated');
 
       const now = new Date();
+      const todayStr = format(now, 'yyyy-MM-dd');
       const monthStart = format(startOfMonth(now), 'yyyy-MM-dd');
-      const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd');
+      // Usar a menor data entre fim do mês e hoje (para não incluir transações futuras)
+      const monthEnd = todayStr < format(endOfMonth(now), 'yyyy-MM-dd') ? todayStr : format(endOfMonth(now), 'yyyy-MM-dd');
       const next7Days = format(addDays(now, 7), 'yyyy-MM-dd');
 
-      // Transações do mês
+      // Transações do mês (somente até hoje - transações futuras não afetam saldo atual)
       const { data: transactions } = await supabase
         .from('transactions')
         .select('type, amount')

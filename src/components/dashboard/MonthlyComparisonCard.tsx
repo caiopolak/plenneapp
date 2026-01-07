@@ -32,12 +32,14 @@ export function MonthlyComparisonCard() {
       if (!user || !workspace) throw new Error('Not authenticated');
 
       const now = new Date();
+      const todayStr = format(now, 'yyyy-MM-dd');
       const currentMonthStart = format(startOfMonth(now), 'yyyy-MM-dd');
-      const currentMonthEnd = format(endOfMonth(now), 'yyyy-MM-dd');
+      // Usar a menor data entre fim do mês e hoje (para não incluir transações futuras)
+      const currentMonthEnd = todayStr < format(endOfMonth(now), 'yyyy-MM-dd') ? todayStr : format(endOfMonth(now), 'yyyy-MM-dd');
       const lastMonthStart = format(startOfMonth(subMonths(now, 1)), 'yyyy-MM-dd');
       const lastMonthEnd = format(endOfMonth(subMonths(now, 1)), 'yyyy-MM-dd');
 
-      // Transações do mês atual
+      // Transações do mês atual (somente até hoje - transações futuras não afetam)
       const { data: currentTransactions } = await supabase
         .from('transactions')
         .select('type, amount')

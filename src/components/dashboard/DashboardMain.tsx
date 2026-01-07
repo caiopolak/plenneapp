@@ -74,26 +74,33 @@ export function DashboardMain() {
   const isLoading = !userProfile && !goalsData;
 
   // Calcular saldo atual para o WelcomeCard
+  // IMPORTANTE: Somente transações com data até hoje devem afetar o saldo atual
   const { data: balanceData } = useQuery({
     queryKey: ['current-balance', user?.id, workspace?.id],
     queryFn: async () => {
       if (!user || !workspace) return { balance: 0, savingsRate: 0 };
 
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+      const todayStr = today.toISOString().split('T')[0];
+
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
 
+      // Buscar apenas transações até a data de hoje (transações futuras não afetam o saldo atual)
       const { data: transactions } = await supabase
         .from('transactions')
         .select('amount, type, date')
         .eq('user_id', user.id)
-        .eq('workspace_id', workspace.id);
+        .eq('workspace_id', workspace.id)
+        .lte('date', todayStr);
 
       const income = transactions?.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0) || 0;
       const expenses = transactions?.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0) || 0;
       const balance = income - expenses;
 
-      // Taxa de economia do mês atual
+      // Taxa de economia do mês atual (apenas transações até hoje)
       const monthlyTransactions = transactions?.filter(t => new Date(t.date) >= startOfMonth) || [];
       const monthlyIncome = monthlyTransactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
       const monthlyExpenses = monthlyTransactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
