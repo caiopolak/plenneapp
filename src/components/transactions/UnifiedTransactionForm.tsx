@@ -338,8 +338,9 @@ export function UnifiedTransactionForm({
               recurrenceEndDate={recurrenceEndDate} 
               setRecurrenceEndDate={setRecurrenceEndDate}
               isMobile={isMobile}
-              isScheduled={false}
+              isScheduled={mode === 'scheduled'}
               canUseRecurring={canUseFeature('recurring')}
+              mode={mode}
             />
 
             {/* Informações sobre limites do plano */}

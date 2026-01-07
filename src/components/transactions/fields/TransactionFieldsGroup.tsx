@@ -26,8 +26,11 @@ interface TransactionFieldsGroupProps {
   recurrenceEndDate: string;
   setRecurrenceEndDate: (value: string) => void;
   isMobile: boolean;
+  /** Deprecated - use mode instead */
   isScheduled?: boolean;
   canUseRecurring?: boolean;
+  /** Current form mode: immediate (add now) or scheduled */
+  mode?: 'immediate' | 'scheduled';
 }
 
 export function TransactionFieldsGroup({
@@ -42,7 +45,12 @@ export function TransactionFieldsGroup({
   isMobile,
   isScheduled = false,
   canUseRecurring = true,
+  mode = 'immediate',
 }: TransactionFieldsGroupProps) {
+  // Determine if we should show date field
+  // Only show date picker in scheduled mode or when editing recurring transactions
+  const showDateField = mode === 'scheduled' || isRecurring;
+  
   return (
     <div className="space-y-4">
       <div className={cn(
@@ -52,24 +60,32 @@ export function TransactionFieldsGroup({
         <TransactionTypeField value={type} onChange={setType} isMobile={isMobile} />
         <TransactionAmountField value={amount} onChange={setAmount} isMobile={isMobile} />
       </div>
-        <TransactionCategoryField type={type} value={category} onChange={setCategory} isMobile={isMobile} />
+      
+      <TransactionCategoryField type={type} value={category} onChange={setCategory} isMobile={isMobile} />
+      
+      {/* Date field - only show in scheduled mode or when recurring is active */}
+      {showDateField && (
         <TransactionDateField 
           value={date} 
           onChange={setDate} 
           isMobile={isMobile}
         />
-        <TransactionDescriptionField value={description} onChange={setDescription} isMobile={isMobile} />
-        {!isScheduled && (
-          <TransactionRecurrenceFields
-            isRecurring={isRecurring}
-            setIsRecurring={setIsRecurring}
-            recurrencePattern={recurrencePattern}
-            setRecurrencePattern={setRecurrencePattern}
-            recurrenceEndDate={recurrenceEndDate}
-            setRecurrenceEndDate={setRecurrenceEndDate}
-            canUseRecurring={canUseRecurring}
-          />
-        )}
+      )}
+      
+      <TransactionDescriptionField value={description} onChange={setDescription} isMobile={isMobile} />
+      
+      {/* Recurrence fields - only show in immediate mode (for instant recurring) or scheduled mode */}
+      <TransactionRecurrenceFields
+        isRecurring={isRecurring}
+        setIsRecurring={setIsRecurring}
+        recurrencePattern={recurrencePattern}
+        setRecurrencePattern={setRecurrencePattern}
+        recurrenceEndDate={recurrenceEndDate}
+        setRecurrenceEndDate={setRecurrenceEndDate}
+        canUseRecurring={canUseRecurring}
+        isMobile={isMobile}
+        mode={mode}
+      />
     </div>
   );
 }
