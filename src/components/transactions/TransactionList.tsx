@@ -104,11 +104,16 @@ export function TransactionList() {
     return filtered;
   }, [transactions, filters]);
 
-  // Cálculos de totais
-  const totalIncome = filteredTransactions
+  // Cálculos de totais - APENAS transações até hoje afetam o saldo atual
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+  
+  const pastTransactions = filteredTransactions.filter(t => new Date(t.date) <= today);
+  
+  const totalIncome = pastTransactions
     .filter(t => t.type === 'income')
     .reduce((sum, t) => sum + Number(t.amount), 0);
-  const totalExpense = filteredTransactions
+  const totalExpense = pastTransactions
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + Number(t.amount), 0);
   const balance = totalIncome - totalExpense;
