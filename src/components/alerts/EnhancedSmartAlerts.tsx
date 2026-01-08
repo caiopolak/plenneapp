@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   AlertTriangle, 
   TrendingUp, 
@@ -13,94 +14,72 @@ import {
   X,
   Eye,
   CheckCircle,
+  CheckCircle2,
   Clock,
   DollarSign,
   PieChart,
   Calendar,
-  Crown
+  Crown,
+  Lightbulb,
+  Wallet,
+  ExternalLink,
+  Sparkles
 } from 'lucide-react';
-import { useIntelligentAlerts } from '@/hooks/useIntelligentAlerts';
+import { useIntelligentAlerts, IntelligentAlert } from '@/hooks/useIntelligentAlerts';
 import { useIntelligentTips } from '@/hooks/useIntelligentTips';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export function EnhancedSmartAlerts() {
-  const [selectedAlert, setSelectedAlert] = useState<any>(null);
+  const [selectedAlert, setSelectedAlert] = useState<IntelligentAlert | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const { alerts, loading: alertsLoading, refetch: refetchAlerts } = useIntelligentAlerts();
+  const { alerts, loading: alertsLoading, markAsRead, deleteAlert, markAllAsRead, unreadCount } = useIntelligentAlerts();
   const { tips, loading: tipsLoading } = useIntelligentTips();
   const { limits } = useSubscriptionLimits();
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const canAccessAdvancedFeatures = limits?.plan !== 'free';
 
   const handleMarkAsRead = async (alertId: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('financial_alerts')
-        .update({ is_read: true })
-        .eq('id', alertId)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Alerta marcado como lido",
-        description: "O alerta foi marcado como lido com sucesso."
-      });
-
-      refetchAlerts();
-    } catch (error) {
-      console.error('Error marking alert as read:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao marcar alerta como lido."
-      });
-    }
+    await markAsRead(alertId);
+    toast({
+      title: "Alerta marcado como lido",
+      description: "O alerta foi marcado como lido."
+    });
   };
 
   const handleDeleteAlert = async (alertId: string) => {
-    if (!user) return;
+    await deleteAlert(alertId);
+    toast({
+      title: "Alerta removido",
+      description: "O alerta foi removido."
+    });
+    setShowDetailsModal(false);
+  };
 
-    try {
-      const { error } = await supabase
-        .from('financial_alerts')
-        .delete()
-        .eq('id', alertId)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Alerta removido",
-        description: "O alerta foi removido com sucesso."
-      });
-
-      refetchAlerts();
-      setShowDetailsModal(false);
-    } catch (error) {
-      console.error('Error deleting alert:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao remover alerta."
-      });
-    }
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead();
+    toast({
+      title: "Todos marcados como lidos",
+      description: `${unreadCount} alertas foram marcados como lidos.`
+    });
   };
 
   const getAlertIcon = (type: string) => {
     switch (type) {
+      case 'budget': return Wallet;
       case 'budget_exceeded': return AlertTriangle;
-      case 'goal_close': return Target;
-      case 'spending_pattern': return TrendingUp;
+      case 'goal': return Target;
+      case 'spending': return TrendingUp;
       case 'savings_low': return TrendingDown;
-      case 'income_increase': return DollarSign;
+      case 'tip': return Lightbulb;
+      case 'investment': return DollarSign;
       default: return Bell;
     }
   };
@@ -114,20 +93,52 @@ export function EnhancedSmartAlerts() {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityStyles = (priority: string, isRead: boolean) => {
+    const opacity = isRead ? 'opacity-60' : '';
     switch (priority) {
-      case 'high': return 'bg-red-50 border-red-200 text-red-800';
-      case 'medium': return 'bg-yellow-50 border-yellow-200 text-yellow-800';
-      case 'low': return 'bg-blue-50 border-blue-200 text-blue-800';
-      default: return 'bg-gray-50 border-gray-200 text-gray-800';
+      case 'high': 
+        return `bg-gradient-to-r from-red-50 to-red-100/50 dark:from-red-950/30 dark:to-red-900/20 border-red-200 dark:border-red-800 ${opacity}`;
+      case 'medium': 
+        return `bg-gradient-to-r from-amber-50 to-yellow-100/50 dark:from-amber-950/30 dark:to-yellow-900/20 border-amber-200 dark:border-amber-800 ${opacity}`;
+      case 'low': 
+        return `bg-gradient-to-r from-blue-50 to-indigo-100/50 dark:from-blue-950/30 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800 ${opacity}`;
+      default: 
+        return `bg-muted/50 border-border ${opacity}`;
     }
   };
 
-  const openAlertDetails = (alert: any) => {
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'Alta';
+      case 'medium': return 'Média';
+      case 'low': return 'Baixa';
+      default: return priority;
+    }
+  };
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'budget': return 'Orçamento';
+      case 'goal': return 'Meta';
+      case 'spending': return 'Gastos';
+      case 'tip': return 'Dica';
+      case 'investment': return 'Investimento';
+      case 'challenge': return 'Desafio';
+      default: return type;
+    }
+  };
+
+  const openAlertDetails = (alert: IntelligentAlert) => {
     setSelectedAlert(alert);
     setShowDetailsModal(true);
     if (!alert.is_read) {
-      handleMarkAsRead(alert.id);
+      markAsRead(alert.id);
+    }
+  };
+
+  const handleActionClick = (url?: string) => {
+    if (url) {
+      navigate(url);
     }
   };
 
@@ -136,17 +147,19 @@ export function EnhancedSmartAlerts() {
 
   if (alertsLoading || tipsLoading) {
     return (
-      <Card>
-        <CardHeader>
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-card to-muted/30">
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
-            Alertas e Dicas Inteligentes
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Bell className="h-5 w-5 text-primary" />
+            </div>
+            Central de Alertas
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-16 bg-muted rounded-lg animate-pulse" />
+              <div key={i} className="h-20 bg-muted rounded-xl animate-pulse" />
             ))}
           </div>
         </CardContent>
@@ -156,109 +169,184 @@ export function EnhancedSmartAlerts() {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5" />
-              Central de Alertas
-              {unreadAlerts.length > 0 && (
-                <Badge variant="destructive" className="ml-2">
-                  {unreadAlerts.length}
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-card to-muted/30">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Bell className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  Central de Alertas
+                  {unreadCount > 0 && (
+                    <Badge variant="destructive" className="animate-pulse">
+                      {unreadCount} {unreadCount === 1 ? 'novo' : 'novos'}
+                    </Badge>
+                  )}
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Acompanhe alertas e dicas sobre suas finanças
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleMarkAllAsRead}
+                  className="text-xs"
+                >
+                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                  Marcar todos como lidos
+                </Button>
+              )}
+              {limits && (
+                <Badge 
+                  variant="outline" 
+                  className={`flex items-center gap-1 ${
+                    limits.plan === 'free' 
+                      ? 'border-muted-foreground/30' 
+                      : 'border-amber-400 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400'
+                  }`}
+                >
+                  {limits.plan === 'free' && 'FREE'}
+                  {limits.plan === 'pro' && <><Crown className="w-3 h-3" />PRO</>}
+                  {limits.plan === 'business' && <><Crown className="w-3 h-3" />BUSINESS</>}
                 </Badge>
               )}
-            </CardTitle>
-            {limits && (
-              <Badge variant="outline" className="flex items-center gap-1">
-                {limits.plan === 'free' && 'FREE'}
-                {limits.plan === 'pro' && <><Crown className="w-3 h-3" />PRO</>}
-                {limits.plan === 'business' && <><Crown className="w-3 h-3" />BUSINESS</>}
-              </Badge>
-            )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="alerts" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="alerts" className="flex items-center gap-2">
+            <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsTrigger value="alerts" className="flex items-center gap-2 data-[state=active]:bg-primary/10">
                 <AlertTriangle className="w-4 h-4" />
-                Alertas ({alerts?.length || 0})
+                <span>Alertas</span>
+                <Badge variant="secondary" className="ml-1 text-xs">
+                  {alerts?.length || 0}
+                </Badge>
               </TabsTrigger>
-              <TabsTrigger value="tips" className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" />
-                Dicas ({tips?.length || 0})
+              <TabsTrigger value="tips" className="flex items-center gap-2 data-[state=active]:bg-primary/10">
+                <Lightbulb className="w-4 h-4" />
+                <span>Dicas</span>
+                <Badge variant="secondary" className="ml-1 text-xs">
+                  {tips?.length || 0}
+                </Badge>
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="alerts" className="space-y-4 mt-4">
-              {alerts && alerts.length > 0 ? (
-                <div className="space-y-3">
-                  {/* Alertas não lidos primeiro */}
-                  {unreadAlerts.map((alert) => {
-                    const AlertIcon = getAlertIcon(alert.alert_type);
-                    return (
-                      <div
-                        key={alert.id}
-                        className={`p-4 rounded-lg border cursor-pointer transition-all hover:shadow-md ${
-                          getPriorityColor(alert.priority)
-                        }`}
-                        onClick={() => openAlertDetails(alert)}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start gap-3 flex-1">
-                            <AlertIcon className="h-5 w-5 mt-0.5" />
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-medium">{alert.title}</h4>
-                <Badge variant={getAlertColor(alert.priority)}>
-                  {alert.priority}
-                </Badge>
-                                {!alert.is_read && (
-                                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                                )}
-                              </div>
-                              <p className="text-sm opacity-90 line-clamp-2">
-                                {alert.message}
-                              </p>
-                              <div className="flex items-center gap-2 mt-2 text-xs opacity-75">
-                                <Clock className="w-3 h-3" />
-                                {new Date(alert.created_at).toLocaleDateString('pt-BR')}
-                              </div>
-                            </div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="opacity-60 hover:opacity-100"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
+            <TabsContent value="alerts" className="mt-0">
+              <ScrollArea className="h-[500px] pr-4">
+                {alerts && alerts.length > 0 ? (
+                  <div className="space-y-3">
+                    {/* Alertas não lidos primeiro */}
+                    {unreadAlerts.length > 0 && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Bell className="w-4 h-4" />
+                          <span className="font-medium">Não lidos ({unreadAlerts.length})</span>
                         </div>
-                      </div>
-                    );
-                  })}
-
-                  {/* Alertas lidos */}
-                  {readAlerts.length > 0 && (
-                    <div className="pt-4 border-t">
-                      <h5 className="text-sm font-medium text-muted-foreground mb-3">
-                        Alertas Lidos ({readAlerts.length})
-                      </h5>
-                      <div className="space-y-2">
-                        {readAlerts.slice(0, 3).map((alert) => {
+                        {unreadAlerts.map((alert) => {
                           const AlertIcon = getAlertIcon(alert.alert_type);
                           return (
                             <div
                               key={alert.id}
-                              className="p-3 rounded-lg border border-gray-100 bg-gray-50/50 cursor-pointer opacity-75 hover:opacity-100 transition-opacity"
+                              className={`p-4 rounded-xl border cursor-pointer transition-all hover:shadow-md hover:scale-[1.01] ${
+                                getPriorityStyles(alert.priority, false)
+                              }`}
+                              onClick={() => openAlertDetails(alert)}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className={`p-2 rounded-lg ${
+                                  alert.priority === 'high' ? 'bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400' :
+                                  alert.priority === 'medium' ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400' :
+                                  'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
+                                }`}>
+                                  <AlertIcon className="h-4 w-4" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                    <h4 className="font-semibold text-sm truncate">{alert.title}</h4>
+                                    <div className="flex items-center gap-1.5">
+                                      <Badge variant={getAlertColor(alert.priority)} className="text-xs">
+                                        {getPriorityLabel(alert.priority)}
+                                      </Badge>
+                                      <Badge variant="outline" className="text-xs">
+                                        {getTypeLabel(alert.alert_type)}
+                                      </Badge>
+                                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                                    </div>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground line-clamp-2">
+                                    {alert.message}
+                                  </p>
+                                  <div className="flex items-center justify-between mt-2">
+                                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                      <Clock className="w-3 h-3" />
+                                      {format(new Date(alert.created_at), "dd 'de' MMM", { locale: ptBR })}
+                                    </div>
+                                    {alert.action_url && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 text-xs"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleActionClick(alert.action_url);
+                                        }}
+                                      >
+                                        Ver mais
+                                        <ExternalLink className="w-3 h-3 ml-1" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 opacity-60 hover:opacity-100"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMarkAsRead(alert.id);
+                                  }}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Alertas lidos */}
+                    {readAlerts.length > 0 && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground pt-4 border-t">
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="font-medium">Lidos ({readAlerts.length})</span>
+                        </div>
+                        {readAlerts.slice(0, 5).map((alert) => {
+                          const AlertIcon = getAlertIcon(alert.alert_type);
+                          return (
+                            <div
+                              key={alert.id}
+                              className={`p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm ${
+                                getPriorityStyles(alert.priority, true)
+                              }`}
                               onClick={() => openAlertDetails(alert)}
                             >
                               <div className="flex items-center gap-3">
-                                <AlertIcon className="h-4 w-4 text-muted-foreground" />
-                                <div className="flex-1">
-                                  <h4 className="font-medium text-sm">{alert.title}</h4>
+                                <div className="p-1.5 rounded-lg bg-muted">
+                                  <AlertIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-sm truncate text-muted-foreground">{alert.title}</h4>
                                   <p className="text-xs text-muted-foreground">
-                                    {new Date(alert.created_at).toLocaleDateString('pt-BR')}
+                                    {format(new Date(alert.created_at), "dd/MM/yyyy", { locale: ptBR })}
                                   </p>
                                 </div>
                                 <CheckCircle className="h-4 w-4 text-green-500" />
@@ -266,79 +354,115 @@ export function EnhancedSmartAlerts() {
                             </div>
                           );
                         })}
+                        {readAlerts.length > 5 && (
+                          <p className="text-xs text-center text-muted-foreground">
+                            + {readAlerts.length - 5} alertas anteriores
+                          </p>
+                        )}
                       </div>
+                    )}
+
+                    {alerts.length === 0 && (
+                      <div className="text-center py-12">
+                        <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+                          <Bell className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                        <h3 className="font-medium text-muted-foreground mb-2">
+                          Nenhum alerta no momento
+                        </h3>
+                        <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                          Quando houver alertas importantes sobre suas finanças, eles aparecerão aqui.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+                      <Bell className="h-8 w-8 text-muted-foreground" />
                     </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="font-medium text-muted-foreground mb-2">
-                    Nenhum alerta no momento
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Quando houver alertas importantes sobre suas finanças, eles aparecerão aqui.
-                  </p>
-                </div>
-              )}
+                    <h3 className="font-medium text-muted-foreground mb-2">
+                      Nenhum alerta no momento
+                    </h3>
+                    <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                      Quando houver alertas importantes sobre suas finanças, eles aparecerão aqui.
+                    </p>
+                  </div>
+                )}
+              </ScrollArea>
             </TabsContent>
 
-            <TabsContent value="tips" className="space-y-4 mt-4">
-              {tips && tips.length > 0 ? (
-                <div className="space-y-3">
-                  {tips.slice(0, 5).map((tip) => (
-                    <div
-                      key={tip.id}
-                      className="p-4 rounded-lg border bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
-                    >
-                      <div className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-                        <div className="flex-1">
-                          <h4 className="font-medium text-blue-900 mb-1">
-                            {tip.title}
-                          </h4>
-                          <p className="text-sm text-blue-800 mb-2">
-                            {tip.content}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              {tip.category}
-                            </Badge>
-                            {tip.difficulty_level && (
-                              <Badge variant="secondary" className="text-xs">
-                                {tip.difficulty_level}
+            <TabsContent value="tips" className="mt-0">
+              <ScrollArea className="h-[500px] pr-4">
+                {tips && tips.length > 0 ? (
+                  <div className="space-y-3">
+                    {tips.slice(0, 10).map((tip, index) => (
+                      <div
+                        key={tip.id}
+                        className="p-4 rounded-xl border bg-gradient-to-r from-emerald-50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-900/20 border-emerald-200 dark:border-emerald-800 transition-all hover:shadow-md"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400">
+                            <Sparkles className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-sm text-emerald-900 dark:text-emerald-100 mb-1">
+                              {tip.title}
+                            </h4>
+                            <p className="text-sm text-emerald-800 dark:text-emerald-200 mb-3">
+                              {tip.content}
+                            </p>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge variant="outline" className="text-xs border-emerald-300 text-emerald-700 dark:text-emerald-300">
+                                {tip.category}
                               </Badge>
-                            )}
+                              {tip.difficulty_level && (
+                                <Badge variant="secondary" className="text-xs">
+                                  {tip.difficulty_level}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+                      <Lightbulb className="h-8 w-8 text-muted-foreground" />
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <CheckCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="font-medium text-muted-foreground mb-2">
-                    Nenhuma dica disponível
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Continue usando o app para receber dicas personalizadas!
-                  </p>
-                </div>
-              )}
+                    <h3 className="font-medium text-muted-foreground mb-2">
+                      Nenhuma dica disponível
+                    </h3>
+                    <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                      Continue usando o app para receber dicas personalizadas sobre suas finanças!
+                    </p>
+                  </div>
+                )}
+              </ScrollArea>
             </TabsContent>
           </Tabs>
 
           {/* Upgrade prompt para plano free */}
           {limits?.plan === 'free' && (
-            <div className="mt-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
-              <div className="flex items-center gap-2 text-amber-800 text-sm">
-                <Crown className="w-4 h-4" />
-                <span className="font-medium">Desbloqueie Análises Avançadas</span>
+            <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+              <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
+                <Crown className="w-5 h-5" />
+                <span className="font-semibold">Desbloqueie Análises Avançadas</span>
               </div>
-              <p className="text-xs text-amber-700 mt-1">
-                Planos Pro e Business incluem alertas mais detalhados, análises preditivas e insights personalizados.
+              <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                Planos Pro e Business incluem alertas mais detalhados, análises preditivas e insights personalizados sobre seu perfil financeiro.
               </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3 border-amber-400 text-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+                onClick={() => navigate('/app/plans')}
+              >
+                Ver Planos
+              </Button>
             </div>
           )}
         </CardContent>
@@ -346,77 +470,97 @@ export function EnhancedSmartAlerts() {
 
       {/* Modal de detalhes do alerta */}
       <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-3">
               {selectedAlert && (() => {
                 const AlertIcon = getAlertIcon(selectedAlert.alert_type);
-                return <AlertIcon className="h-5 w-5" />;
+                return (
+                  <div className={`p-2 rounded-lg ${
+                    selectedAlert.priority === 'high' ? 'bg-red-100 text-red-600' :
+                    selectedAlert.priority === 'medium' ? 'bg-amber-100 text-amber-600' :
+                    'bg-blue-100 text-blue-600'
+                  }`}>
+                    <AlertIcon className="h-5 w-5" />
+                  </div>
+                );
               })()}
-              {selectedAlert?.title}
+              <span className="text-lg">{selectedAlert?.title}</span>
             </DialogTitle>
           </DialogHeader>
           
           {selectedAlert && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant={getAlertColor(selectedAlert.priority)}>
-                  {selectedAlert.priority} prioridade
+                  Prioridade {getPriorityLabel(selectedAlert.priority)}
                 </Badge>
                 <Badge variant="outline">
-                  {selectedAlert.alert_type?.replace('_', ' ')}
+                  {getTypeLabel(selectedAlert.alert_type)}
                 </Badge>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Calendar className="w-3 h-3" />
-                  {new Date(selectedAlert.created_at).toLocaleString('pt-BR')}
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Calendar className="w-3.5 h-3.5" />
+                  {format(new Date(selectedAlert.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
                 </div>
               </div>
               
-              <div className="p-4 rounded-lg bg-muted">
+              <div className="p-4 rounded-xl bg-muted/50">
                 <p className="text-sm leading-relaxed">
                   {selectedAlert.message}
                 </p>
               </div>
 
               {canAccessAdvancedFeatures && (
-                <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
-                  <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                <div className="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800">
+                  <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
                     <PieChart className="w-4 h-4" />
                     Recomendações Personalizadas
                   </h4>
-                  <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• Considere revisar seu orçamento para essa categoria</li>
-                    <li>• Defina alertas automáticos para gastos futuros</li>
-                    <li>• Analise padrões de gastos dos últimos 3 meses</li>
+                  <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1.5">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1">•</span>
+                      Considere revisar seu orçamento para essa categoria
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1">•</span>
+                      Defina alertas automáticos para gastos futuros
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1">•</span>
+                      Analise padrões de gastos dos últimos 3 meses
+                    </li>
                   </ul>
                 </div>
               )}
 
-              <div className="flex justify-between pt-4">
+              {selectedAlert.action_url && (
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    handleActionClick(selectedAlert.action_url);
+                    setShowDetailsModal(false);
+                  }}
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Ir para {getTypeLabel(selectedAlert.alert_type)}
+                </Button>
+              )}
+
+              <div className="flex justify-between pt-2 border-t">
                 <Button
                   variant="outline"
                   onClick={() => setShowDetailsModal(false)}
                 >
                   Fechar
                 </Button>
-                <div className="flex gap-2">
-                  {!selectedAlert.is_read && (
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleMarkAsRead(selectedAlert.id)}
-                    >
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Marcar como Lido
-                    </Button>
-                  )}
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleDeleteAlert(selectedAlert.id)}
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Remover
-                  </Button>
-                </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleDeleteAlert(selectedAlert.id)}
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Dispensar
+                </Button>
               </div>
             </div>
           )}

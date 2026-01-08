@@ -5,7 +5,7 @@ import { UpcomingTransactionsCard } from './UpcomingTransactionsCard';
 import { ProjectedBalanceChart } from './ProjectedBalanceChart';
 import { FinancialHealthCard } from './FinancialHealthCard';
 import { MonthlyComparisonCard } from './MonthlyComparisonCard';
-
+import { DashboardAlertsCard } from './DashboardAlertsCard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UnifiedTransactionForm } from '@/components/transactions/UnifiedTransactionForm';
 import { Button } from '@/components/ui/button';
@@ -167,6 +167,11 @@ export function DashboardMain() {
         <div className="animate-fade-in stagger-6">
           <ProjectedBalanceChart />
         </div>
+      </div>
+
+      {/* Card de Alertas e Dicas */}
+      <div className="animate-fade-in stagger-7">
+        <DashboardAlertsCard />
       </div>
 
       {/* Modal de Nova Transação */}
