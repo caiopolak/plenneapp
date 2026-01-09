@@ -174,68 +174,78 @@ export function DashboardOverview() {
 
   const currentMonth = format(new Date(), 'MMMM yyyy', { locale: ptBR });
 
+  // Calcular taxa de poupança
+  const savingsRate = data.totalIncome > 0 
+    ? ((data.totalIncome - data.totalExpenses) / data.totalIncome) * 100 
+    : 0;
+
+  // Calcular patrimônio total
+  const totalPatrimony = (data.balance > 0 ? data.balance : 0) + data.totalInvested;
+
   return (
-    <Card className="bg-gradient-to-br from-card to-muted/30 border-border shadow-lg">
-      <CardHeader className="pb-2">
+    <Card className="bg-gradient-to-br from-card to-muted/30 border-border shadow-lg h-full flex flex-col">
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-            <Wallet className="h-5 w-5 text-primary" />
+          <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Wallet className="h-4 w-4 text-primary" />
+            </div>
             Resumo do Mês
           </CardTitle>
-          <Badge variant="outline" className="text-muted-foreground capitalize">
+          <Badge variant="outline" className="text-muted-foreground capitalize text-xs">
             📅 {currentMonth}
           </Badge>
         </div>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Visão geral das suas finanças neste período
         </p>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="flex-1 flex flex-col">
         {/* Saldo e Fluxo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg bg-background/50 border border-border">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Balanço Mensal</span>
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="p-3 rounded-lg bg-background/60 border border-border/50">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-muted-foreground">Balanço Mensal</span>
               {data.balance >= 0 ? (
-                <CheckCircle2 className="h-4 w-4 text-[hsl(var(--chart-2))]" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-[hsl(var(--chart-2))]" />
               ) : (
-                <AlertTriangle className="h-4 w-4 text-destructive" />
+                <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
               )}
             </div>
-            <p className={`text-2xl font-bold ${data.balance >= 0 ? 'text-[hsl(var(--chart-2))]' : 'text-destructive'}`}>
+            <p className={`text-xl font-bold ${data.balance >= 0 ? 'text-[hsl(var(--chart-2))]' : 'text-destructive'}`}>
               {formatCurrency(data.balance)}
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-background/50 border border-border">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="h-4 w-4 text-[hsl(var(--chart-2))]" />
-              <span className="text-sm text-muted-foreground">Receitas</span>
+          <div className="p-3 rounded-lg bg-background/60 border border-border/50">
+            <div className="flex items-center gap-1.5 mb-1">
+              <TrendingUp className="h-3.5 w-3.5 text-[hsl(var(--chart-2))]" />
+              <span className="text-xs text-muted-foreground">Receitas</span>
             </div>
-            <p className="text-xl font-semibold text-foreground">{formatCurrency(data.totalIncome)}</p>
+            <p className="text-lg font-semibold text-foreground">{formatCurrency(data.totalIncome)}</p>
           </div>
 
-          <div className="p-4 rounded-lg bg-background/50 border border-border">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingDown className="h-4 w-4 text-destructive" />
-              <span className="text-sm text-muted-foreground">Despesas</span>
+          <div className="p-3 rounded-lg bg-background/60 border border-border/50">
+            <div className="flex items-center gap-1.5 mb-1">
+              <TrendingDown className="h-3.5 w-3.5 text-destructive" />
+              <span className="text-xs text-muted-foreground">Despesas</span>
             </div>
-            <p className="text-xl font-semibold text-foreground">{formatCurrency(data.totalExpenses)}</p>
+            <p className="text-lg font-semibold text-foreground">{formatCurrency(data.totalExpenses)}</p>
           </div>
         </div>
 
         {/* Grid de Informações */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           {/* Metas */}
-          <div className="p-3 rounded-lg bg-background/50 border border-border">
-            <div className="flex items-center gap-2 mb-2">
-              <Target className="h-4 w-4 text-primary" />
+          <div className="p-3 rounded-lg bg-background/60 border border-border/50">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Target className="h-3.5 w-3.5 text-primary" />
               <span className="text-xs font-medium text-muted-foreground">Suas Metas</span>
             </div>
             <p className="text-lg font-bold text-foreground">
               {data.completedGoals}/{data.totalGoals}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[10px] text-muted-foreground">
               {data.completedGoals === data.totalGoals && data.totalGoals > 0 
                 ? '🎉 Todas concluídas!' 
                 : 'em andamento'}
@@ -243,36 +253,86 @@ export function DashboardOverview() {
           </div>
 
           {/* Investimentos */}
-          <div className="p-3 rounded-lg bg-background/50 border border-border">
-            <div className="flex items-center gap-2 mb-2">
-              <PieChart className="h-4 w-4 text-[hsl(var(--chart-4))]" />
+          <div className="p-3 rounded-lg bg-background/60 border border-border/50">
+            <div className="flex items-center gap-2 mb-1.5">
+              <PieChart className="h-3.5 w-3.5 text-[hsl(var(--chart-4))]" />
               <span className="text-xs font-medium text-muted-foreground">Patrimônio Investido</span>
             </div>
             <p className="text-lg font-bold text-foreground">{formatCurrency(data.totalInvested)}</p>
-            <p className="text-xs text-muted-foreground">{data.investmentsCount} {data.investmentsCount === 1 ? 'ativo' : 'ativos'}</p>
+            <p className="text-[10px] text-muted-foreground">{data.investmentsCount} {data.investmentsCount === 1 ? 'ativo' : 'ativos'}</p>
           </div>
 
           {/* Orçamentos */}
-          <div className="p-3 rounded-lg bg-background/50 border border-border">
-            <div className="flex items-center gap-2 mb-2">
-              <Wallet className="h-4 w-4 text-[hsl(var(--chart-3))]" />
+          <div className="p-3 rounded-lg bg-background/60 border border-border/50">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Wallet className="h-3.5 w-3.5 text-[hsl(var(--chart-3))]" />
               <span className="text-xs font-medium text-muted-foreground">Orçamentos Ativos</span>
             </div>
             <p className="text-lg font-bold text-foreground">{data.totalBudgets}</p>
-            <p className="text-xs text-muted-foreground">{data.totalBudgets === 1 ? 'categoria monitorada' : 'categorias monitoradas'}</p>
+            <p className="text-[10px] text-muted-foreground">{data.totalBudgets === 1 ? 'categoria monitorada' : 'categorias monitoradas'}</p>
           </div>
 
           {/* Próximas Transações */}
-          <div className="p-3 rounded-lg bg-background/50 border border-border">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="h-4 w-4 text-[hsl(var(--chart-5))]" />
+          <div className="p-3 rounded-lg bg-background/60 border border-border/50">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Clock className="h-3.5 w-3.5 text-[hsl(var(--chart-5))]" />
               <span className="text-xs font-medium text-muted-foreground">Próximos 7 Dias</span>
             </div>
             <p className="text-lg font-bold text-foreground">{data.upcomingCount}</p>
-            <p className="text-xs text-muted-foreground">{data.upcomingCount === 1 ? 'transação agendada' : 'transações agendadas'}</p>
+            <p className="text-[10px] text-muted-foreground">{data.upcomingCount === 1 ? 'transação agendada' : 'transações agendadas'}</p>
           </div>
         </div>
 
+        {/* Indicadores Extras - Nova Seção */}
+        <div className="mt-auto pt-3 border-t border-border/50">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Taxa de Poupança */}
+            <div className="p-3 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-muted-foreground">Taxa de Poupança</span>
+                {savingsRate >= 20 ? (
+                  <CheckCircle2 className="h-3.5 w-3.5 text-[hsl(var(--chart-2))]" />
+                ) : savingsRate >= 0 ? (
+                  <AlertTriangle className="h-3.5 w-3.5 text-[hsl(var(--chart-4))]" />
+                ) : (
+                  <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
+                )}
+              </div>
+              <p className={`text-xl font-bold ${
+                savingsRate >= 20 
+                  ? 'text-[hsl(var(--chart-2))]' 
+                  : savingsRate >= 0 
+                    ? 'text-[hsl(var(--chart-4))]' 
+                    : 'text-destructive'
+              }`}>
+                {savingsRate.toFixed(1)}%
+              </p>
+              <p className="text-[10px] text-muted-foreground">
+                {savingsRate >= 20 
+                  ? '🎉 Excelente!' 
+                  : savingsRate >= 10 
+                    ? '👍 Bom progresso' 
+                    : savingsRate >= 0 
+                      ? '⚠️ Pode melhorar' 
+                      : '🚨 Gastando mais que ganha'}
+              </p>
+            </div>
+
+            {/* Patrimônio Total */}
+            <div className="p-3 rounded-lg bg-gradient-to-br from-[hsl(var(--chart-4))]/5 to-[hsl(var(--chart-4))]/10 border border-[hsl(var(--chart-4))]/20">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-muted-foreground">Patrimônio Total</span>
+                <TrendingUp className="h-3.5 w-3.5 text-[hsl(var(--chart-4))]" />
+              </div>
+              <p className="text-xl font-bold text-[hsl(var(--chart-4))]">
+                {formatCurrency(totalPatrimony)}
+              </p>
+              <p className="text-[10px] text-muted-foreground">
+                Saldo + Investimentos
+              </p>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
