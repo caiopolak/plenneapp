@@ -150,8 +150,12 @@ export function UnifiedTransactionForm({
     setLoading(true);
 
     try {
+      const today = new Date();
+      const todayStr = format(today, 'yyyy-MM-dd');
+      
       if (mode === 'immediate') {
-        // Transação imediata
+        // Transação imediata - sempre usa a data de hoje
+        // Se recorrente, a data de hoje é o ponto de partida
         const transactionData = {
           user_id: user.id,
           workspace_id: workspaceId,
@@ -159,7 +163,7 @@ export function UnifiedTransactionForm({
           amount: parseFloat(amount),
           category,
           description,
-          date: format(date, 'yyyy-MM-dd'),
+          date: todayStr, // Sempre hoje no modo imediato
           is_recurring: isRecurring && canUseFeature('recurring'),
           recurrence_pattern: isRecurring && canUseFeature('recurring') ? recurrencePattern : null,
           recurrence_end_date: isRecurring && canUseFeature('recurring') ? recurrenceEndDate || null : null
@@ -180,7 +184,8 @@ export function UnifiedTransactionForm({
 
         toast({
           title: "Sucesso!",
-          description: transaction ? "Transação atualizada!" : "Transação adicionada!"
+          description: transaction ? "Transação atualizada!" : 
+            (isRecurring ? "Transação recorrente adicionada!" : "Transação adicionada!")
         });
 
       } else {
