@@ -8,10 +8,12 @@ import { MonthlyComparisonCard } from './MonthlyComparisonCard';
 import { DashboardAlertsCard } from './DashboardAlertsCard';
 import { DashboardChallengesCard } from './DashboardChallengesCard';
 import { DashboardTipsCard } from './DashboardTipsCard';
+import { ConsolidatedHealthDashboard } from './ConsolidatedHealthDashboard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UnifiedTransactionForm } from '@/components/transactions/UnifiedTransactionForm';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, LayoutDashboard, Activity } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useQuery } from '@tanstack/react-query';
@@ -113,6 +115,8 @@ export function DashboardMain() {
     enabled: !!user && !!workspace
   });
 
+  const [activeView, setActiveView] = useState<'overview' | 'consolidated'>('overview');
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -125,15 +129,50 @@ export function DashboardMain() {
             Acompanhe sua situação financeira em tempo real
           </p>
         </div>
-        <Button 
-          onClick={() => setShowTransactionForm(true)}
-          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-          data-tour="add-transaction"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nova Transação
-        </Button>
+        <div className="flex items-center gap-3">
+          <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'overview' | 'consolidated')} className="hidden sm:block">
+            <TabsList className="h-9">
+              <TabsTrigger value="overview" className="gap-1.5 text-sm">
+                <LayoutDashboard className="w-4 h-4" />
+                Resumo
+              </TabsTrigger>
+              <TabsTrigger value="consolidated" className="gap-1.5 text-sm">
+                <Activity className="w-4 h-4" />
+                Saúde Financeira
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button 
+            onClick={() => setShowTransactionForm(true)}
+            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+            data-tour="add-transaction"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Nova Transação
+          </Button>
+        </div>
       </div>
+
+      {/* Mobile view toggle */}
+      <div className="sm:hidden">
+        <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'overview' | 'consolidated')}>
+          <TabsList className="w-full grid grid-cols-2">
+            <TabsTrigger value="overview" className="gap-1.5">
+              <LayoutDashboard className="w-4 h-4" />
+              Resumo
+            </TabsTrigger>
+            <TabsTrigger value="consolidated" className="gap-1.5">
+              <Activity className="w-4 h-4" />
+              Saúde
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      {activeView === 'consolidated' ? (
+        <ConsolidatedHealthDashboard />
+      ) : (
+        <>
 
       {/* Welcome Card - Topo com informações do usuário */}
       <div data-tour="welcome-card" className="animate-fade-in stagger-1">
@@ -184,6 +223,8 @@ export function DashboardMain() {
       <div className="animate-fade-in stagger-9">
         <DashboardAlertsCard />
       </div>
+        </>
+      )}
 
       {/* Modal de Nova Transação */}
       <Dialog open={showTransactionForm} onOpenChange={setShowTransactionForm}>
