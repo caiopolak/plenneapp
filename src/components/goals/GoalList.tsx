@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Edit2, Trash2, Plus, TrendingUp, Download, Import } from 'lucide-react';
+import { Edit2, Trash2, TrendingUp, BarChart3, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -15,16 +15,22 @@ import { useAuth } from '@/contexts/AuthContext';
 import { GoalForm } from './GoalForm';
 import { Tables } from '@/integrations/supabase/types';
 import { GoalDetailsModal } from "./GoalDetailsModal";
-import { GoalDepositsHistory } from './GoalDepositsHistory';
-import { exportGoalsCsv } from './utils/exportGoalsCsv';
-import { ImportGoalsCSV } from "./ImportGoalsCSV";
-import { GoalActionButtons } from "./GoalActionButtons";
 import { GoalProjectionCard } from "./GoalProjectionCard";
 import { GoalDeadlineAlerts } from "./GoalDeadlineAlerts";
+import { GoalInsights } from "./GoalInsights";
+import { GoalSummaryCards } from "./GoalSummaryCards";
+import { CompactGoalFilters, GoalFilters } from "./CompactGoalFilters";
 import { GoalCardSkeleton } from "@/components/ui/loading-skeletons";
 import { usePaginatedLoad } from "@/hooks/useLazyLoad";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 type Goal = Tables<'financial_goals'>;
+
+const initialFilters: GoalFilters = {
+  searchTerm: '',
+  priority: 'all',
+  status: 'all'
+};
 
 export function GoalList() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -35,8 +41,8 @@ export function GoalList() {
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [detailsGoal, setDetailsGoal] = useState<Goal | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [search, setSearch] = useState("");
-  const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  const [filters, setFilters] = useState<GoalFilters>(initialFilters);
+  const [showAnalytics, setShowAnalytics] = useState(true);
 
   const { toast } = useToast();
   const { user } = useAuth();
@@ -92,7 +98,6 @@ export function GoalList() {
     }
   };
 
-  // Adiciona valor na meta, gera transação de saída E registra no histórico (goal_deposits)
   const addAmountToGoal = async (goalId: string, amount: number) => {
     try {
       const goal = goals.find(g => g.id === goalId);
@@ -100,7 +105,6 @@ export function GoalList() {
 
       const newCurrentAmount = (goal.current_amount || 0) + amount;
 
-      // 1. Atualiza goal
       const { error: updateError } = await supabase
         .from('financial_goals')
         .update({ current_amount: newCurrentAmount })
@@ -108,7 +112,6 @@ export function GoalList() {
 
       if (updateError) throw updateError;
 
-      // 2. Salva depósito no histórico
       const { error: depositError } = await supabase
         .from('goal_deposits')
         .insert([{
@@ -119,7 +122,6 @@ export function GoalList() {
         }]);
       if (depositError) throw depositError;
 
-      // 3. Gera transação de saída (despesa) para refletir no saldo
       const { error: transactionError } = await supabase
         .from('transactions')
         .insert([{
@@ -143,7 +145,6 @@ export function GoalList() {
       setSelectedGoalId(null);
       fetchGoals();
     } catch (error) {
-      console.error('Error adding amount to goal:', error);
       toast({
         variant: "destructive",
         title: "Erro",
@@ -154,9 +155,9 @@ export function GoalList() {
 
   const getPriorityColor = (priority: string | null) => {
     switch (priority) {
-      case 'high': return 'destructive'; // vermelho
-      case 'medium': return 'default';   // azul petróleo (badge padrão)
-      case 'low': return 'secondary';    // dourado claro/cinza
+      case 'high': return 'destructive';
+      case 'medium': return 'default';
+      case 'low': return 'secondary';
       default: return 'default';
     }
   };
@@ -170,32 +171,30 @@ export function GoalList() {
     }
   };
 
-  // Notificação: meta próxima ou atingida
-  useEffect(() => {
-    goals.forEach(goal => {
-      const currentAmount = goal.current_amount || 0;
-      const targetAmount = goal.target_amount || 0;
-      const progress = targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0;
-      if (progress >= 100) {
-        toast({ title: "Parabéns!", description: `Meta "${goal.name}" foi atingida!` });
-      } else if (goal.target_date) {
-        const dias = Math.ceil((new Date(goal.target_date).getTime() - Date.now())/(1000*60*60*24));
-        if (dias <= 5 && dias >= 0) {
-          toast({ title: "Meta próxima do prazo", description: `Faltam ${dias} dias para "${goal.name}"!` });
-        }
-      }
+  // Filtros
+  const filteredGoals = useMemo(() => {
+    return goals.filter(g => {
+      const matchesPriority = filters.priority === "all" || g.priority === filters.priority;
+      const matchesSearch = !filters.searchTerm || g.name.toLowerCase().includes(filters.searchTerm.toLowerCase());
+      
+      const progress = g.target_amount > 0 ? ((g.current_amount || 0) / g.target_amount) * 100 : 0;
+      const isCompleted = progress >= 100;
+      const matchesStatus = filters.status === "all" || 
+        (filters.status === "completed" && isCompleted) ||
+        (filters.status === "active" && !isCompleted);
+      
+      return matchesPriority && matchesSearch && matchesStatus;
     });
-    // eslint-disable-next-line
-  }, [goals]);
+  }, [goals, filters]);
 
-  // Filtros e busca:
-  const filteredGoals = goals.filter(g => {
-    const matchesPriority = priorityFilter === "all" || g.priority === priorityFilter;
-    const matchesSearch = !search || g.name.toLowerCase().includes(search.toLowerCase());
-    return matchesPriority && matchesSearch;
-  });
+  const resetFilters = () => setFilters(initialFilters);
 
-  // Lazy loading para metas
+  // Contagem de filtros ativos
+  const activeFiltersCount = [
+    filters.priority !== 'all',
+    filters.status !== 'all',
+  ].filter(Boolean).length;
+
   const {
     displayedItems: displayedGoals,
     hasMore,
@@ -213,9 +212,10 @@ export function GoalList() {
           <div className="h-8 w-48 bg-muted animate-pulse rounded" />
           <div className="h-10 w-32 bg-muted animate-pulse rounded" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <GoalCardSkeleton />
-          <GoalCardSkeleton />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-24 bg-muted animate-pulse rounded-lg" />
+          ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -232,11 +232,7 @@ export function GoalList() {
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent
           className="max-w-xl w-full rounded-2xl p-4 md:p-6 bg-card text-foreground"
-          style={{
-            maxWidth: "96vw",
-            width: "100%",
-            margin: "0 auto",
-          }}
+          style={{ maxWidth: "96vw", width: "100%", margin: "0 auto" }}
         >
           <DialogHeader>
             <DialogTitle className="text-foreground">Nova Meta</DialogTitle>
@@ -251,53 +247,111 @@ export function GoalList() {
         </DialogContent>
       </Dialog>
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
-            Metas Financeiras
-          </h1>
-          <p className="text-muted-foreground">
-            Defina objetivos claros, acompanhe seu progresso e celebre cada conquista no caminho da independência financeira.
-          </p>
+      {/* Header com filtros integrados */}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1">
+            <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
+              Metas Financeiras
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Defina objetivos e acompanhe seu progresso
+            </p>
+          </div>
+          
+          {/* Filtros + Ações */}
+          <CompactGoalFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            onReset={resetFilters}
+            goals={goals}
+            onImportSuccess={fetchGoals}
+            onNewGoal={() => setShowForm(true)}
+          />
         </div>
-        <GoalActionButtons
-          goals={goals}
-          onSearchChange={e => setSearch(e.target.value)}
-          search={search}
-          priorityFilter={priorityFilter}
-          onPriorityChange={e => setPriorityFilter(e.target.value)}
-          onImportSuccess={fetchGoals}
-          showForm={showForm}
-          setShowForm={setShowForm}
-        />
+
+        {/* Tags de filtros ativos */}
+        {activeFiltersCount > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {filters.priority !== 'all' && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                {getPriorityLabel(filters.priority)}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, priority: 'all' }))} />
+              </Badge>
+            )}
+            {filters.status !== 'all' && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                {filters.status === 'completed' ? 'Concluídas' : 'Em andamento'}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, status: 'all' }))} />
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* 1. Alertas de Prazo - Importante no topo */}
+      {/* Insights inteligentes */}
       {goals.length > 0 && (
-        <GoalDeadlineAlerts
-          goals={goals}
-          onGoalClick={(goalId) => {
-            const goal = goals.find((g) => g.id === goalId);
-            if (goal) {
-              setDetailsGoal(goal);
-              setShowDetailsModal(true);
-            }
-          }}
-        />
+        <GoalInsights goals={goals.map(g => ({
+          ...g,
+          current_amount: g.current_amount || 0
+        }))} />
       )}
 
-      {/* 2. Projeções Inteligentes */}
+      {/* Cards de resumo */}
       {goals.length > 0 && (
-        <GoalProjectionCard goals={goals} />
+        <GoalSummaryCards goals={goals.map(g => ({
+          ...g,
+          current_amount: g.current_amount || 0
+        }))} />
       )}
 
+      {/* Seção de Análises - Colapsável */}
+      {goals.length > 0 && (
+        <Collapsible open={showAnalytics} onOpenChange={setShowAnalytics}>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Projeções e Alertas
+            </h2>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm">
+                {showAnalytics ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                {showAnalytics ? 'Ocultar' : 'Mostrar'}
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+          
+          <CollapsibleContent className="space-y-4 mt-4">
+            {/* Alertas de Prazo */}
+            <GoalDeadlineAlerts
+              goals={goals}
+              onGoalClick={(goalId) => {
+                const goal = goals.find((g) => g.id === goalId);
+                if (goal) {
+                  setDetailsGoal(goal);
+                  setShowDetailsModal(true);
+                }
+              }}
+            />
+
+            {/* Projeções Inteligentes */}
+            <GoalProjectionCard goals={goals.map(g => ({
+              ...g,
+              current_amount: g.current_amount || 0
+            }))} />
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+
+      {/* Lista de Metas */}
       {filteredGoals.length === 0 ? (
         <Card className="bg-card border border-border">
           <CardContent className="p-8 text-center rounded-lg">
             <p className="text-lg font-semibold text-foreground font-text">Comece a sonhar grande! 🎯</p>
             <p className="text-sm text-muted-foreground mt-2 font-text">
-              Criar metas é o primeiro passo para transformar seus sonhos em realidade. Seja uma viagem, um carro novo ou sua reserva de emergência - defina, acompanhe e conquiste!
+              {goals.length === 0 
+                ? 'Criar metas é o primeiro passo para transformar seus sonhos em realidade.'
+                : 'Nenhuma meta encontrada com os filtros atuais.'}
             </p>
           </CardContent>
         </Card>
