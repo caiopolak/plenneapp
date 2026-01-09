@@ -7,26 +7,18 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import FinancieApp from "@/pages/FinancieApp";
+import LandingPage from "@/pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
 function AppContent() {
-  
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route 
         path="/app/*" 
-        element={
-          <ProtectedRoute>
-            <FinancieApp />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/" 
         element={
           <ProtectedRoute>
             <FinancieApp />
