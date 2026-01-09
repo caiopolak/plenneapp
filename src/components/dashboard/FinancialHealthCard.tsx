@@ -186,79 +186,107 @@ export function FinancialHealthCard() {
   const StatusIcon = config.icon;
 
   return (
-    <Card className={`${config.bg} ${config.border} border shadow-lg`}>
+    <Card className={`relative overflow-hidden ${config.bg} ${config.border} border shadow-xl`}>
+      {/* Efeito de brilho animado no topo */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-current to-transparent opacity-50 animate-shimmer" 
+           style={{ color: `hsl(var(--${health.status === 'excellent' ? 'card-success-accent' : health.status === 'good' ? 'card-info-accent' : health.status === 'attention' ? 'card-warning-accent' : 'card-error-accent'}))` }} />
+      
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Heart className={`h-5 w-5 ${config.color}`} />
-            Saúde Financeira
+            <div className={`p-2 rounded-xl ${config.bg} border ${config.border}`}>
+              <Heart className={`h-5 w-5 ${config.color} animate-pulse`} />
+            </div>
+            <span>Saúde Financeira</span>
             <InfoTooltip content={tooltips.financialHealth} />
           </CardTitle>
-          <Badge variant="outline" className={`${config.color} border-current`}>
-            <StatusIcon className="h-3 w-3 mr-1" />
+          <Badge variant="outline" className={`${config.color} border-current px-3 py-1 font-semibold`}>
+            <StatusIcon className="h-3.5 w-3.5 mr-1.5" />
             {config.label}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Score Principal */}
-        <div className="flex items-center gap-4">
-          <div className="relative w-20 h-20">
-            <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
-              <path
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="text-muted/30"
-              />
-              <path
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeDasharray={`${health.score}, 100`}
-                className={config.color}
-              />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className={`text-xl font-bold ${config.color}`}>{health.score}</span>
+      <CardContent className="space-y-5">
+        {/* Score Principal - Maior e mais impactante */}
+        <div className="flex items-center gap-6">
+          <div className="relative">
+            {/* Círculo de fundo com glow */}
+            <div className={`absolute inset-0 rounded-full blur-xl opacity-30 ${config.bg}`} />
+            <div className="relative w-24 h-24">
+              <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
+                {/* Trilha de fundo */}
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="text-muted/20"
+                />
+                {/* Progresso */}
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray={`${health.score}, 100`}
+                  className={`${config.color} transition-all duration-1000 ease-out`}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className={`text-3xl font-extrabold ${config.color}`}>{health.score}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">de 100</span>
+              </div>
             </div>
           </div>
           
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Taxa de Economia</span>
-              <span className={`font-medium ${health.savingsRate >= 20 ? 'text-emerald-500' : 'text-amber-500'}`}>
-                {health.savingsRate.toFixed(0)}%
-              </span>
+          {/* Métricas com barras de progresso visuais */}
+          <div className="flex-1 space-y-3">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground font-medium">Taxa de Economia</span>
+                <span className={`font-bold ${health.savingsRate >= 20 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                  {health.savingsRate.toFixed(0)}%
+                </span>
+              </div>
+              <Progress value={Math.min(health.savingsRate, 100)} className={`h-2 ${health.savingsRate >= 20 ? '[&>div]:bg-emerald-500' : '[&>div]:bg-amber-500'}`} />
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Variação Despesas</span>
-              <span className={`font-medium flex items-center gap-1 ${health.expenseGrowth <= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                {health.expenseGrowth > 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                {Math.abs(health.expenseGrowth).toFixed(0)}%
-              </span>
+            
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground font-medium">Variação Despesas</span>
+                <span className={`font-bold flex items-center gap-1 ${health.expenseGrowth <= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                  {health.expenseGrowth > 0 ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
+                  {Math.abs(health.expenseGrowth).toFixed(0)}%
+                </span>
+              </div>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Progresso Metas</span>
-              <span className="font-medium text-foreground">{health.goalProgress.toFixed(0)}%</span>
+            
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground font-medium">Progresso Metas</span>
+                <span className="font-bold text-foreground">{health.goalProgress.toFixed(0)}%</span>
+              </div>
+              <Progress value={Math.min(health.goalProgress, 100)} className="h-2 [&>div]:bg-primary" />
             </div>
           </div>
         </div>
 
-        {/* Dicas */}
+        {/* Dicas com visual melhorado */}
         {health.tips.length > 0 && (
-          <div className="pt-3 border-t border-border/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Lightbulb className="h-4 w-4 text-amber-500" />
-              <span className="text-sm font-medium text-foreground">Dicas para você</span>
+          <div className="pt-4 border-t border-border/50">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-1.5 rounded-lg bg-amber-500/10">
+                <Lightbulb className="h-4 w-4 text-amber-500" />
+              </div>
+              <span className="text-sm font-semibold text-foreground">Dicas personalizadas</span>
             </div>
-            <ul className="space-y-1">
+            <ul className="space-y-2">
               {health.tips.map((tip, index) => (
-                <li key={index} className="text-xs text-muted-foreground flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  {tip}
+                <li key={index} className="text-sm text-muted-foreground flex items-start gap-2 bg-muted/30 rounded-lg p-2.5">
+                  <span className="text-primary font-bold mt-0.5">→</span>
+                  <span>{tip}</span>
                 </li>
               ))}
             </ul>

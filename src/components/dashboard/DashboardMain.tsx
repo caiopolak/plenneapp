@@ -131,12 +131,18 @@ export function DashboardMain() {
         </div>
         <div className="flex items-center gap-3">
           <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'overview' | 'consolidated')} className="hidden sm:block">
-            <TabsList className="h-9">
-              <TabsTrigger value="overview" className="gap-1.5 text-sm">
+            <TabsList className="h-11 p-1 bg-muted/50 border border-border/50 rounded-xl">
+              <TabsTrigger 
+                value="overview" 
+                className="gap-2 text-sm px-4 h-9 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300"
+              >
                 <LayoutDashboard className="w-4 h-4" />
                 Resumo
               </TabsTrigger>
-              <TabsTrigger value="consolidated" className="gap-1.5 text-sm">
+              <TabsTrigger 
+                value="consolidated" 
+                className="gap-2 text-sm px-4 h-9 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-secondary/80 data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md transition-all duration-300"
+              >
                 <Activity className="w-4 h-4" />
                 Saúde Financeira
               </TabsTrigger>
@@ -144,7 +150,8 @@ export function DashboardMain() {
           </Tabs>
           <Button 
             onClick={() => setShowTransactionForm(true)}
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+            variant="cta"
+            className="shadow-lg"
             data-tour="add-transaction"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -156,12 +163,18 @@ export function DashboardMain() {
       {/* Mobile view toggle */}
       <div className="sm:hidden">
         <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'overview' | 'consolidated')}>
-          <TabsList className="w-full grid grid-cols-2">
-            <TabsTrigger value="overview" className="gap-1.5">
+          <TabsList className="w-full grid grid-cols-2 h-12 p-1 bg-muted/50 border border-border/50 rounded-xl">
+            <TabsTrigger 
+              value="overview" 
+              className="gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+            >
               <LayoutDashboard className="w-4 h-4" />
               Resumo
             </TabsTrigger>
-            <TabsTrigger value="consolidated" className="gap-1.5">
+            <TabsTrigger 
+              value="consolidated" 
+              className="gap-2 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-secondary/80 data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md"
+            >
               <Activity className="w-4 h-4" />
               Saúde
             </TabsTrigger>

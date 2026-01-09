@@ -168,25 +168,41 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Menu Educação */}
+        {/* Menu Educação - Destacado */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-secondary font-semibold text-sm md:text-xs px-3 py-2">📚 Aprendizado</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {educationItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild
-                    isActive={location.pathname === item.url}
-                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary min-h-[44px] md:min-h-[36px] px-3"
-                  >
-                    <a href={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-5 w-5 md:h-4 md:w-4 shrink-0" />
-                      <span className="text-base md:text-sm">{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {educationItems.map((item, index) => {
+                const isLearn = item.title === "Aprender";
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild
+                      isActive={location.pathname === item.url}
+                      className={`
+                        min-h-[44px] md:min-h-[36px] px-3 transition-all duration-300
+                        ${isLearn 
+                          ? 'bg-gradient-to-r from-secondary/20 to-primary/10 hover:from-secondary/30 hover:to-primary/20 border border-secondary/30 rounded-xl shadow-sm hover:shadow-md data-[state=active]:from-secondary/40 data-[state=active]:to-primary/30 data-[state=active]:shadow-lg' 
+                          : 'hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary'
+                        }
+                      `}
+                    >
+                      <a href={item.url} className="flex items-center gap-3">
+                        <div className={isLearn ? "p-1.5 rounded-lg bg-secondary/20" : ""}>
+                          <item.icon className={`h-5 w-5 md:h-4 md:w-4 shrink-0 ${isLearn ? 'text-secondary' : ''}`} />
+                        </div>
+                        <span className={`text-base md:text-sm ${isLearn ? 'font-semibold text-secondary' : ''}`}>{item.title}</span>
+                        {isLearn && (
+                          <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-5 bg-secondary/20 text-secondary border-secondary/30">
+                            Novo
+                          </Badge>
+                        )}
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
