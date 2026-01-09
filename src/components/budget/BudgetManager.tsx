@@ -112,59 +112,7 @@ export function BudgetManager() {
     handlePeriodChange();
   }, [selectedYear, selectedMonth]);
 
-  if (loading) {
-    return (
-      <div className="space-y-6 animate-fade-in">
-        <Card className="animate-pulse">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="h-6 w-40 bg-muted rounded" />
-              <div className="flex gap-2">
-                <div className="h-9 w-24 bg-muted rounded" />
-                <div className="h-9 w-32 bg-muted rounded" />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-4">
-              <div className="flex-1 space-y-2">
-                <div className="h-4 w-12 bg-muted rounded" />
-                <div className="h-10 w-full bg-muted rounded" />
-              </div>
-              <div className="flex-1 space-y-2">
-                <div className="h-4 w-12 bg-muted rounded" />
-                <div className="h-10 w-full bg-muted rounded" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <div className="grid gap-4">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-5 w-24 bg-muted rounded" />
-                      <div className="h-5 w-16 bg-muted rounded-full" />
-                    </div>
-                    <div className="h-2 w-full bg-muted rounded-full" />
-                    <div className="flex justify-between">
-                      <div className="h-4 w-32 bg-muted rounded" />
-                      <div className="h-4 w-12 bg-muted rounded" />
-                    </div>
-                  </div>
-                  <div className="h-8 w-8 bg-muted rounded ml-4" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // Filtrar orçamentos
+  // Filtrar orçamentos - MUST be before any conditional returns
   const filteredBudgets = useMemo(() => {
     return budgets.filter(budget => {
       const matchesSearch = !filters.searchTerm || 
@@ -216,6 +164,58 @@ export function BudgetManager() {
     month: selectedMonth,
     year: selectedYear,
   }));
+
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <Card className="animate-pulse">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="h-6 w-40 bg-muted rounded" />
+              <div className="flex gap-2">
+                <div className="h-9 w-24 bg-muted rounded" />
+                <div className="h-9 w-32 bg-muted rounded" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4">
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-12 bg-muted rounded" />
+                <div className="h-10 w-full bg-muted rounded" />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-12 bg-muted rounded" />
+                <div className="h-10 w-full bg-muted rounded" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <div className="grid gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-5 w-24 bg-muted rounded" />
+                      <div className="h-5 w-16 bg-muted rounded-full" />
+                    </div>
+                    <div className="h-2 w-full bg-muted rounded-full" />
+                    <div className="flex justify-between">
+                      <div className="h-4 w-32 bg-muted rounded" />
+                      <div className="h-4 w-12 bg-muted rounded" />
+                    </div>
+                  </div>
+                  <div className="h-8 w-8 bg-muted rounded ml-4" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
