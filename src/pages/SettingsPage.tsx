@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -9,7 +9,6 @@ import {
   Settings, 
   Palette, 
   Bell, 
-  Shield, 
   Info,
   Calendar,
   GitBranch,
@@ -19,14 +18,14 @@ import {
   Sun,
   Eye,
   EyeOff,
-  Package
+  Package,
+  Sparkles
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 import { toast } from "sonner";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { 
   APP_VERSION, 
@@ -34,6 +33,7 @@ import {
   getEnvironmentLabel, 
   formatBuildDate 
 } from "@/config/appVersion";
+import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -52,14 +52,6 @@ export default function SettingsPage() {
     return `${maskedLocal}@${domain}`;
   };
 
-  const handleNotificationSettings = () => {
-    toast.info("Configuração de notificações estará disponível em breve!");
-  };
-
-  const handlePrivacySettings = () => {
-    toast.info("Configurações de privacidade em desenvolvimento!");
-  };
-
   // Nome do usuário ou fallback
   const userName = profile?.full_name || user?.user_metadata?.full_name || "Usuário";
   const userEmail = user?.email || "";
@@ -73,288 +65,290 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="general" className="w-full">
+      <Tabs defaultValue="appearance" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="general">Geral</TabsTrigger>
-          <TabsTrigger value="notifications">Notificações</TabsTrigger>
-          <TabsTrigger value="system">Sistema</TabsTrigger>
+          <TabsTrigger value="appearance" className="flex items-center gap-2">
+            <Palette className="h-4 w-4" />
+            <span className="hidden sm:inline">Aparência</span>
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="flex items-center gap-2">
+            <Bell className="h-4 w-4" />
+            <span className="hidden sm:inline">Notificações</span>
+          </TabsTrigger>
+          <TabsTrigger value="system" className="flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            <span className="hidden sm:inline">Sistema</span>
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="general" className="mt-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Configurações Gerais */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Configurações Gerais
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
-                    <div className="flex items-center gap-3">
-                      {isDarkMode ? (
-                        <Moon className="h-5 w-5 text-primary" />
-                      ) : (
-                        <Sun className="h-5 w-5 text-primary" />
-                      )}
-                      <div>
-                        <Label htmlFor="dark-mode" className="font-medium cursor-pointer">
-                          Modo Escuro
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
-                          {isDarkMode ? 'Ativado' : 'Desativado'}
-                        </p>
-                      </div>
-                    </div>
-                    <Switch
-                      id="dark-mode"
-                      checked={isDarkMode}
-                      onCheckedChange={toggleDarkMode}
-                    />
+        {/* Aba de Aparência */}
+        <TabsContent value="appearance" className="mt-6 space-y-6">
+          {/* Toggle Modo Escuro - Destaque Principal */}
+          <Card className="overflow-hidden">
+            <div className={cn(
+              "p-6 transition-all duration-300",
+              isDarkMode 
+                ? "bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900" 
+                : "bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50"
+            )}>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className={cn(
+                    "relative p-4 rounded-2xl transition-all duration-500 shadow-lg",
+                    isDarkMode 
+                      ? "bg-gradient-to-br from-indigo-600 to-purple-700" 
+                      : "bg-gradient-to-br from-amber-400 to-orange-500"
+                  )}>
+                    {isDarkMode ? (
+                      <Moon className="h-8 w-8 text-white" />
+                    ) : (
+                      <Sun className="h-8 w-8 text-white" />
+                    )}
+                    <Sparkles className={cn(
+                      "absolute -top-1 -right-1 h-4 w-4 transition-opacity duration-300",
+                      isDarkMode ? "text-purple-300 opacity-100" : "text-amber-300 opacity-100"
+                    )} />
                   </div>
-
-                  <Separator />
-
                   <div>
-                    <h4 className="font-medium">Tema de Cores</h4>
+                    <h3 className="text-lg font-bold">
+                      Modo {isDarkMode ? 'Escuro' : 'Claro'}
+                    </h3>
                     <p className="text-sm text-muted-foreground">
-                      Escolha um esquema de cores (funciona em modo claro e escuro)
+                      {isDarkMode 
+                        ? 'Interface escura, ideal para ambientes com pouca luz' 
+                        : 'Interface clara, ideal para uso durante o dia'}
                     </p>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {themes.map((theme) => {
-                      const colors = isDarkMode ? theme.colors.dark : theme.colors.light;
-                      return (
-                        <Button
-                          key={theme.name}
-                          onClick={() => saveTheme(theme.name)}
-                          variant={currentTheme === theme.name ? "default" : "outline"}
-                          className={`h-16 flex flex-col gap-2 p-3 relative ${
-                            currentTheme === theme.name ? 'ring-2 ring-primary' : ''
-                          }`}
-                        >
-                          <div className="flex gap-1.5">
-                            <div
-                              className="w-4 h-4 rounded-full border"
-                              style={{ backgroundColor: `hsl(${colors.primary})` }}
-                            />
-                            <div
-                              className="w-4 h-4 rounded-full border"
-                              style={{ backgroundColor: `hsl(${colors.secondary})` }}
-                            />
-                            <div
-                              className="w-4 h-4 rounded-full border"
-                              style={{ backgroundColor: `hsl(${colors.accent})` }}
-                            />
-                          </div>
-                          <span className="text-xs font-medium">{theme.label}</span>
-                          {currentTheme === theme.name && (
-                            <div className="absolute top-1 right-1">
-                              <CheckCircle className="h-4 w-4 text-primary" />
-                            </div>
-                          )}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    💡 Os temas são aplicados instantaneamente e salvos automaticamente na sua conta
-                  </div>
                 </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h4 className="font-medium">Notificações</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Configure alertas e lembretes
-                  </p>
-                  <Button 
-                    onClick={handleNotificationSettings}
-                    variant="outline" 
-                    className="w-full"
-                  >
-                    <Bell className="h-4 w-4 mr-2" />
-                    Gerenciar Notificações
-                  </Button>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h4 className="font-medium">Privacidade</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Configurações de segurança e privacidade
-                  </p>
-                  <Button 
-                    onClick={handlePrivacySettings}
-                    variant="outline" 
-                    className="w-full"
-                  >
-                    <Shield className="h-4 w-4 mr-2" />
-                    Configurar Privacidade
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Informações do Sistema */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Info className="h-5 w-5" />
-                  Informações do Sistema
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Versão:</span>
-                    <Badge variant="secondary" className="font-mono">
-                      v{APP_VERSION.version}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Ambiente:</span>
-                    <Badge 
-                      variant={environment === 'production' ? 'default' : 'secondary'}
-                      className={
-                        environment === 'development' 
-                          ? 'bg-warning/20 text-warning border-warning/30' 
-                          : environment === 'staging'
-                          ? 'bg-primary/20 text-primary border-primary/30'
-                          : ''
-                      }
-                    >
-                      {environmentLabel}
-                    </Badge>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Build:</span>
-                    <span className="text-sm text-muted-foreground flex items-center gap-1 font-mono">
-                      <Package className="h-3 w-3" />
-                      {APP_VERSION.buildId}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Última Atualização:</span>
-                    <span className="text-sm text-muted-foreground flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {formatBuildDate()}
-                    </span>
-                  </div>
-
-                  <Separator className="my-2" />
-
-                  {user && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Usuário:</span>
-                      <div className="flex items-center gap-2">
-                        <User className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-sm font-medium text-foreground">
-                          {userName}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {showEmail ? userEmail : maskEmail(userEmail)}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => setShowEmail(!showEmail)}
-                          title={showEmail ? "Ocultar email" : "Mostrar email"}
-                        >
-                          {showEmail ? (
-                            <EyeOff className="h-3.5 w-3.5" />
-                          ) : (
-                            <Eye className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
+                
+                {/* Toggle Button Personalizado */}
+                <button
+                  onClick={() => toggleDarkMode()}
+                  className={cn(
+                    "relative w-20 h-10 rounded-full transition-all duration-300 focus:outline-none focus:ring-4",
+                    isDarkMode 
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 focus:ring-purple-500/30" 
+                      : "bg-gradient-to-r from-amber-400 to-orange-500 focus:ring-amber-500/30"
                   )}
-                </div>
+                  aria-label="Alternar modo escuro"
+                >
+                  <div className={cn(
+                    "absolute top-1 w-8 h-8 rounded-full bg-white shadow-md transition-all duration-300 flex items-center justify-center",
+                    isDarkMode ? "left-11" : "left-1"
+                  )}>
+                    {isDarkMode ? (
+                      <Moon className="h-4 w-4 text-purple-600" />
+                    ) : (
+                      <Sun className="h-4 w-4 text-amber-500" />
+                    )}
+                  </div>
+                </button>
+              </div>
+            </div>
+          </Card>
 
-                {APP_VERSION.releaseNotes && (
-                  <>
-                    <Separator />
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm flex items-center gap-2">
-                        <GitBranch className="h-4 w-4" />
-                        Novidades da versão
-                      </h4>
-                      <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
-                        {APP_VERSION.releaseNotes}
-                      </p>
-                    </div>
-                  </>
-                )}
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h4 className="font-medium text-sm">Sobre o Plenne</h4>
-                  <p className="text-xs text-muted-foreground">
-                    © 2025 Plenne - Todos os direitos reservados.<br />
-                    Projeto criado por apenas 1 dev! 💚
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Seleção de Temas */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="h-5 w-5 text-primary" />
+                Tema de Cores
+              </CardTitle>
+              <CardDescription>
+                Escolha um esquema de cores que combine com seu estilo. Os temas funcionam tanto no modo claro quanto escuro.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                {themes.map((theme) => {
+                  const colors = isDarkMode ? theme.colors.dark : theme.colors.light;
+                  const isActive = currentTheme === theme.name;
+                  return (
+                    <button
+                      key={theme.name}
+                      onClick={() => saveTheme(theme.name)}
+                      className={cn(
+                        "group relative p-4 rounded-xl border-2 transition-all duration-200 text-left",
+                        "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary/50",
+                        isActive 
+                          ? "border-primary bg-primary/5 shadow-md" 
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      {/* Círculos de cores */}
+                      <div className="flex gap-1.5 mb-3">
+                        <div
+                          className="w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10"
+                          style={{ backgroundColor: `hsl(${colors.primary})` }}
+                        />
+                        <div
+                          className="w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10"
+                          style={{ backgroundColor: `hsl(${colors.secondary})` }}
+                        />
+                        <div
+                          className="w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10"
+                          style={{ backgroundColor: `hsl(${colors.accent})` }}
+                        />
+                      </div>
+                      
+                      {/* Nome e descrição */}
+                      <div className="space-y-0.5">
+                        <span className="text-sm font-semibold block">{theme.label}</span>
+                        <span className="text-xs text-muted-foreground line-clamp-1">
+                          {theme.description}
+                        </span>
+                      </div>
+                      
+                      {/* Indicador de selecionado */}
+                      {isActive && (
+                        <div className="absolute top-2 right-2">
+                          <div className="bg-primary text-primary-foreground rounded-full p-1">
+                            <CheckCircle className="h-3.5 w-3.5" />
+                          </div>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                Os temas são salvos automaticamente na sua conta
+              </p>
+            </CardContent>
+          </Card>
         </TabsContent>
 
+        {/* Aba de Notificações */}
         <TabsContent value="notifications" className="mt-6">
           <NotificationSettings />
         </TabsContent>
 
-        <TabsContent value="system" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Info className="h-5 w-5" />
-                Informações Detalhadas do Sistema
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="p-4 rounded-lg bg-muted/30 border border-border">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Package className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">Versão</span>
+        {/* Aba do Sistema */}
+        <TabsContent value="system" className="mt-6 space-y-6">
+          {/* Cards de informações */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card className="overflow-hidden">
+              <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-lg bg-primary text-primary-foreground">
+                    <Package className="h-5 w-5" />
                   </div>
-                  <p className="text-2xl font-bold font-mono">v{APP_VERSION.version}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Build: {APP_VERSION.buildId}</p>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Versão</p>
+                    <p className="text-2xl font-bold font-mono">v{APP_VERSION.version}</p>
+                  </div>
                 </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Build: <span className="font-mono">{APP_VERSION.buildId}</span>
+                </p>
+              </div>
+            </Card>
 
-                <div className="p-4 rounded-lg bg-muted/30 border border-border">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">Última Atualização</span>
+            <Card className="overflow-hidden">
+              <div className="p-4 bg-gradient-to-br from-secondary/10 to-secondary/5">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-lg bg-secondary text-secondary-foreground">
+                    <Calendar className="h-5 w-5" />
                   </div>
-                  <p className="text-2xl font-bold">{formatBuildDate()}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Ambiente: {environmentLabel}
-                  </p>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Última Atualização</p>
+                    <p className="text-xl font-bold">{formatBuildDate()}</p>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <Badge 
+                    variant={environment === 'production' ? 'default' : 'secondary'}
+                    className={cn(
+                      "text-xs",
+                      environment === 'development' && 'bg-warning/20 text-warning border-warning/30',
+                      environment === 'staging' && 'bg-primary/20 text-primary border-primary/30'
+                    )}
+                  >
+                    {environmentLabel}
+                  </Badge>
                 </div>
               </div>
+            </Card>
+          </div>
 
-              {APP_VERSION.releaseNotes && (
-                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                  <h4 className="font-medium text-sm flex items-center gap-2 mb-2">
-                    <GitBranch className="h-4 w-4 text-primary" />
-                    Notas da Versão
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    {APP_VERSION.releaseNotes}
-                  </p>
+          {/* Informações do usuário */}
+          {user && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-primary" />
+                  Informações da Conta
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-primary/10">
+                      <User className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{userName}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {showEmail ? userEmail : maskEmail(userEmail)}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowEmail(!showEmail)}
+                    className="gap-2"
+                  >
+                    {showEmail ? (
+                      <>
+                        <EyeOff className="h-4 w-4" />
+                        Ocultar
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="h-4 w-4" />
+                        Mostrar
+                      </>
+                    )}
+                  </Button>
                 </div>
-              )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Notas da versão */}
+          {APP_VERSION.releaseNotes && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <GitBranch className="h-5 w-5 text-primary" />
+                  Novidades da Versão
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                  <p className="text-sm">{APP_VERSION.releaseNotes}</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Sobre */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center space-y-2">
+                <h3 className="text-lg font-bold brand-gradient-text">Plenne</h3>
+                <p className="text-sm text-muted-foreground italic">
+                  "Sua vida financeira, plena."
+                </p>
+                <Separator className="my-4" />
+                <p className="text-xs text-muted-foreground">
+                  © 2025 Plenne - Todos os direitos reservados.<br />
+                  Desenvolvido com 💚 por um desenvolvedor apaixonado.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
