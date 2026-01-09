@@ -21,482 +21,501 @@ export interface DefaultTheme {
   };
 }
 
-// Temas com paletas harmoniosas e categorizados por plano
+// ================================================================================
+// SISTEMA DE TEMAS PLENNE - Paletas diferenciadas por plano
+// ================================================================================
+// FREE (5): Cores sólidas, básicas, funcionais - foco em usabilidade
+// PRO (8): Cores vibrantes, ousadas, "trendy" - foco em personalidade
+// BUSINESS (7): Cores de luxo, metálicas, joias - foco em sofisticação premium
+// ================================================================================
+
 const defaultThemes: DefaultTheme[] = [
-  // ========== TEMAS FREE (5 temas) ==========
+  // ╔══════════════════════════════════════════════════════════════════════════════╗
+  // ║                           TEMAS FREE (5 temas)                               ║
+  // ║        Cores básicas, neutras e funcionais - Paletas sólidas                 ║
+  // ╚══════════════════════════════════════════════════════════════════════════════╝
+  
   {
     name: 'default',
     label: 'Esmeralda',
-    description: 'Verde institucional Plenne, sofisticado e confiável',
+    description: 'Verde institucional Plenne - padrão e confiável',
     plan: 'free',
     colors: {
       light: {
         primary: '158 64% 35%',
-        secondary: '142 50% 42%',
-        accent: '43 96% 56%',
-        background: '150 20% 98%',
+        secondary: '158 50% 42%',
+        accent: '158 45% 48%',
+        background: '0 0% 99%',
         surface: '0 0% 100%',
-        foreground: '158 30% 15%'
+        foreground: '158 25% 12%'
       },
       dark: {
         primary: '158 55% 48%',
-        secondary: '142 45% 52%',
-        accent: '43 90% 52%',
-        background: '160 18% 7%',
-        surface: '160 14% 11%',
-        foreground: '150 15% 95%'
+        secondary: '158 45% 52%',
+        accent: '158 40% 56%',
+        background: '160 15% 8%',
+        surface: '160 12% 12%',
+        foreground: '150 10% 95%'
       }
     }
   },
   {
     name: 'ocean',
     label: 'Oceano',
-    description: 'Azul profundo inspirado no mar, transmite calma e confiança',
+    description: 'Azul clássico - profissional e sereno',
     plan: 'free',
     colors: {
       light: {
-        primary: '205 85% 45%',
-        secondary: '195 70% 52%',
-        accent: '175 65% 48%',
-        background: '205 30% 98%',
+        primary: '210 70% 45%',
+        secondary: '210 55% 52%',
+        accent: '210 50% 58%',
+        background: '0 0% 99%',
         surface: '0 0% 100%',
-        foreground: '205 50% 15%'
+        foreground: '210 40% 12%'
       },
       dark: {
-        primary: '205 75% 58%',
-        secondary: '195 65% 60%',
-        accent: '175 60% 55%',
-        background: '205 30% 7%',
-        surface: '205 25% 11%',
-        foreground: '200 20% 95%'
+        primary: '210 65% 55%',
+        secondary: '210 50% 60%',
+        accent: '210 45% 65%',
+        background: '210 20% 8%',
+        surface: '210 15% 12%',
+        foreground: '200 10% 95%'
       }
     }
   },
   {
     name: 'slate',
     label: 'Grafite',
-    description: 'Neutro e profissional, minimalismo elegante',
+    description: 'Cinza neutro - minimalista e clean',
     plan: 'free',
     colors: {
       light: {
-        primary: '220 15% 40%',
-        secondary: '215 12% 50%',
-        accent: '210 55% 55%',
-        background: '220 15% 98%',
+        primary: '220 12% 42%',
+        secondary: '220 10% 50%',
+        accent: '220 15% 55%',
+        background: '0 0% 99%',
         surface: '0 0% 100%',
-        foreground: '220 25% 12%'
+        foreground: '220 15% 12%'
       },
       dark: {
-        primary: '220 15% 60%',
-        secondary: '215 12% 65%',
-        accent: '210 55% 62%',
-        background: '220 18% 8%',
-        surface: '220 15% 12%',
-        foreground: '220 10% 95%'
+        primary: '220 10% 60%',
+        secondary: '220 8% 65%',
+        accent: '220 12% 70%',
+        background: '220 10% 8%',
+        surface: '220 8% 12%',
+        foreground: '220 5% 95%'
       }
     }
   },
   {
     name: 'forest',
     label: 'Floresta',
-    description: 'Verde natural e acolhedor, conexão com a natureza',
+    description: 'Verde escuro - natural e terroso',
     plan: 'free',
     colors: {
       light: {
-        primary: '145 40% 38%',
-        secondary: '130 35% 45%',
-        accent: '85 45% 50%',
-        background: '140 20% 97%',
+        primary: '140 35% 35%',
+        secondary: '140 30% 42%',
+        accent: '140 25% 48%',
+        background: '0 0% 99%',
         surface: '0 0% 100%',
-        foreground: '145 35% 15%'
+        foreground: '140 30% 12%'
       },
       dark: {
-        primary: '145 38% 50%',
-        secondary: '130 33% 55%',
-        accent: '85 42% 55%',
-        background: '145 22% 7%',
-        surface: '145 18% 11%',
-        foreground: '140 15% 95%'
+        primary: '140 32% 48%',
+        secondary: '140 28% 52%',
+        accent: '140 24% 56%',
+        background: '140 18% 8%',
+        surface: '140 14% 12%',
+        foreground: '140 10% 95%'
       }
     }
   },
   {
     name: 'midnight',
     label: 'Meia-Noite',
-    description: 'Azul escuro elegante, executivo e impactante',
+    description: 'Azul escuro - executivo e sóbrio',
     plan: 'free',
     colors: {
       light: {
-        primary: '225 65% 50%',
-        secondary: '215 55% 55%',
-        accent: '240 60% 65%',
-        background: '225 25% 97%',
+        primary: '230 50% 40%',
+        secondary: '230 40% 48%',
+        accent: '230 35% 55%',
+        background: '0 0% 99%',
         surface: '0 0% 100%',
-        foreground: '225 50% 12%'
+        foreground: '230 35% 12%'
       },
       dark: {
-        primary: '225 60% 62%',
-        secondary: '215 52% 62%',
-        accent: '240 55% 70%',
-        background: '225 30% 6%',
-        surface: '225 25% 10%',
-        foreground: '225 15% 95%'
+        primary: '230 45% 55%',
+        secondary: '230 38% 60%',
+        accent: '230 32% 65%',
+        background: '230 22% 7%',
+        surface: '230 18% 11%',
+        foreground: '225 10% 95%'
       }
     }
   },
 
-  // ========== TEMAS PRO (8 temas) ==========
+  // ╔══════════════════════════════════════════════════════════════════════════════╗
+  // ║                           TEMAS PRO (8 temas)                                ║
+  // ║        Cores vibrantes, combinações ousadas, personalidade forte             ║
+  // ╚══════════════════════════════════════════════════════════════════════════════╝
+
   {
-    name: 'lavender',
-    label: 'Lavanda',
-    description: 'Roxo suave e relaxante, sofisticação e criatividade',
+    name: 'aurora',
+    label: 'Aurora Neon',
+    description: 'Ciano elétrico cyberpunk - futurista e intenso',
     plan: 'pro',
     colors: {
       light: {
-        primary: '268 55% 55%',
-        secondary: '280 45% 60%',
-        accent: '300 50% 62%',
-        background: '270 25% 98%',
+        primary: '185 100% 40%',
+        secondary: '175 85% 45%',
+        accent: '195 90% 50%',
+        background: '185 20% 98%',
         surface: '0 0% 100%',
-        foreground: '268 40% 18%'
+        foreground: '185 60% 10%'
       },
       dark: {
-        primary: '268 50% 65%',
-        secondary: '280 42% 68%',
-        accent: '300 48% 70%',
-        background: '270 22% 7%',
-        surface: '270 18% 11%',
-        foreground: '270 15% 95%'
+        primary: '185 95% 50%',
+        secondary: '175 80% 55%',
+        accent: '195 85% 58%',
+        background: '185 40% 5%',
+        surface: '185 30% 9%',
+        foreground: '180 15% 95%'
       }
     }
   },
   {
     name: 'sunset',
     label: 'Pôr do Sol',
-    description: 'Laranja quente e vibrante, energia e otimismo',
+    description: 'Laranja quente com rosa - vibrante e energético',
     plan: 'pro',
     colors: {
       light: {
-        primary: '25 90% 52%',
-        secondary: '35 88% 55%',
-        accent: '15 85% 58%',
-        background: '30 40% 98%',
+        primary: '25 95% 52%',
+        secondary: '15 90% 55%',
+        accent: '35 88% 50%',
+        background: '30 30% 98%',
         surface: '0 0% 100%',
-        foreground: '25 45% 15%'
+        foreground: '25 50% 12%'
       },
       dark: {
-        primary: '25 85% 58%',
-        secondary: '35 82% 60%',
-        accent: '15 80% 62%',
-        background: '25 25% 7%',
-        surface: '25 20% 11%',
-        foreground: '30 20% 95%'
+        primary: '25 90% 58%',
+        secondary: '15 85% 60%',
+        accent: '35 82% 55%',
+        background: '20 30% 6%',
+        surface: '20 25% 10%',
+        foreground: '30 15% 95%'
+      }
+    }
+  },
+  {
+    name: 'coral',
+    label: 'Coral Vibrante',
+    description: 'Coral intenso - moderno e jovem',
+    plan: 'pro',
+    colors: {
+      light: {
+        primary: '12 85% 55%',
+        secondary: '5 80% 58%',
+        accent: '20 82% 52%',
+        background: '12 25% 98%',
+        surface: '0 0% 100%',
+        foreground: '12 50% 12%'
+      },
+      dark: {
+        primary: '12 80% 60%',
+        secondary: '5 75% 62%',
+        accent: '20 78% 58%',
+        background: '12 25% 6%',
+        surface: '12 20% 10%',
+        foreground: '15 12% 95%'
       }
     }
   },
   {
     name: 'rose',
     label: 'Rose Gold',
-    description: 'Rosa elegante e sofisticado, luxo discreto e feminino',
+    description: 'Rosa dourado - elegante e feminino',
     plan: 'pro',
     colors: {
       light: {
-        primary: '350 65% 55%',
-        secondary: '340 55% 60%',
-        accent: '20 70% 58%',
-        background: '350 25% 98%',
+        primary: '350 70% 55%',
+        secondary: '340 60% 60%',
+        accent: '0 65% 58%',
+        background: '350 20% 98%',
         surface: '0 0% 100%',
-        foreground: '350 40% 15%'
+        foreground: '350 45% 12%'
       },
       dark: {
-        primary: '350 58% 62%',
-        secondary: '340 50% 68%',
-        accent: '20 65% 62%',
-        background: '350 20% 7%',
-        surface: '350 16% 11%',
-        foreground: '350 15% 95%'
-      }
-    }
-  },
-  {
-    name: 'coral',
-    label: 'Coral',
-    description: 'Vibrante e moderno, dinamismo e juventude',
-    plan: 'pro',
-    colors: {
-      light: {
-        primary: '12 80% 58%',
-        secondary: '20 75% 55%',
-        accent: '0 72% 60%',
-        background: '15 35% 98%',
-        surface: '0 0% 100%',
-        foreground: '12 45% 15%'
-      },
-      dark: {
-        primary: '12 75% 62%',
-        secondary: '20 70% 60%',
-        accent: '0 68% 65%',
-        background: '12 22% 7%',
-        surface: '12 18% 11%',
-        foreground: '15 15% 95%'
+        primary: '350 65% 62%',
+        secondary: '340 55% 65%',
+        accent: '0 60% 62%',
+        background: '350 22% 6%',
+        surface: '350 18% 10%',
+        foreground: '350 12% 95%'
       }
     }
   },
   {
     name: 'mint',
-    label: 'Menta',
-    description: 'Verde menta refrescante, leve e revitalizante',
+    label: 'Menta Fresca',
+    description: 'Verde água refrescante - clean e moderno',
     plan: 'pro',
     colors: {
       light: {
-        primary: '168 62% 45%',
-        secondary: '175 55% 50%',
-        accent: '155 50% 48%',
-        background: '168 30% 97%',
+        primary: '168 70% 42%',
+        secondary: '175 62% 48%',
+        accent: '160 58% 45%',
+        background: '168 22% 98%',
         surface: '0 0% 100%',
-        foreground: '168 45% 15%'
+        foreground: '168 50% 10%'
       },
       dark: {
-        primary: '168 55% 55%',
-        secondary: '175 50% 58%',
-        accent: '155 48% 55%',
-        background: '168 25% 7%',
-        surface: '168 20% 11%',
-        foreground: '168 15% 95%'
+        primary: '168 65% 52%',
+        secondary: '175 58% 55%',
+        accent: '160 54% 52%',
+        background: '168 30% 6%',
+        surface: '168 24% 10%',
+        foreground: '168 12% 95%'
       }
     }
   },
   {
-    name: 'aurora',
-    label: 'Aurora Boreal',
-    description: 'Tons mágicos de verde e azul, inspiração nórdica',
+    name: 'lavender',
+    label: 'Lavanda Suave',
+    description: 'Lilás delicado - criativo e relaxante',
     plan: 'pro',
     colors: {
       light: {
-        primary: '180 55% 42%',
-        secondary: '165 60% 48%',
-        accent: '200 65% 55%',
-        background: '180 25% 97%',
+        primary: '270 60% 55%',
+        secondary: '280 52% 60%',
+        accent: '260 48% 58%',
+        background: '270 18% 98%',
         surface: '0 0% 100%',
-        foreground: '180 45% 15%'
+        foreground: '270 45% 12%'
       },
       dark: {
-        primary: '180 50% 52%',
-        secondary: '165 55% 55%',
-        accent: '200 60% 62%',
-        background: '180 25% 6%',
-        surface: '180 20% 10%',
-        foreground: '180 15% 95%'
+        primary: '270 55% 62%',
+        secondary: '280 48% 65%',
+        accent: '260 44% 62%',
+        background: '270 22% 6%',
+        surface: '270 18% 10%',
+        foreground: '270 10% 95%'
       }
     }
   },
   {
     name: 'mocha',
-    label: 'Mocha',
-    description: 'Tons de café e chocolate, aconchegante e elegante',
+    label: 'Mocha Café',
+    description: 'Marrom aconchegante - quente e sofisticado',
     plan: 'pro',
     colors: {
       light: {
-        primary: '28 45% 38%',
-        secondary: '35 40% 45%',
-        accent: '18 55% 50%',
-        background: '30 25% 97%',
+        primary: '28 55% 38%',
+        secondary: '22 48% 45%',
+        accent: '35 52% 42%',
+        background: '28 18% 98%',
         surface: '0 0% 100%',
-        foreground: '28 40% 15%'
+        foreground: '28 45% 12%'
       },
       dark: {
-        primary: '28 42% 50%',
-        secondary: '35 38% 55%',
-        accent: '18 50% 55%',
-        background: '28 25% 7%',
-        surface: '28 20% 11%',
-        foreground: '28 15% 95%'
+        primary: '28 50% 50%',
+        secondary: '22 45% 55%',
+        accent: '35 48% 52%',
+        background: '28 28% 6%',
+        surface: '28 22% 10%',
+        foreground: '28 12% 95%'
       }
     }
   },
   {
     name: 'cherry',
-    label: 'Cereja',
-    description: 'Vermelho vibrante e apaixonado, energia e ousadia',
+    label: 'Cereja Intensa',
+    description: 'Vermelho apaixonado - ousado e marcante',
     plan: 'pro',
     colors: {
       light: {
-        primary: '355 72% 52%',
-        secondary: '345 65% 58%',
-        accent: '10 70% 55%',
-        background: '355 25% 98%',
+        primary: '355 78% 50%',
+        secondary: '345 70% 55%',
+        accent: '5 72% 52%',
+        background: '355 18% 98%',
         surface: '0 0% 100%',
-        foreground: '355 45% 12%'
+        foreground: '355 50% 10%'
       },
       dark: {
-        primary: '355 68% 58%',
-        secondary: '345 60% 65%',
-        accent: '10 65% 60%',
-        background: '355 25% 7%',
-        surface: '355 20% 11%',
-        foreground: '355 15% 95%'
+        primary: '355 72% 58%',
+        secondary: '345 65% 62%',
+        accent: '5 68% 58%',
+        background: '355 28% 6%',
+        surface: '355 22% 10%',
+        foreground: '355 12% 95%'
       }
     }
   },
 
-  // ========== TEMAS BUSINESS (7 temas exclusivos) ==========
+  // ╔══════════════════════════════════════════════════════════════════════════════╗
+  // ║                        TEMAS BUSINESS (7 temas)                              ║
+  // ║        Cores de luxo, metálicas, joias - Máxima sofisticação                 ║
+  // ╚══════════════════════════════════════════════════════════════════════════════╝
+
   {
     name: 'gold',
     label: 'Ouro Imperial',
-    description: 'Dourado luxuoso e exclusivo, riqueza e prestígio',
+    description: 'Dourado luxuoso - prestígio e riqueza',
     plan: 'business',
     colors: {
       light: {
-        primary: '45 85% 48%',
-        secondary: '38 80% 52%',
-        accent: '30 75% 50%',
-        background: '45 30% 97%',
+        primary: '45 90% 45%',
+        secondary: '40 85% 48%',
+        accent: '50 88% 42%',
+        background: '45 25% 97%',
         surface: '0 0% 100%',
-        foreground: '45 50% 12%'
+        foreground: '45 55% 10%'
       },
       dark: {
-        primary: '45 80% 55%',
-        secondary: '38 75% 58%',
-        accent: '30 70% 55%',
-        background: '45 28% 6%',
-        surface: '45 22% 10%',
-        foreground: '45 20% 95%'
+        primary: '45 85% 52%',
+        secondary: '40 80% 55%',
+        accent: '50 82% 50%',
+        background: '45 35% 5%',
+        surface: '45 28% 9%',
+        foreground: '45 15% 95%'
       }
     }
   },
   {
     name: 'amethyst',
-    label: 'Ametista',
-    description: 'Roxo profundo e místico, realeza e sabedoria',
+    label: 'Ametista Real',
+    description: 'Roxo profundo místico - realeza e sabedoria',
     plan: 'business',
     colors: {
       light: {
-        primary: '275 55% 50%',
-        secondary: '290 48% 55%',
-        accent: '260 50% 58%',
-        background: '275 22% 97%',
+        primary: '280 60% 48%',
+        secondary: '290 52% 52%',
+        accent: '270 55% 50%',
+        background: '280 18% 97%',
         surface: '0 0% 100%',
-        foreground: '275 45% 15%'
+        foreground: '280 50% 10%'
       },
       dark: {
-        primary: '275 50% 60%',
-        secondary: '290 45% 65%',
-        accent: '260 48% 65%',
-        background: '275 25% 6%',
-        surface: '275 20% 10%',
-        foreground: '275 15% 95%'
+        primary: '280 55% 58%',
+        secondary: '290 48% 62%',
+        accent: '270 50% 60%',
+        background: '280 32% 5%',
+        surface: '280 26% 9%',
+        foreground: '280 12% 95%'
       }
     }
   },
   {
     name: 'obsidian',
-    label: 'Obsidiana',
-    description: 'Preto refinado com toques de azul, poder e elegância',
+    label: 'Obsidiana Negra',
+    description: 'Preto absoluto premium - poder e mistério',
     plan: 'business',
     colors: {
       light: {
-        primary: '230 25% 35%',
-        secondary: '220 22% 42%',
-        accent: '210 45% 52%',
-        background: '230 18% 97%',
+        primary: '0 0% 25%',
+        secondary: '0 0% 32%',
+        accent: '0 0% 40%',
+        background: '0 0% 98%',
         surface: '0 0% 100%',
-        foreground: '230 30% 10%'
+        foreground: '0 0% 8%'
       },
       dark: {
-        primary: '230 22% 55%',
-        secondary: '220 20% 60%',
-        accent: '210 42% 60%',
-        background: '230 25% 5%',
-        surface: '230 20% 9%',
-        foreground: '230 12% 95%'
+        primary: '0 0% 75%',
+        secondary: '0 0% 68%',
+        accent: '0 0% 60%',
+        background: '0 0% 3%',
+        surface: '0 0% 7%',
+        foreground: '0 0% 95%'
       }
     }
   },
   {
     name: 'sapphire',
-    label: 'Safira',
-    description: 'Azul precioso e profundo, sofisticação atemporal',
+    label: 'Safira Nobreza',
+    description: 'Azul royal intenso - sofisticação atemporal',
     plan: 'business',
     colors: {
       light: {
-        primary: '215 72% 48%',
-        secondary: '225 65% 55%',
-        accent: '200 60% 52%',
-        background: '215 28% 97%',
+        primary: '220 80% 48%',
+        secondary: '225 72% 52%',
+        accent: '215 75% 50%',
+        background: '220 22% 97%',
         surface: '0 0% 100%',
-        foreground: '215 55% 12%'
+        foreground: '220 60% 10%'
       },
       dark: {
-        primary: '215 68% 58%',
-        secondary: '225 60% 62%',
-        accent: '200 55% 58%',
-        background: '215 30% 6%',
-        surface: '215 25% 10%',
-        foreground: '215 15% 95%'
+        primary: '220 75% 58%',
+        secondary: '225 68% 62%',
+        accent: '215 70% 58%',
+        background: '220 38% 5%',
+        surface: '220 30% 9%',
+        foreground: '220 12% 95%'
       }
     }
   },
   {
     name: 'emerald',
-    label: 'Esmeralda Real',
-    description: 'Verde esmeralda intenso e vibrante, luxo natural',
+    label: 'Esmeralda Joia',
+    description: 'Verde esmeralda vibrante - luxo natural',
     plan: 'business',
     colors: {
       light: {
-        primary: '152 62% 40%',
-        secondary: '165 55% 45%',
-        accent: '140 50% 48%',
-        background: '152 25% 97%',
+        primary: '152 70% 38%',
+        secondary: '158 62% 42%',
+        accent: '145 65% 40%',
+        background: '152 20% 97%',
         surface: '0 0% 100%',
-        foreground: '152 50% 12%'
+        foreground: '152 55% 10%'
       },
       dark: {
-        primary: '152 58% 50%',
-        secondary: '165 52% 55%',
-        accent: '140 48% 55%',
-        background: '152 28% 6%',
-        surface: '152 22% 10%',
-        foreground: '152 15% 95%'
+        primary: '152 65% 48%',
+        secondary: '158 58% 52%',
+        accent: '145 60% 50%',
+        background: '152 35% 5%',
+        surface: '152 28% 9%',
+        foreground: '152 12% 95%'
       }
     }
   },
   {
     name: 'wine',
     label: 'Vinho Nobre',
-    description: 'Bordô sofisticado e intenso, requinte e tradição',
+    description: 'Bordô intenso - requinte e tradição',
     plan: 'business',
     colors: {
       light: {
-        primary: '345 55% 42%',
-        secondary: '355 48% 48%',
-        accent: '335 45% 52%',
-        background: '345 22% 97%',
+        primary: '345 65% 40%',
+        secondary: '350 58% 45%',
+        accent: '340 60% 42%',
+        background: '345 18% 97%',
         surface: '0 0% 100%',
-        foreground: '345 45% 12%'
+        foreground: '345 50% 10%'
       },
       dark: {
-        primary: '345 50% 52%',
-        secondary: '355 45% 58%',
-        accent: '335 42% 58%',
-        background: '345 28% 6%',
-        surface: '345 22% 10%',
-        foreground: '345 15% 95%'
+        primary: '345 60% 52%',
+        secondary: '350 54% 55%',
+        accent: '340 56% 52%',
+        background: '345 35% 5%',
+        surface: '345 28% 9%',
+        foreground: '345 12% 95%'
       }
     }
   },
   {
     name: 'platinum',
-    label: 'Platina',
-    description: 'Cinza prateado premium, modernidade e exclusividade',
+    label: 'Platina Premium',
+    description: 'Prata metálico - exclusividade moderna',
     plan: 'business',
     colors: {
       light: {
-        primary: '210 12% 45%',
-        secondary: '200 10% 52%',
-        accent: '220 35% 58%',
-        background: '210 15% 98%',
+        primary: '210 15% 50%',
+        secondary: '200 12% 55%',
+        accent: '220 18% 52%',
+        background: '210 10% 98%',
         surface: '0 0% 100%',
-        foreground: '210 20% 10%'
+        foreground: '210 18% 10%'
       },
       dark: {
         primary: '210 12% 62%',
