@@ -1,12 +1,23 @@
 // Utilitário para exportação de relatórios em PDF
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+// Nota: usamos dynamic import para reduzir o peso do grafo de tipos no build.
 
 export interface PDFExportOptions {
   filename: string;
   title: string;
   subtitle?: string;
   orientation?: 'portrait' | 'landscape';
+}
+
+async function loadPdfDeps() {
+  const [html2canvasMod, jsPdfMod] = await Promise.all([
+    import('html2canvas'),
+    import('jspdf'),
+  ]);
+
+  const html2canvas = (html2canvasMod as any).default ?? (html2canvasMod as any);
+  const JsPDF = (jsPdfMod as any).default ?? (jsPdfMod as any);
+
+  return { html2canvas, JsPDF } as { html2canvas: any; JsPDF: any };
 }
 
 // Exportar elemento DOM para PDF
@@ -16,12 +27,14 @@ export async function exportElementToPDF(
 ): Promise<void> {
   const { filename, title, subtitle, orientation = 'portrait' } = options;
 
+  const { html2canvas, JsPDF } = await loadPdfDeps();
+
   // Capturar elemento como imagem
   const canvas = await html2canvas(element, {
     scale: 2,
     useCORS: true,
     logging: false,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#ffffff',
   });
 
   const imgData = canvas.toDataURL('image/png');
@@ -29,10 +42,10 @@ export async function exportElementToPDF(
   const imgHeight = canvas.height;
 
   // Criar PDF
-  const pdf = new jsPDF({
+  const pdf = new JsPDF({
     orientation,
     unit: 'mm',
-    format: 'a4'
+    format: 'a4',
   });
 
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -147,10 +160,12 @@ export async function generateConsolidatedPDF(data: {
   upcomingTransactions: number;
   projectedBalance: number;
 }): Promise<void> {
-  const pdf = new jsPDF({
+  const { JsPDF } = await loadPdfDeps();
+
+  const pdf = new JsPDF({
     orientation: 'portrait',
     unit: 'mm',
-    format: 'a4'
+    format: 'a4',
   });
 
   const pageWidth = pdf.internal.pageSize.getWidth();
