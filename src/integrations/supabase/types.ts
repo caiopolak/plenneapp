@@ -151,8 +151,10 @@ export type Database = {
           is_free: boolean | null
           module_id: string | null
           order_index: number | null
+          thumbnail_url: string | null
           title: string
           updated_at: string | null
+          video_file_url: string | null
           video_url: string | null
         }
         Insert: {
@@ -164,8 +166,10 @@ export type Database = {
           is_free?: boolean | null
           module_id?: string | null
           order_index?: number | null
+          thumbnail_url?: string | null
           title: string
           updated_at?: string | null
+          video_file_url?: string | null
           video_url?: string | null
         }
         Update: {
@@ -177,8 +181,10 @@ export type Database = {
           is_free?: boolean | null
           module_id?: string | null
           order_index?: number | null
+          thumbnail_url?: string | null
           title?: string
           updated_at?: string | null
+          video_file_url?: string | null
           video_url?: string | null
         }
         Relationships: [
@@ -226,34 +232,49 @@ export type Database = {
       }
       financial_challenges: {
         Row: {
+          completed_at: string | null
           created_at: string | null
           creator_id: string
           description: string | null
           duration_days: number
           id: string
+          is_automatic: boolean | null
+          started_at: string | null
           status: string | null
           target_amount: number | null
           title: string
+          user_id: string | null
+          workspace_id: string | null
         }
         Insert: {
+          completed_at?: string | null
           created_at?: string | null
           creator_id: string
           description?: string | null
           duration_days: number
           id?: string
+          is_automatic?: boolean | null
+          started_at?: string | null
           status?: string | null
           target_amount?: number | null
           title: string
+          user_id?: string | null
+          workspace_id?: string | null
         }
         Update: {
+          completed_at?: string | null
           created_at?: string | null
           creator_id?: string
           description?: string | null
           duration_days?: number
           id?: string
+          is_automatic?: boolean | null
+          started_at?: string | null
           status?: string | null
           target_amount?: number | null
           title?: string
+          user_id?: string | null
+          workspace_id?: string | null
         }
         Relationships: []
       }
@@ -511,6 +532,50 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      lesson_materials: {
+        Row: {
+          created_at: string
+          description: string | null
+          file_size: number | null
+          file_type: string
+          file_url: string
+          id: string
+          lesson_id: string
+          order_index: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          file_size?: number | null
+          file_type: string
+          file_url: string
+          id?: string
+          lesson_id: string
+          order_index?: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          file_size?: number | null
+          file_type?: string
+          file_url?: string
+          id?: string
+          lesson_id?: string
+          order_index?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_materials_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "education_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notification_settings: {
         Row: {
@@ -847,6 +912,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_themes: {
         Row: {
           created_at: string | null
@@ -967,12 +1053,21 @@ export type Database = {
       get_user_role_from_jwt:
         | { Args: never; Returns: string }
         | { Args: { jwt_token: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_workspace_owner: {
         Args: { _user_id: string; _workspace_id: string }
         Returns: boolean
       }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user"
       risk_profile: "conservative" | "moderate" | "aggressive"
       subscription_plan: "free" | "pro" | "business"
       subscription_status: "active" | "canceled" | "expired" | "trial"
@@ -1103,6 +1198,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "user"],
       risk_profile: ["conservative", "moderate", "aggressive"],
       subscription_plan: ["free", "pro", "business"],
       subscription_status: ["active", "canceled", "expired", "trial"],

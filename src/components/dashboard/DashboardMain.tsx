@@ -6,6 +6,8 @@ import { ProjectedBalanceChart } from './ProjectedBalanceChart';
 import { FinancialHealthCard } from './FinancialHealthCard';
 import { MonthlyComparisonCard } from './MonthlyComparisonCard';
 import { DashboardAlertsCard } from './DashboardAlertsCard';
+import { DashboardChallengesCard } from './DashboardChallengesCard';
+import { DashboardTipsCard } from './DashboardTipsCard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UnifiedTransactionForm } from '@/components/transactions/UnifiedTransactionForm';
 import { Button } from '@/components/ui/button';
@@ -169,8 +171,17 @@ export function DashboardMain() {
         </div>
       </div>
 
-      {/* Card de Alertas e Dicas */}
-      <div className="animate-fade-in stagger-7">
+      {/* Cards de Dicas, Desafios e Alertas */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="animate-fade-in stagger-7">
+          <DashboardTipsCard />
+        </div>
+        <div className="animate-fade-in stagger-8">
+          <DashboardChallengesCard />
+        </div>
+      </div>
+
+      <div className="animate-fade-in stagger-9">
         <DashboardAlertsCard />
       </div>
 
