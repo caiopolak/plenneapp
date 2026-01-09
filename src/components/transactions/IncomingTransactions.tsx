@@ -23,6 +23,9 @@ interface IncomingTransaction {
   user_id: string;
   workspace_id: string | null;
   created_at: string;
+  source: 'incoming' | 'recurring';
+  is_recurring?: boolean;
+  recurrence_pattern?: string | null;
 }
 
 export function IncomingTransactions() {
@@ -41,7 +44,12 @@ export function IncomingTransactions() {
     }
 
     try {
-      const { data, error } = await supabase
+      const today = new Date();
+      const todayStr = format(today, 'yyyy-MM-dd');
+      const futureLimit = format(addDays(today, 90), 'yyyy-MM-dd');
+
+      // 1. Buscar incoming_transactions (transações únicas agendadas)
+      const { data: incomingData, error: incomingError } = await supabase
         .from('incoming_transactions')
         .select('*')
         .eq('user_id', user.id)
@@ -49,8 +57,51 @@ export function IncomingTransactions() {
         .eq('status', 'pending')
         .order('expected_date', { ascending: true });
 
-      if (error) throw error;
-      setIncomingTransactions(data || []);
+      if (incomingError) throw incomingError;
+
+      // 2. Buscar transações recorrentes com data futura (templates)
+      const { data: recurringData, error: recurringError } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('workspace_id', workspace.id)
+        .eq('is_recurring', true)
+        .gt('date', todayStr)
+        .lte('date', futureLimit)
+        .order('date', { ascending: true });
+
+      if (recurringError) throw recurringError;
+
+      // Mapear incoming transactions
+      const incomingMapped: IncomingTransaction[] = (incomingData || []).map(t => ({
+        ...t,
+        expected_date: t.expected_date,
+        source: 'incoming' as const
+      }));
+
+      // Mapear recurring transactions futuras
+      const recurringMapped: IncomingTransaction[] = (recurringData || []).map(t => ({
+        id: t.id,
+        type: t.type,
+        amount: t.amount,
+        category: t.category,
+        description: t.description,
+        expected_date: t.date,
+        status: 'pending',
+        user_id: t.user_id,
+        workspace_id: t.workspace_id,
+        created_at: t.created_at,
+        source: 'recurring' as const,
+        is_recurring: true,
+        recurrence_pattern: t.recurrence_pattern
+      }));
+
+      // Combinar e ordenar por data
+      const combined = [...incomingMapped, ...recurringMapped].sort((a, b) => 
+        new Date(a.expected_date).getTime() - new Date(b.expected_date).getTime()
+      );
+
+      setIncomingTransactions(combined);
     } catch (error) {
       safeLog('error', 'Erro ao buscar transações pendentes', { error: String(error) });
       toast({
@@ -69,7 +120,17 @@ export function IncomingTransactions() {
 
   const confirmTransaction = async (incomingTransaction: IncomingTransaction) => {
     try {
-      // Criar transação real
+      if (incomingTransaction.source === 'recurring') {
+        // Para transações recorrentes, não precisamos confirmar manualmente
+        // A função automática vai processar quando chegar a data
+        toast({
+          title: "Transação Recorrente",
+          description: "Esta transação será processada automaticamente na data programada."
+        });
+        return;
+      }
+
+      // Criar transação real (apenas para incoming_transactions)
       const { error: transactionError } = await supabase
         .from('transactions')
         .insert({
@@ -108,19 +169,35 @@ export function IncomingTransactions() {
     }
   };
 
-  const cancelTransaction = async (id: string) => {
+  const cancelTransaction = async (transaction: IncomingTransaction) => {
     try {
-      const { error } = await supabase
-        .from('incoming_transactions')
-        .update({ status: 'cancelled' })
-        .eq('id', id);
+      if (transaction.source === 'recurring') {
+        // Cancelar transação recorrente = deletar o template
+        const { error } = await supabase
+          .from('transactions')
+          .delete()
+          .eq('id', transaction.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Sucesso!",
-        description: "Transação cancelada"
-      });
+        toast({
+          title: "Sucesso!",
+          description: "Transação recorrente cancelada"
+        });
+      } else {
+        // Cancelar incoming transaction
+        const { error } = await supabase
+          .from('incoming_transactions')
+          .update({ status: 'cancelled' })
+          .eq('id', transaction.id);
+
+        if (error) throw error;
+
+        toast({
+          title: "Sucesso!",
+          description: "Transação cancelada"
+        });
+      }
 
       fetchIncomingTransactions();
     } catch (error) {
@@ -175,7 +252,7 @@ export function IncomingTransactions() {
                   className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted bg-card"
                 >
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <Badge
                       variant="default"
                       className={
@@ -187,6 +264,18 @@ export function IncomingTransactions() {
                       {transaction.type === 'income' ? 'Receita' : 'Despesa'}
                     </Badge>
                     {getDateBadge(transaction.expected_date)}
+                    {transaction.source === 'recurring' && (
+                      <Badge variant="outline" className="text-primary border-primary">
+                        <Clock className="w-3 h-3 mr-1" />
+                        Recorrente
+                        {transaction.recurrence_pattern && ` (${
+                          transaction.recurrence_pattern === 'weekly' ? 'Semanal' :
+                          transaction.recurrence_pattern === 'monthly' ? 'Mensal' :
+                          transaction.recurrence_pattern === 'yearly' ? 'Anual' :
+                          transaction.recurrence_pattern
+                        })`}
+                      </Badge>
+                    )}
                   </div>
                   <div className="font-medium">{transaction.category}</div>
                   {transaction.description && (
@@ -195,7 +284,8 @@ export function IncomingTransactions() {
                     </div>
                   )}
                   <div className="text-sm text-muted-foreground">
-                    Previsto para: {format(new Date(transaction.expected_date), "dd/MM/yyyy", { locale: ptBR })}
+                    {transaction.source === 'recurring' ? 'Próxima ocorrência: ' : 'Previsto para: '}
+                    {format(new Date(transaction.expected_date), "dd/MM/yyyy", { locale: ptBR })}
                   </div>
                 </div>
 
@@ -218,7 +308,7 @@ export function IncomingTransactions() {
                       size="sm"
                       variant="outline"
                       className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                      onClick={() => cancelTransaction(transaction.id)}
+                      onClick={() => cancelTransaction(transaction)}
                     >
                       <X className="w-4 h-4" />
                     </Button>
