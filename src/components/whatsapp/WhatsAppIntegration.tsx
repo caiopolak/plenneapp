@@ -107,26 +107,26 @@ export function WhatsAppIntegration() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-[#003f5c] flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
             <MessageCircle className="w-6 h-6" />
             Assistente WhatsApp
-            <Badge className="bg-[#f8961e] text-white">
+            <Badge className="bg-warning text-warning-foreground">
               <Crown className="w-3 h-3 mr-1" />
               Business
             </Badge>
           </h2>
-          <p className="text-[#2b2b2b]/70">Gerencie suas finanças diretamente pelo WhatsApp</p>
+          <p className="text-muted-foreground">Gerencie suas finanças diretamente pelo WhatsApp</p>
         </div>
       </div>
 
       {!isBusinessPlan && (
-        <Card className="border-l-4 border-l-[#f8961e] bg-orange-50">
+        <Card className="border-l-4 border-l-warning bg-warning/10">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <Crown className="w-6 h-6 text-[#f8961e]" />
+              <Crown className="w-6 h-6 text-warning" />
               <div>
-                <h3 className="font-semibold text-[#003f5c]">Recurso Premium</h3>
-                <p className="text-[#2b2b2b]/70">
+                <h3 className="font-semibold text-primary">Recurso Premium</h3>
+                <p className="text-muted-foreground">
                   A integração com WhatsApp está disponível exclusivamente no plano Business. 
                   Upgrade seu plano para acessar este recurso.
                 </p>
@@ -140,7 +140,7 @@ export function WhatsAppIntegration() {
         {/* Configuração */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-[#003f5c]">
+            <CardTitle className="flex items-center gap-2 text-primary">
               <Phone className="w-5 h-5" />
               Configuração
             </CardTitle>
@@ -158,7 +158,7 @@ export function WhatsAppIntegration() {
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     disabled={!isBusinessPlan}
                   />
-                  <p className="text-xs text-[#2b2b2b]/60 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Inclua o código do país (+55 para Brasil)
                   </p>
                 </div>
@@ -166,18 +166,18 @@ export function WhatsAppIntegration() {
                 <Button 
                   onClick={connectWhatsApp}
                   disabled={loading || !isBusinessPlan}
-                  className="w-full bg-[#25D366] hover:bg-[#25D366]/90 text-white"
+                  className="w-full bg-success hover:bg-success/90 text-success-foreground"
                 >
                   {loading ? "Conectando..." : "Conectar WhatsApp"}
                 </Button>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                <div className="flex items-center gap-2 p-3 bg-success/10 rounded-lg border border-success/20">
+                  <CheckCircle className="w-5 h-5 text-success" />
                   <div>
-                    <p className="font-medium text-green-800">WhatsApp Conectado</p>
-                    <p className="text-sm text-green-600">{phoneNumber}</p>
+                    <p className="font-medium text-success">WhatsApp Conectado</p>
+                    <p className="text-sm text-success/80">{phoneNumber}</p>
                   </div>
                 </div>
                 
@@ -192,7 +192,7 @@ export function WhatsAppIntegration() {
                   <Button 
                     onClick={disconnectWhatsApp}
                     variant="outline"
-                    className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
+                    className="flex-1 text-destructive border-destructive/30 hover:bg-destructive/10"
                   >
                     Desconectar
                   </Button>
@@ -205,18 +205,18 @@ export function WhatsAppIntegration() {
         {/* Recursos Disponíveis */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-[#003f5c]">Recursos Disponíveis</CardTitle>
+            <CardTitle className="text-primary">Recursos Disponíveis</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {features.map((feature, index) => (
                 <div key={index} className="flex items-start gap-3">
-                  <div className="p-2 bg-[#2f9e44]/10 rounded-lg text-[#2f9e44]">
+                  <div className="p-2 bg-accent/20 rounded-lg text-accent">
                     {feature.icon}
                   </div>
                   <div>
-                    <h4 className="font-medium text-[#003f5c]">{feature.title}</h4>
-                    <p className="text-sm text-[#2b2b2b]/70">{feature.description}</p>
+                    <h4 className="font-medium text-primary">{feature.title}</h4>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
                   </div>
                 </div>
               ))}
@@ -228,25 +228,25 @@ export function WhatsAppIntegration() {
       {/* Comandos Disponíveis */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-[#003f5c]">Comandos Disponíveis</CardTitle>
+          <CardTitle className="text-primary">Comandos Disponíveis</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {commands.map((cmd, index) => (
-              <div key={index} className="p-4 bg-[#f4f4f4] rounded-lg">
-                <code className="text-[#2f9e44] font-mono font-semibold">
+              <div key={index} className="p-4 bg-muted rounded-lg">
+                <code className="text-accent font-mono font-semibold">
                   {cmd.command}
                 </code>
-                <p className="text-sm text-[#2b2b2b]/70 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {cmd.description}
                 </p>
               </div>
             ))}
           </div>
           
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h4 className="font-medium text-blue-800 mb-2">💡 Dica:</h4>
-            <p className="text-sm text-blue-700">
+          <div className="mt-6 p-4 bg-secondary/20 rounded-lg border border-secondary/30">
+            <h4 className="font-medium text-secondary mb-2">💡 Dica:</h4>
+            <p className="text-sm text-secondary/90">
               Você também pode conversar naturalmente com nosso assistente! 
               Pergunte coisas como "Quanto gastei este mês?" ou "Como posso economizar mais?"
             </p>
@@ -257,31 +257,31 @@ export function WhatsAppIntegration() {
       {/* Exemplo de Conversa */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-[#003f5c]">Exemplo de Conversa</CardTitle>
+          <CardTitle className="text-primary">Exemplo de Conversa</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3 max-h-64 overflow-y-auto">
             <div className="flex justify-end">
-              <div className="bg-[#dcf8c6] p-3 rounded-lg max-w-xs">
-                <p className="text-sm">Oi! Gastei R$ 45 no almoço hoje</p>
+              <div className="bg-success/20 p-3 rounded-lg max-w-xs">
+                <p className="text-sm text-foreground">Oi! Gastei R$ 45 no almoço hoje</p>
               </div>
             </div>
             
             <div className="flex justify-start">
-              <div className="bg-white border p-3 rounded-lg max-w-xs">
+              <div className="bg-card border p-3 rounded-lg max-w-xs">
                 <p className="text-sm">✅ Gasto registrado! R$ 45,00 em Alimentação.</p>
                 <p className="text-sm mt-1">💡 Você já gastou R$ 350 em alimentação este mês. Sua meta é R$ 400.</p>
               </div>
             </div>
             
             <div className="flex justify-end">
-              <div className="bg-[#dcf8c6] p-3 rounded-lg max-w-xs">
-                <p className="text-sm">Como está meu orçamento?</p>
+              <div className="bg-success/20 p-3 rounded-lg max-w-xs">
+                <p className="text-sm text-foreground">Como está meu orçamento?</p>
               </div>
             </div>
             
             <div className="flex justify-start">
-              <div className="bg-white border p-3 rounded-lg max-w-xs">
+              <div className="bg-card border p-3 rounded-lg max-w-xs">
                 <p className="text-sm">📊 Seu orçamento mensal:</p>
                 <p className="text-sm">• Alimentação: R$ 350/400 (87%)</p>
                 <p className="text-sm">• Transporte: R$ 200/300 (67%)</p>

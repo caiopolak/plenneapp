@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { UserCheck, Users, Mail } from "lucide-react";
+import { safeLog } from "@/lib/security";
 
 interface PendingInvite {
   id: string;
@@ -52,7 +53,7 @@ export function WorkspaceInviteAccept() {
       if (error) throw error;
       setPendingInvites(data || []);
     } catch (error) {
-      console.error("Erro ao buscar convites:", error);
+      safeLog('error', 'Erro ao buscar convites', { error: String(error) });
     } finally {
       setLoading(false);
     }
@@ -82,7 +83,7 @@ export function WorkspaceInviteAccept() {
       await fetchPendingInvites();
       await reload(); // Recarrega workspaces para mostrar o novo
     } catch (error) {
-      console.error("Erro ao aceitar convite:", error);
+      safeLog('error', 'Erro ao aceitar convite', { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
@@ -111,7 +112,7 @@ export function WorkspaceInviteAccept() {
 
       await fetchPendingInvites();
     } catch (error) {
-      console.error("Erro ao recusar convite:", error);
+      safeLog('error', 'Erro ao recusar convite', { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",

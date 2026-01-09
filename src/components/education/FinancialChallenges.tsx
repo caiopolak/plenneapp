@@ -97,11 +97,11 @@ export function FinancialChallenges() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-blue-500';
-      case 'completed': return 'bg-green-500';
-      case 'paused': return 'bg-yellow-500';
-      case 'failed': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'active': return 'bg-secondary';
+      case 'completed': return 'bg-success';
+      case 'paused': return 'bg-warning';
+      case 'failed': return 'bg-destructive';
+      default: return 'bg-muted';
     }
   };
 
@@ -142,16 +142,16 @@ export function FinancialChallenges() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-[#003f5c] flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
             <Trophy className="w-6 h-6" />
             Desafios Financeiros
           </h2>
-          <p className="text-[#2b2b2b]/70">Desafie-se e evolua suas finanças</p>
+          <p className="text-muted-foreground">Desafie-se e evolua suas finanças</p>
         </div>
         
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
-            <Button className="bg-[#2f9e44] hover:bg-[#2f9e44]/90">
+            <Button className="bg-accent hover:bg-accent/90">
               <Plus className="w-4 h-4 mr-2" />
               Novo Desafio
             </Button>
@@ -237,12 +237,12 @@ export function FinancialChallenges() {
             const daysRemaining = getDaysRemaining(challenge);
             
             return (
-              <Card key={challenge.id} className="border-l-4 border-l-[#f8961e]">
+              <Card key={challenge.id} className="border-l-4 border-l-warning">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-lg text-[#003f5c]">{challenge.title}</CardTitle>
-                      <Badge className={`mt-2 ${getStatusColor(challenge.status)} text-white`}>
+                      <CardTitle className="text-lg text-primary">{challenge.title}</CardTitle>
+                      <Badge className={`mt-2 ${getStatusColor(challenge.status)} text-primary-foreground`}>
                         {getStatusLabel(challenge.status)}
                       </Badge>
                     </div>
@@ -291,10 +291,10 @@ export function FinancialChallenges() {
                 </CardHeader>
                 
                 <CardContent className="space-y-4">
-                  <p className="text-[#2b2b2b]">{challenge.description}</p>
+                  <p className="text-foreground">{challenge.description}</p>
                   
                   {challenge.target_amount && (
-                    <div className="flex items-center gap-2 text-sm text-[#2b2b2b]/70">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <DollarSign className="w-4 h-4" />
                       Meta: R$ {challenge.target_amount.toFixed(2).replace('.', ',')}
                     </div>
@@ -308,7 +308,7 @@ export function FinancialChallenges() {
                     <Progress value={progress} className="h-2" />
                   </div>
                   
-                  <div className="flex items-center justify-between text-sm text-[#2b2b2b]/70">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
                       {daysRemaining > 0 ? `${daysRemaining} dias restantes` : 'Prazo expirado'}
@@ -319,7 +319,7 @@ export function FinancialChallenges() {
                   </div>
                   
                   {challenge.completed_at && (
-                    <div className="text-sm text-green-600">
+                    <div className="text-sm text-success">
                       Concluído em {format(new Date(challenge.completed_at), "dd/MM/yyyy", { locale: ptBR })}
                     </div>
                   )}

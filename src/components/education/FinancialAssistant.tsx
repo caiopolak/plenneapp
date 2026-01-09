@@ -55,12 +55,12 @@ export function FinancialAssistant() {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-6">
-            <Bot className="w-6 h-6 text-[#003f5c]" />
-            <h2 className="text-xl font-bold text-[#003f5c]">Assistente Financeiro (IA Gemini)</h2>
+            <Bot className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-primary">Assistente Financeiro (IA Gemini)</h2>
           </div>
-          <div className="flex flex-col gap-2 min-h-[240px] max-h-72 overflow-y-auto bg-gray-100 rounded-lg p-4 mb-4">
+          <div className="flex flex-col gap-2 min-h-[240px] max-h-72 overflow-y-auto bg-muted rounded-lg p-4 mb-4">
             {messages.length === 0 ? (
-              <div className="text-[#003f5c]/60">
+              <div className="text-muted-foreground">
                 Você pode pedir dicas financeiras, pedir para analisar seus gastos, pedir desafios ou perguntas sobre saúde financeira!<br />
                 Exemplo: <span className="italic">"Qual desafio financeiro posso cumprir este mês?"</span>
               </div>
@@ -71,7 +71,7 @@ export function FinancialAssistant() {
                 </div>
               ))
             )}
-            {loading && <div className="text-xs text-[#003f5c]/80">Pensando...</div>}
+            {loading && <div className="text-xs text-muted-foreground">Pensando...</div>}
           </div>
           <div className="flex gap-2">
             <Input
@@ -83,7 +83,7 @@ export function FinancialAssistant() {
             />
             <Button onClick={handleSend} disabled={loading || !input}>Enviar</Button>
           </div>
-          <span className="block text-xs text-[#003f5c]/60 mt-3">
+          <span className="block text-xs text-muted-foreground mt-3">
             Agora com respostas reais e sugestões automáticas, powered by Gemini IA!
           </span>
         </CardContent>

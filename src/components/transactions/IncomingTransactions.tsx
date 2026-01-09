@@ -10,6 +10,7 @@ import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { Calendar, DollarSign, Check, X, Clock } from 'lucide-react';
 import { format, isToday, isTomorrow, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { safeLog } from '@/lib/security';
 
 interface IncomingTransaction {
   id: string;
@@ -33,7 +34,7 @@ export function IncomingTransactions() {
 
   const fetchIncomingTransactions = async () => {
     if (!user || !workspace?.id) {
-      console.log("IncomingTransactions - No user or workspace, clearing transactions");
+      safeLog('info', 'IncomingTransactions - No user or workspace, clearing transactions');
       setIncomingTransactions([]);
       setLoading(false);
       return;
@@ -51,7 +52,7 @@ export function IncomingTransactions() {
       if (error) throw error;
       setIncomingTransactions(data || []);
     } catch (error) {
-      console.error('Erro ao buscar transações pendentes:', error);
+      safeLog('error', 'Erro ao buscar transações pendentes', { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
@@ -98,7 +99,7 @@ export function IncomingTransactions() {
 
       fetchIncomingTransactions();
     } catch (error) {
-      console.error('Erro ao confirmar transação:', error);
+      safeLog('error', 'Erro ao confirmar transação', { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
@@ -123,7 +124,7 @@ export function IncomingTransactions() {
 
       fetchIncomingTransactions();
     } catch (error) {
-      console.error('Erro ao cancelar transação:', error);
+      safeLog('error', 'Erro ao cancelar transação', { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",

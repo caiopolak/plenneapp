@@ -18,6 +18,7 @@ import { List, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TransactionRowSkeleton, AnalyticsCardSkeleton } from '@/components/ui/loading-skeletons';
 import { usePaginatedLoad } from '@/hooks/useLazyLoad';
+import { safeLog } from '@/lib/security';
 
 const initialFilters: TransactionFilters = {
   searchTerm: '',
@@ -142,7 +143,7 @@ export function TransactionList() {
       });
       fetchTransactions();
     } catch (error) {
-      console.error('Error deleting transaction:', error);
+      safeLog('error', 'Error deleting transaction', { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
