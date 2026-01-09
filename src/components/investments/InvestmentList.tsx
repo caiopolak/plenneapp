@@ -12,6 +12,7 @@ import { InvestmentForm } from './InvestmentForm';
 import { InvestmentCard } from "./InvestmentCard";
 import { InvestmentsAnalyticsCards } from "./InvestmentsAnalyticsCards";
 import { InvestmentProfitabilityAnalysis } from "./InvestmentProfitabilityAnalysis";
+import { InvestmentEvolutionChart } from "./InvestmentEvolutionChart";
 import { InvestmentInsights } from "./InvestmentInsights";
 import { CompactInvestmentFilters, InvestmentFilters } from "./CompactInvestmentFilters";
 import { InvestmentCardSkeleton, AnalyticsCardSkeleton } from "@/components/ui/loading-skeletons";
@@ -255,6 +256,11 @@ export function InvestmentList() {
         totalInvestments={filteredInvestments.length}
         averageReturn={averageReturn}
       />
+
+      {/* Gráfico de Evolução Patrimonial */}
+      {filteredInvestments.length > 0 && (
+        <InvestmentEvolutionChart investments={filteredInvestments} />
+      )}
 
       {/* Análise de Rentabilidade - Colapsável */}
       {filteredInvestments.length > 0 && (
