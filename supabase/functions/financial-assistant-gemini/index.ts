@@ -111,6 +111,22 @@ async function getFinancialContext(supabaseClient: any, userId: string) {
       .eq('user_id', userId)
       .limit(10);
 
+    // Buscar desafios ativos
+    const { data: challenges } = await supabaseClient
+      .from('financial_challenges')
+      .select('title, description, target_amount, duration_days, status, started_at, is_automatic')
+      .or(`user_id.eq.${userId},creator_id.eq.${userId}`)
+      .eq('status', 'active')
+      .limit(5);
+
+    // Buscar progresso nos cursos
+    const { data: courseProgress } = await supabaseClient
+      .from('user_lesson_progress')
+      .select('completed')
+      .eq('user_id', userId);
+
+    const completedLessons = (courseProgress || []).filter((p: any) => p.completed).length;
+
     // Montar contexto
     const balance = totalIncome - totalExpense;
     
@@ -137,6 +153,13 @@ async function getFinancialContext(supabaseClient: any, userId: string) {
     // Total investido
     const totalInvested = (investments || []).reduce((sum: number, i: any) => sum + Number(i.amount), 0);
 
+    // Desafios ativos
+    const challengesStatus = (challenges || []).map((c: any) => {
+      const daysInfo = c.started_at ? `, iniciado em ${new Date(c.started_at).toLocaleDateString('pt-BR')}` : '';
+      const targetInfo = c.target_amount ? ` (meta: R$ ${Number(c.target_amount).toFixed(2)})` : '';
+      return `${c.title}${targetInfo} - ${c.duration_days} dias${daysInfo}${c.is_automatic ? ' [sugerido pela IA]' : ''}`;
+    }).join('; ');
+
     return `
 CONTEXTO FINANCEIRO DO USUÁRIO (Mês atual: ${today.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}):
 - Receitas do mês: R$ ${totalIncome.toFixed(2)}
@@ -146,8 +169,12 @@ CONTEXTO FINANCEIRO DO USUÁRIO (Mês atual: ${today.toLocaleDateString('pt-BR',
 ${budgetStatus ? `- Orçamentos: ${budgetStatus}` : ''}
 ${goalsStatus ? `- Metas: ${goalsStatus}` : ''}
 ${totalInvested > 0 ? `- Total investido: R$ ${totalInvested.toFixed(2)}` : ''}
+${challengesStatus ? `- Desafios ativos: ${challengesStatus}` : ''}
+${completedLessons > 0 ? `- Aulas de educação financeira completadas: ${completedLessons}` : ''}
 
-Use estas informações para dar conselhos personalizados e relevantes.
+Use estas informações para dar conselhos personalizados e relevantes. 
+Incentive o usuário a continuar seus desafios ativos e parabenize progressos.
+Se o usuário não tem desafios ativos, sugira que ele aceite um desafio baseado nos padrões de gastos.
 `;
   } catch (error) {
     console.error("Error fetching financial context:", error);

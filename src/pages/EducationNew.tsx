@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { FinancialTips } from "@/components/education/FinancialTips";
-import { FinancialChallenges } from "@/components/education/FinancialChallenges";
+import { FinancialChallengesNew } from "@/components/education/FinancialChallengesNew";
 import { CourseViewer } from "@/components/education/CourseViewer";
 import { CourseModuleManager } from "@/components/education/admin/CourseModuleManager";
 import { BookOpen, Lightbulb, Trophy, Settings } from "lucide-react";
@@ -74,7 +74,7 @@ export default function EducationNew() {
         </TabsContent>
 
         <TabsContent value="challenges" className="mt-6">
-          <FinancialChallenges />
+          <FinancialChallengesNew />
         </TabsContent>
 
         {isAdmin && (
