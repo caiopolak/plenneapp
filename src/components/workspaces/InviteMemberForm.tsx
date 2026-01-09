@@ -37,7 +37,7 @@ export function InviteMemberForm({ onInvite, canInvite }: InviteMemberFormProps)
 
   if (!canInvite) {
     return (
-      <div className="p-4 bg-gray-50 rounded-lg border">
+      <div className="p-4 bg-muted rounded-lg border border-border">
         <p className="text-sm text-muted-foreground flex items-center gap-2">
           <UserPlus className="w-4 h-4" />
           Apenas administradores podem convidar novos membros.
@@ -90,9 +90,9 @@ export function InviteMemberForm({ onInvite, canInvite }: InviteMemberFormProps)
         </Button>
       </form>
       
-      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <p className="text-sm text-blue-800">
-          <strong>Como funciona:</strong> O convite será enviado por e-mail. 
+      <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+        <p className="text-sm text-foreground">
+          <strong className="text-primary">Como funciona:</strong> O convite será enviado por e-mail. 
           Se a pessoa não tiver conta no Plenne, precisará criar uma com este e-mail. 
           Após o cadastro, terá acesso automático a este workspace.
         </p>
