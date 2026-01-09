@@ -273,28 +273,6 @@ export function DashboardOverview() {
           </div>
         </div>
 
-        {/* Meta mais próxima */}
-        {data.nearestGoal && (
-          <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">Meta em Destaque</span>
-              </div>
-              {data.nearestGoal.targetDate && (
-                <Badge variant="secondary" className="text-xs">
-                  <Calendar className="h-3 w-3 mr-1" />
-                  {format(new Date(data.nearestGoal.targetDate), 'dd/MM/yyyy')}
-                </Badge>
-              )}
-            </div>
-            <p className="text-sm font-semibold text-foreground mb-2">{data.nearestGoal.name}</p>
-            <div className="flex items-center gap-3">
-              <Progress value={data.nearestGoal.progress} className="flex-1 h-2" />
-              <span className="text-sm font-medium text-primary">{data.nearestGoal.progress.toFixed(0)}%</span>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
