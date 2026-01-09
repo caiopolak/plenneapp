@@ -32,7 +32,7 @@ import {
   APP_VERSION, 
   getEnvironment, 
   getEnvironmentLabel, 
-  formatReleaseDate 
+  formatBuildDate 
 } from "@/config/appVersion";
 
 export default function SettingsPage() {
@@ -245,7 +245,7 @@ export default function SettingsPage() {
                     <span className="text-sm font-medium">Última Atualização:</span>
                     <span className="text-sm text-muted-foreground flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      {formatReleaseDate()}
+                      {formatBuildDate()}
                     </span>
                   </div>
 
@@ -337,7 +337,7 @@ export default function SettingsPage() {
                     <Calendar className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium">Última Atualização</span>
                   </div>
-                  <p className="text-2xl font-bold">{formatReleaseDate()}</p>
+                  <p className="text-2xl font-bold">{formatBuildDate()}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Ambiente: {environmentLabel}
                   </p>
