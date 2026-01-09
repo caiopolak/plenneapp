@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Zap, Target, Sparkles, Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useConfetti } from "@/hooks/useConfetti";
 
 interface AddValueModalProps {
   open: boolean;
@@ -27,6 +28,7 @@ export function AddValueModal({
   targetAmount,
   onConfirm
 }: AddValueModalProps) {
+  const { fireGoalComplete, fireCelebration } = useConfetti();
   const [amount, setAmount] = useState<string>("");
   const [note, setNote] = useState<string>("");
   const [selectedQuick, setSelectedQuick] = useState<number | null>(null);
@@ -66,7 +68,20 @@ export function AddValueModal({
 
   const handleConfirm = () => {
     if (parsedAmount > 0) {
+      // Check if this deposit will complete the goal
+      const willComplete = currentAmount + parsedAmount >= targetAmount;
+      
       onConfirm(parsedAmount, note || undefined);
+      
+      // Fire confetti if goal is now complete
+      if (willComplete) {
+        // Small delay to let the modal close first
+        setTimeout(() => {
+          fireCelebration();
+          setTimeout(() => fireGoalComplete(), 300);
+        }, 100);
+      }
+      
       setAmount("");
       setNote("");
       setSelectedQuick(null);
