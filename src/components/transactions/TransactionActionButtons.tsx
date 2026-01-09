@@ -17,7 +17,7 @@ export function TransactionActionButtons({
   setShowForm,
   transactions = [],
 }: TransactionActionButtonsProps) {
-  const buttonGradient = "bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 text-white hover:from-[#003f5c] hover:to-[#2f9e44] hover:text-white";
+  const buttonGradient = "bg-gradient-to-tr from-primary/80 to-accent/60 text-primary-foreground hover:from-primary hover:to-accent";
 
   return (
     <div className="flex gap-2 flex-wrap w-full sm:w-auto">

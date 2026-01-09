@@ -35,10 +35,10 @@ export function IntelligentTips() {
 
   const getDifficultyColor = (level: string) => {
     switch (level) {
-      case 'beginner': return 'bg-green-500';
-      case 'intermediate': return 'bg-yellow-500';
-      case 'advanced': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'beginner': return 'bg-success';
+      case 'intermediate': return 'bg-warning';
+      case 'advanced': return 'bg-destructive';
+      default: return 'bg-muted';
     }
   };
 
@@ -53,10 +53,10 @@ export function IntelligentTips() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'border-l-red-500 bg-red-50';
-      case 'medium': return 'border-l-yellow-500 bg-yellow-50';
-      case 'low': return 'border-l-blue-500 bg-blue-50';
-      default: return 'border-l-gray-500 bg-gray-50';
+      case 'high': return 'border-l-destructive bg-destructive/10';
+      case 'medium': return 'border-l-warning bg-warning/10';
+      case 'low': return 'border-l-primary bg-primary/10';
+      default: return 'border-l-muted bg-muted/10';
     }
   };
 
@@ -90,8 +90,8 @@ export function IntelligentTips() {
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
               <div key={i} className="animate-pulse">
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-muted rounded mb-2"></div>
+                <div className="h-3 bg-muted rounded w-3/4"></div>
               </div>
             ))}
           </div>
@@ -104,16 +104,16 @@ export function IntelligentTips() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-[#003f5c] flex items-center gap-2">
-            <Lightbulb className="w-6 h-6 text-[#f8961e]" />
+          <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
+            <Lightbulb className="w-6 h-6 text-warning" />
             Dicas Inteligentes Personalizadas
             {highPriorityCount > 0 && (
-              <Badge className="bg-[#d62828] text-white">
+              <Badge className="bg-destructive text-destructive-foreground">
                 {highPriorityCount} urgentes
               </Badge>
             )}
           </h2>
-          <p className="text-[#2b2b2b]/70">
+          <p className="text-muted-foreground">
             {automaticCount} dicas automáticas baseadas no seu comportamento financeiro
           </p>
         </div>
@@ -134,7 +134,7 @@ export function IntelligentTips() {
             variant={filter === filterOption.value ? "default" : "outline"}
             size="sm"
             onClick={() => setFilter(filterOption.value)}
-            className={filter === filterOption.value ? "bg-[#003f5c] hover:bg-[#003f5c]/90" : ""}
+            className={filter === filterOption.value ? "bg-primary hover:bg-primary/90" : ""}
           >
             {filterOption.label}
           </Button>
@@ -144,11 +144,11 @@ export function IntelligentTips() {
       {filteredTips.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center">
-            <Lightbulb className="w-12 h-12 mx-auto text-[#f8961e]/50 mb-4" />
-            <p className="text-[#2b2b2b]/70">
+            <Lightbulb className="w-12 h-12 mx-auto text-warning/50 mb-4" />
+            <p className="text-muted-foreground">
               Nenhuma dica encontrada nesta categoria
             </p>
-            <p className="text-sm text-[#2b2b2b]/50 mt-2">
+            <p className="text-sm text-muted-foreground/70 mt-2">
               Continue registrando suas transações para receber dicas personalizadas!
             </p>
           </CardContent>
@@ -162,11 +162,11 @@ export function IntelligentTips() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3 flex-1">
-                      <div className="p-2 rounded-full bg-[#eaf6ee] text-[#2f9e44]">
+                      <div className="p-2 rounded-full bg-accent/20 text-accent">
                         {Icon}
                       </div>
                       <div className="flex-1">
-                        <CardTitle className="text-lg font-bold text-[#003f5c]">
+                        <CardTitle className="text-lg font-bold text-primary">
                           {tip.title}
                           {tip.is_automatic && (
                             <Badge variant="outline" className="ml-2 text-xs">
@@ -180,12 +180,12 @@ export function IntelligentTips() {
                           </Badge>
                           <div className="flex items-center gap-1">
                             <div className={`w-2 h-2 rounded-full ${getDifficultyColor(tip.difficulty_level)}`} />
-                            <span className="text-xs text-[#2b2b2b]/50">
+                            <span className="text-xs text-muted-foreground">
                               {getDifficultyLabel(tip.difficulty_level)}
                             </span>
                           </div>
                           {tip.priority === 'high' && (
-                            <Badge className="bg-red-500 text-white text-xs">
+                            <Badge className="bg-destructive text-destructive-foreground text-xs">
                               Urgente
                             </Badge>
                           )}
@@ -205,11 +205,11 @@ export function IntelligentTips() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-[#2b2b2b] mb-3">
+                  <p className="text-foreground mb-3">
                     {tip.content}
                   </p>
                   {tip.reason && (
-                    <p className="text-xs text-[#2b2b2b]/50 italic">
+                    <p className="text-xs text-muted-foreground italic">
                       💡 {tip.reason}
                     </p>
                   )}

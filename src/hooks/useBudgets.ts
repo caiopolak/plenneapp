@@ -13,6 +13,7 @@ import {
   updateBudgetInDB,
   deleteBudgetFromDB
 } from "@/services/budgetApi";
+import { safeLog } from "@/lib/security";
 
 export function useBudgets() {
   const { current } = useWorkspace();
@@ -21,12 +22,11 @@ export function useBudgets() {
   const [budgets, setBudgets] = useState<BudgetWithSpent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  console.log("useBudgets - current workspace:", current?.id);
-  console.log("useBudgets - user:", user?.id);
+  safeLog("info", "useBudgets - init", { workspaceId: current?.id, userId: user?.id });
 
   const fetchBudgets = async (year?: number, month?: number) => {
     if (!current?.id || !user?.id) {
-      console.log("useBudgets - No workspace or user, clearing budgets");
+      safeLog("info", "useBudgets - No workspace or user, clearing budgets");
       setBudgets([]);
       setLoading(false);
       return;
@@ -44,7 +44,7 @@ export function useBudgets() {
 
       // Calculate spent by category
       const spentByCategory = calculateSpentByCategory(transactionData);
-      console.log("useBudgets - Spent by category:", spentByCategory);
+      safeLog("info", "useBudgets - Spent by category", { categories: Object.keys(spentByCategory).length });
 
       // Combine budgets with spent amounts and generate alerts
       const budgetsWithSpent: BudgetWithSpent[] = budgetData.map(budget => {
@@ -62,7 +62,7 @@ export function useBudgets() {
 
       setBudgets(budgetsWithSpent);
     } catch (error) {
-      console.error("useBudgets - Error fetching budgets:", error);
+      safeLog("error", "useBudgets - Error fetching budgets", { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
@@ -75,7 +75,7 @@ export function useBudgets() {
 
   const createBudget = async (category: string, amount: number, year: number, month: number) => {
     if (!current?.id || !user?.id) {
-      console.log("useBudgets - Cannot create budget: no workspace or user");
+      safeLog("info", "useBudgets - Cannot create budget: no workspace or user");
       return false;
     }
 
@@ -90,7 +90,7 @@ export function useBudgets() {
       await fetchBudgets(year, month);
       return true;
     } catch (error) {
-      console.error("useBudgets - Error creating budget:", error);
+      safeLog("error", "useBudgets - Error creating budget", { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
@@ -116,7 +116,7 @@ export function useBudgets() {
       }
       return true;
     } catch (error) {
-      console.error("useBudgets - Error updating budget:", error);
+      safeLog("error", "useBudgets - Error updating budget", { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
@@ -138,7 +138,7 @@ export function useBudgets() {
       setBudgets(prev => prev.filter(b => b.id !== budgetId));
       return true;
     } catch (error) {
-      console.error("useBudgets - Error deleting budget:", error);
+      safeLog("error", "useBudgets - Error deleting budget", { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
@@ -149,7 +149,7 @@ export function useBudgets() {
   };
 
   useEffect(() => {
-    console.log("useBudgets - Effect triggered, workspace:", current?.id, "user:", user?.id);
+    safeLog("info", "useBudgets - Effect triggered", { workspaceId: current?.id, userId: user?.id });
     fetchBudgets();
   }, [current?.id, user?.id]);
 

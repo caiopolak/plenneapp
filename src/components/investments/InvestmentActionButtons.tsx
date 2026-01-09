@@ -20,7 +20,7 @@ export function InvestmentActionButtons({
   setShowForm 
 }: InvestmentActionButtonsProps) {
   const buttonGradient =
-    "bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 text-white hover:from-[#003f5c] hover:to-[#2f9e44]";
+    "bg-gradient-to-tr from-primary/80 to-accent/60 text-primary-foreground hover:from-primary hover:to-accent";
 
   // Mapear para o formato de exportação
   const investmentsForExport: InvestmentExport[] = investments.map(inv => ({
