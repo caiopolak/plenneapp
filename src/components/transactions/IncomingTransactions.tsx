@@ -1,16 +1,18 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
-import { Calendar, DollarSign, Check, X, Clock } from 'lucide-react';
-import { format, isToday, isTomorrow, addDays } from 'date-fns';
+import { Calendar, Check, X, Clock, Filter, RefreshCw } from 'lucide-react';
+import { format, isToday, isTomorrow, addDays, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { safeLog } from '@/lib/security';
+import { cn } from '@/lib/utils';
 
 interface IncomingTransaction {
   id: string;
@@ -28,9 +30,14 @@ interface IncomingTransaction {
   recurrence_pattern?: string | null;
 }
 
+type FilterType = 'all' | 'single' | 'recurring';
+type FilterPeriod = 'all' | '7days' | '30days' | '90days';
+
 export function IncomingTransactions() {
   const [incomingTransactions, setIncomingTransactions] = useState<IncomingTransaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filterType, setFilterType] = useState<FilterType>('all');
+  const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('all');
   const { user } = useAuth();
   const { current: workspace } = useWorkspace();
   const { toast } = useToast();
@@ -44,6 +51,7 @@ export function IncomingTransactions() {
     }
 
     try {
+      setLoading(true);
       const today = new Date();
       const todayStr = format(today, 'yyyy-MM-dd');
       const futureLimit = format(addDays(today, 90), 'yyyy-MM-dd');
@@ -118,11 +126,48 @@ export function IncomingTransactions() {
     fetchIncomingTransactions();
   }, [user, workspace]);
 
+  // Filtrar transações baseado nos filtros selecionados
+  const filteredTransactions = useMemo(() => {
+    let result = incomingTransactions;
+
+    // Filtro por tipo
+    if (filterType === 'single') {
+      result = result.filter(t => t.source === 'incoming');
+    } else if (filterType === 'recurring') {
+      result = result.filter(t => t.source === 'recurring');
+    }
+
+    // Filtro por período
+    if (filterPeriod !== 'all') {
+      const today = startOfDay(new Date());
+      let limitDate: Date;
+      
+      switch (filterPeriod) {
+        case '7days':
+          limitDate = endOfDay(addDays(today, 7));
+          break;
+        case '30days':
+          limitDate = endOfDay(addDays(today, 30));
+          break;
+        case '90days':
+          limitDate = endOfDay(addDays(today, 90));
+          break;
+        default:
+          limitDate = endOfDay(addDays(today, 90));
+      }
+
+      result = result.filter(t => {
+        const transactionDate = new Date(t.expected_date);
+        return transactionDate <= limitDate;
+      });
+    }
+
+    return result;
+  }, [incomingTransactions, filterType, filterPeriod]);
+
   const confirmTransaction = async (incomingTransaction: IncomingTransaction) => {
     try {
       if (incomingTransaction.source === 'recurring') {
-        // Para transações recorrentes, não precisamos confirmar manualmente
-        // A função automática vai processar quando chegar a data
         toast({
           title: "Transação Recorrente",
           description: "Esta transação será processada automaticamente na data programada."
@@ -130,7 +175,6 @@ export function IncomingTransactions() {
         return;
       }
 
-      // Criar transação real (apenas para incoming_transactions)
       const { error: transactionError } = await supabase
         .from('transactions')
         .insert({
@@ -145,7 +189,6 @@ export function IncomingTransactions() {
 
       if (transactionError) throw transactionError;
 
-      // Marcar como confirmada
       const { error: updateError } = await supabase
         .from('incoming_transactions')
         .update({ status: 'confirmed' })
@@ -172,7 +215,6 @@ export function IncomingTransactions() {
   const cancelTransaction = async (transaction: IncomingTransaction) => {
     try {
       if (transaction.source === 'recurring') {
-        // Cancelar transação recorrente = deletar o template
         const { error } = await supabase
           .from('transactions')
           .delete()
@@ -185,7 +227,6 @@ export function IncomingTransactions() {
           description: "Transação recorrente cancelada"
         });
       } else {
-        // Cancelar incoming transaction
         const { error } = await supabase
           .from('incoming_transactions')
           .update({ status: 'cancelled' })
@@ -228,25 +269,85 @@ export function IncomingTransactions() {
     return <Badge variant="outline">{format(transactionDate, 'dd/MM', { locale: ptBR })}</Badge>;
   };
 
+  const resetFilters = () => {
+    setFilterType('all');
+    setFilterPeriod('all');
+  };
+
+  const hasActiveFilters = filterType !== 'all' || filterPeriod !== 'all';
+
+  // Contadores para os badges
+  const singleCount = incomingTransactions.filter(t => t.source === 'incoming').length;
+  const recurringCount = incomingTransactions.filter(t => t.source === 'recurring').length;
+
   if (loading) return <div>Carregando transações pendentes...</div>;
 
   return (
     <Card className="bg-card border-border/10">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-[--primary] font-display">
-          <Clock className="w-5 h-5" />
-          Transações Pendentes ({incomingTransactions.length})
-        </CardTitle>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <CardTitle className="flex items-center gap-2 text-primary font-display">
+            <Clock className="w-5 h-5" />
+            Transações Pendentes ({filteredTransactions.length})
+          </CardTitle>
+          
+          {/* Filtros */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Filter className="w-4 h-4" />
+            </div>
+            
+            <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}>
+              <SelectTrigger className="w-[140px] h-9">
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos ({incomingTransactions.length})</SelectItem>
+                <SelectItem value="single">Únicas ({singleCount})</SelectItem>
+                <SelectItem value="recurring">Recorrentes ({recurringCount})</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={filterPeriod} onValueChange={(v) => setFilterPeriod(v as FilterPeriod)}>
+              <SelectTrigger className="w-[130px] h-9">
+                <SelectValue placeholder="Período" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todo período</SelectItem>
+                <SelectItem value="7days">Próx. 7 dias</SelectItem>
+                <SelectItem value="30days">Próx. 30 dias</SelectItem>
+                <SelectItem value="90days">Próx. 90 dias</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={resetFilters}
+                className="h-9 px-2"
+              >
+                <RefreshCw className="w-4 h-4 mr-1" />
+                Limpar
+              </Button>
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        {incomingTransactions.length === 0 ? (
+        {filteredTransactions.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Clock className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-            <p>Nenhuma transação pendente</p>
+            <p>{hasActiveFilters ? 'Nenhuma transação encontrada com os filtros aplicados' : 'Nenhuma transação pendente'}</p>
+            {hasActiveFilters && (
+              <Button variant="link" onClick={resetFilters} className="mt-2">
+                Limpar filtros
+              </Button>
+            )}
           </div>
         ) : (
           <div className="space-y-3">
-            {incomingTransactions.map((transaction) => (
+            {filteredTransactions.map((transaction) => (
                 <div
                   key={transaction.id}
                   className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted bg-card"
@@ -264,7 +365,7 @@ export function IncomingTransactions() {
                       {transaction.type === 'income' ? 'Receita' : 'Despesa'}
                     </Badge>
                     {getDateBadge(transaction.expected_date)}
-                    {transaction.source === 'recurring' && (
+                    {transaction.source === 'recurring' ? (
                       <Badge variant="outline" className="text-primary border-primary">
                         <Clock className="w-3 h-3 mr-1" />
                         Recorrente
@@ -274,6 +375,11 @@ export function IncomingTransactions() {
                           transaction.recurrence_pattern === 'yearly' ? 'Anual' :
                           transaction.recurrence_pattern
                         })`}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        Única
                       </Badge>
                     )}
                   </div>
