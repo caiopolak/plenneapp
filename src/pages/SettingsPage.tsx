@@ -19,7 +19,10 @@ import {
   Eye,
   EyeOff,
   Package,
-  Sparkles
+  Sparkles,
+  Crown,
+  Building2,
+  Lock
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -34,6 +37,7 @@ import {
   formatBuildDate 
 } from "@/config/appVersion";
 import { cn } from "@/lib/utils";
+import { DefaultTheme } from "@/hooks/useThemes";
 
 // Função para aplicar preview temporário
 const applyPreviewTheme = (colors: Record<string, string>, isDark: boolean) => {
@@ -43,6 +47,26 @@ const applyPreviewTheme = (colors: Record<string, string>, isDark: boolean) => {
     if (key === 'secondary') root.style.setProperty('--secondary', value);
     if (key === 'accent') root.style.setProperty('--accent', value);
   });
+};
+
+// Badge do plano
+const PlanBadge = ({ plan }: { plan: 'free' | 'pro' | 'business' }) => {
+  if (plan === 'free') return null;
+  
+  return (
+    <Badge 
+      variant="outline" 
+      className={cn(
+        "text-[9px] px-1.5 py-0 font-bold uppercase tracking-wide",
+        plan === 'pro' && "bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/40 text-primary",
+        plan === 'business' && "bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border-amber-500/40 text-amber-600 dark:text-amber-400"
+      )}
+    >
+      {plan === 'pro' && <Crown className="h-2.5 w-2.5 mr-0.5" />}
+      {plan === 'business' && <Building2 className="h-2.5 w-2.5 mr-0.5" />}
+      {plan}
+    </Badge>
+  );
 };
 
 export default function SettingsPage() {
@@ -56,6 +80,17 @@ export default function SettingsPage() {
   const environment = getEnvironment();
   const environmentLabel = getEnvironmentLabel();
 
+  // TODO: Integrar com hook de subscription real
+  const userPlan = 'business' as 'free' | 'pro' | 'business'; // Temporário para demo
+
+  // Verificar se tema está disponível para o plano
+  const isThemeAvailable = (theme: DefaultTheme) => {
+    if (theme.plan === 'free') return true;
+    if (theme.plan === 'pro') return userPlan === 'pro' || userPlan === 'business';
+    if (theme.plan === 'business') return userPlan === 'business';
+    return false;
+  };
+
   // Ocultar email mantendo primeira letra e domínio visíveis
   const maskEmail = (email: string) => {
     const [localPart, domain] = email.split("@");
@@ -67,6 +102,119 @@ export default function SettingsPage() {
   // Nome do usuário ou fallback
   const userName = profile?.full_name || user?.user_metadata?.full_name || "Usuário";
   const userEmail = user?.email || "";
+
+  // Agrupar temas por plano
+  const freeThemes = themes.filter(t => t.plan === 'free');
+  const proThemes = themes.filter(t => t.plan === 'pro');
+  const businessThemes = themes.filter(t => t.plan === 'business');
+
+  const renderThemeCard = (theme: DefaultTheme) => {
+    const colors = isDarkMode ? theme.colors.dark : theme.colors.light;
+    const isActive = currentTheme === theme.name;
+    const isHovered = hoveredTheme === theme.name;
+    const available = isThemeAvailable(theme);
+    
+    return (
+      <button
+        key={theme.name}
+        disabled={!available}
+        onClick={() => {
+          if (available) {
+            saveTheme(theme.name);
+            setHoveredTheme(null);
+          }
+        }}
+        onMouseEnter={() => {
+          if (!available) return;
+          if (previewTimeoutRef.current) {
+            clearTimeout(previewTimeoutRef.current);
+          }
+          previewTimeoutRef.current = setTimeout(() => {
+            setHoveredTheme(theme.name);
+            applyPreviewTheme(colors, isDarkMode);
+          }, 100);
+        }}
+        onMouseLeave={() => {
+          if (previewTimeoutRef.current) {
+            clearTimeout(previewTimeoutRef.current);
+          }
+          setHoveredTheme(null);
+          applyTheme(currentTheme);
+        }}
+        className={cn(
+          "group relative p-3 rounded-xl border-2 transition-all duration-300 text-left",
+          available && "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary/50",
+          !available && "opacity-60 cursor-not-allowed",
+          isActive 
+            ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20" 
+            : isHovered && available
+              ? "border-primary/60 bg-primary/5 shadow-lg"
+              : "border-border hover:border-primary/50"
+        )}
+      >
+        {/* Lock para temas indisponíveis */}
+        {!available && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-xl z-10">
+            <Lock className="h-5 w-5 text-muted-foreground" />
+          </div>
+        )}
+        
+        {/* Círculos de cores */}
+        <div className="flex gap-1 mb-2">
+          <div
+            className={cn(
+              "w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300",
+              (isHovered || isActive) && available && "scale-110"
+            )}
+            style={{ backgroundColor: `hsl(${colors.primary})` }}
+          />
+          <div
+            className={cn(
+              "w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-75",
+              (isHovered || isActive) && available && "scale-110"
+            )}
+            style={{ backgroundColor: `hsl(${colors.secondary})` }}
+          />
+          <div
+            className={cn(
+              "w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-150",
+              (isHovered || isActive) && available && "scale-110"
+            )}
+            style={{ backgroundColor: `hsl(${colors.accent})` }}
+          />
+        </div>
+        
+        {/* Nome e badges */}
+        <div className="flex items-center gap-1.5 mb-0.5">
+          <span className="text-sm font-semibold truncate">{theme.label}</span>
+          <PlanBadge plan={theme.plan} />
+        </div>
+        
+        {/* Descrição */}
+        <span className="text-[11px] text-muted-foreground line-clamp-2 leading-tight">
+          {theme.description}
+        </span>
+        
+        {/* Indicador de selecionado */}
+        {isActive && (
+          <div className="absolute top-2 right-2">
+            <div className="bg-primary text-primary-foreground rounded-full p-0.5 animate-scale-in">
+              <CheckCircle className="h-3.5 w-3.5" />
+            </div>
+          </div>
+        )}
+        
+        {/* Preview badge */}
+        {isHovered && !isActive && available && (
+          <div className="absolute top-2 right-2">
+            <Badge variant="secondary" className="text-[9px] px-1 py-0 animate-fade-in">
+              Preview
+            </Badge>
+          </div>
+        )}
+      </button>
+    );
+  };
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -95,10 +243,9 @@ export default function SettingsPage() {
 
         {/* Aba de Aparência */}
         <TabsContent value="appearance" className="mt-6 space-y-6">
-        {/* Toggle Modo Escuro - Design Unificado */}
+          {/* Toggle Modo Escuro - Design Unificado */}
           <Card className="overflow-hidden">
             <CardContent className="p-0">
-              {/* Seletor único de modo */}
               <div className="p-1.5 bg-muted/50">
                 <div className="grid grid-cols-2 gap-1">
                   <button
@@ -137,121 +284,70 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Seleção de Temas com Preview */}
+          {/* Temas Gratuitos */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <Palette className="h-5 w-5 text-primary" />
-                Tema de Cores
+                Temas Básicos
               </CardTitle>
-              <CardDescription>
-                Passe o mouse sobre um tema para pré-visualizar. Clique para aplicar permanentemente.
+              <CardDescription className="text-xs">
+                Disponíveis para todos os planos
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                {themes.map((theme) => {
-                  const colors = isDarkMode ? theme.colors.dark : theme.colors.light;
-                  const isActive = currentTheme === theme.name;
-                  const isHovered = hoveredTheme === theme.name;
-                  
-                  return (
-                    <button
-                      key={theme.name}
-                      onClick={() => {
-                        saveTheme(theme.name);
-                        setHoveredTheme(null);
-                      }}
-                      onMouseEnter={() => {
-                        // Limpar timeout anterior
-                        if (previewTimeoutRef.current) {
-                          clearTimeout(previewTimeoutRef.current);
-                        }
-                        // Delay pequeno para evitar flickering
-                        previewTimeoutRef.current = setTimeout(() => {
-                          setHoveredTheme(theme.name);
-                          applyPreviewTheme(colors, isDarkMode);
-                        }, 100);
-                      }}
-                      onMouseLeave={() => {
-                        if (previewTimeoutRef.current) {
-                          clearTimeout(previewTimeoutRef.current);
-                        }
-                        setHoveredTheme(null);
-                        // Restaurar tema atual
-                        applyTheme(currentTheme);
-                      }}
-                      className={cn(
-                        "group relative p-4 rounded-xl border-2 transition-all duration-300 text-left",
-                        "hover:shadow-xl hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-primary/50",
-                        isActive 
-                          ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20" 
-                          : isHovered
-                            ? "border-primary/60 bg-primary/5 shadow-lg"
-                            : "border-border hover:border-primary/50"
-                      )}
-                    >
-                      {/* Círculos de cores com animação */}
-                      <div className="flex gap-1.5 mb-3">
-                        <div
-                          className={cn(
-                            "w-7 h-7 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300",
-                            (isHovered || isActive) && "scale-110"
-                          )}
-                          style={{ backgroundColor: `hsl(${colors.primary})` }}
-                        />
-                        <div
-                          className={cn(
-                            "w-7 h-7 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-75",
-                            (isHovered || isActive) && "scale-110"
-                          )}
-                          style={{ backgroundColor: `hsl(${colors.secondary})` }}
-                        />
-                        <div
-                          className={cn(
-                            "w-7 h-7 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-150",
-                            (isHovered || isActive) && "scale-110"
-                          )}
-                          style={{ backgroundColor: `hsl(${colors.accent})` }}
-                        />
-                      </div>
-                      
-                      {/* Nome e descrição */}
-                      <div className="space-y-0.5">
-                        <span className="text-sm font-semibold block">{theme.label}</span>
-                        <span className="text-xs text-muted-foreground line-clamp-2">
-                          {theme.description}
-                        </span>
-                      </div>
-                      
-                      {/* Indicador de selecionado */}
-                      {isActive && (
-                        <div className="absolute top-2 right-2">
-                          <div className="bg-primary text-primary-foreground rounded-full p-1 animate-scale-in">
-                            <CheckCircle className="h-4 w-4" />
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Preview badge */}
-                      {isHovered && !isActive && (
-                        <div className="absolute top-2 right-2">
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 animate-fade-in">
-                            Preview
-                          </Badge>
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {freeThemes.map(renderThemeCard)}
               </div>
-              
-              <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5" />
-                {themes.length} temas disponíveis • Salvos automaticamente na sua conta
-              </p>
             </CardContent>
           </Card>
+
+          {/* Temas Pro */}
+          <Card className="border-primary/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Crown className="h-5 w-5 text-primary" />
+                Temas Pro
+                <Badge variant="outline" className="ml-1 text-[10px] bg-primary/10 border-primary/30">
+                  8 temas
+                </Badge>
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Paletas exclusivas para assinantes Pro e Business
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {proThemes.map(renderThemeCard)}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Temas Business */}
+          <Card className="border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Building2 className="h-5 w-5 text-amber-500" />
+                Temas Business
+                <Badge variant="outline" className="ml-1 text-[10px] bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400">
+                  Premium
+                </Badge>
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Paletas exclusivas de alto impacto visual
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {businessThemes.map(renderThemeCard)}
+              </div>
+            </CardContent>
+          </Card>
+          
+          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5" />
+            {themes.length} temas disponíveis • Passe o mouse para pré-visualizar
+          </p>
         </TabsContent>
 
         {/* Aba de Notificações */}
