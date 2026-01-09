@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';
-import { NetWorthEvolutionChart } from './NetWorthEvolutionChart';
+
 import { generateConsolidatedPDF } from '@/utils/pdfExport';
 import { useToast } from '@/hooks/use-toast';
 
@@ -522,9 +522,6 @@ export function ConsolidatedFinancialReport() {
         </div>
       </CardContent>
     </Card>
-
-    {/* Gráfico de Evolução Patrimonial */}
-    <NetWorthEvolutionChart />
     </div>
   );
 }
