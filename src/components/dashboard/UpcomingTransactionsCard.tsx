@@ -50,7 +50,7 @@ export function UpcomingTransactionsCard() {
   }
 
   return (
-    <Card className="bg-card border-border">
+    <Card className="bg-card border-border h-full min-h-[480px] flex flex-col">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-foreground flex items-center gap-2">
@@ -68,7 +68,7 @@ export function UpcomingTransactionsCard() {
           Próximos 30 dias • {transactions.length} transação(ões) agendada(s)
         </p>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex-1 flex flex-col">
         {/* Impact Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="p-3 rounded-lg bg-muted/50 border border-border">
