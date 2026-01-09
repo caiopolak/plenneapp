@@ -1,20 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Edit2, Trash2, TrendingUp, BarChart3, ChevronDown, ChevronUp, X } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { BarChart3, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { GoalForm } from './GoalForm';
 import { Tables } from '@/integrations/supabase/types';
-import { GoalDetailsModal } from "./GoalDetailsModal";
+import { GoalDetailsModalEnhanced } from "./GoalDetailsModalEnhanced";
 import { GoalProjectionCard } from "./GoalProjectionCard";
 import { GoalDeadlineAlerts } from "./GoalDeadlineAlerts";
 import { GoalInsights } from "./GoalInsights";
@@ -23,6 +18,8 @@ import { CompactGoalFilters, GoalFilters } from "./CompactGoalFilters";
 import { GoalCardSkeleton } from "@/components/ui/loading-skeletons";
 import { usePaginatedLoad } from "@/hooks/useLazyLoad";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { GoalCard } from "./GoalCard";
+import { AddValueModal } from "./AddValueModal";
 
 type Goal = Tables<'financial_goals'>;
 
@@ -37,12 +34,15 @@ export function GoalList() {
   const [loading, setLoading] = useState(true);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [addingAmount, setAddingAmount] = useState<string>('');
-  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [detailsGoal, setDetailsGoal] = useState<Goal | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [filters, setFilters] = useState<GoalFilters>(initialFilters);
   const [showAnalytics, setShowAnalytics] = useState(true);
+  
+  // Add Value Modal State
+  const [addValueGoal, setAddValueGoal] = useState<Goal | null>(null);
+  const [showAddValueModal, setShowAddValueModal] = useState(false);
 
   const { toast } = useToast();
   const { user } = useAuth();
@@ -98,7 +98,7 @@ export function GoalList() {
     }
   };
 
-  const addAmountToGoal = async (goalId: string, amount: number) => {
+  const addAmountToGoal = async (goalId: string, amount: number, note?: string) => {
     try {
       const goal = goals.find(g => g.id === goalId);
       if (!goal || !user) return;
@@ -118,7 +118,7 @@ export function GoalList() {
           goal_id: goalId,
           user_id: user.id,
           amount: amount,
-          note: `Aporte na meta "${goal.name}"`
+          note: note || `Aporte na meta "${goal.name}"`
         }]);
       if (depositError) throw depositError;
 
@@ -136,13 +136,17 @@ export function GoalList() {
         }]);
       if (transactionError) throw transactionError;
 
+      const newProgress = goal.target_amount > 0 
+        ? ((newCurrentAmount / goal.target_amount) * 100).toFixed(0)
+        : 0;
+
       toast({
-        title: "Sucesso!",
-        description: `R$ ${amount.toFixed(2)} adicionado à meta (saldo atualizado)`
+        title: "🎉 Aporte realizado!",
+        description: `R$ ${amount.toFixed(2)} adicionado à meta. Progresso: ${newProgress}%`
       });
 
-      setAddingAmount('');
-      setSelectedGoalId(null);
+      setAddValueGoal(null);
+      setShowAddValueModal(false);
       fetchGoals();
     } catch (error) {
       toast({
@@ -150,15 +154,6 @@ export function GoalList() {
         title: "Erro",
         description: "Erro ao adicionar valor à meta"
       });
-    }
-  };
-
-  const getPriorityColor = (priority: string | null) => {
-    switch (priority) {
-      case 'high': return 'destructive';
-      case 'medium': return 'default';
-      case 'low': return 'secondary';
-      default: return 'default';
     }
   };
 
@@ -246,6 +241,44 @@ export function GoalList() {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Dialog para Editar Meta */}
+      <Dialog open={showEditForm} onOpenChange={setShowEditForm}>
+        <DialogContent className="max-w-xl w-full rounded-2xl p-4 md:p-6 bg-card text-foreground">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Editar Meta</DialogTitle>
+          </DialogHeader>
+          {editingGoal && (
+            <GoalForm
+              goal={editingGoal}
+              onSuccess={() => {
+                setShowEditForm(false);
+                setEditingGoal(null);
+                fetchGoals();
+              }}
+              onCancel={() => {
+                setShowEditForm(false);
+                setEditingGoal(null);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Adicionar Valor */}
+      {addValueGoal && (
+        <AddValueModal
+          open={showAddValueModal}
+          onOpenChange={(open) => {
+            setShowAddValueModal(open);
+            if (!open) setAddValueGoal(null);
+          }}
+          goalName={addValueGoal.name}
+          currentAmount={addValueGoal.current_amount || 0}
+          targetAmount={addValueGoal.target_amount || 0}
+          onConfirm={(amount, note) => addAmountToGoal(addValueGoal.id, amount, note)}
+        />
+      )}
       
       {/* Header com filtros integrados */}
       <div className="flex flex-col gap-4">
@@ -255,7 +288,7 @@ export function GoalList() {
               Metas Financeiras
             </h1>
             <p className="text-muted-foreground text-sm">
-              Defina objetivos e acompanhe seu progresso
+              Defina objetivos e acompanhe seu progresso rumo aos seus sonhos
             </p>
           </div>
           
@@ -347,216 +380,46 @@ export function GoalList() {
       {filteredGoals.length === 0 ? (
         <Card className="bg-card border border-border">
           <CardContent className="p-8 text-center rounded-lg">
-            <p className="text-lg font-semibold text-foreground font-text">Comece a sonhar grande! 🎯</p>
-            <p className="text-sm text-muted-foreground mt-2 font-text">
+            <div className="text-4xl mb-3">🎯</div>
+            <p className="text-lg font-semibold text-foreground font-text">Comece a sonhar grande!</p>
+            <p className="text-sm text-muted-foreground mt-2 font-text max-w-md mx-auto">
               {goals.length === 0 
-                ? 'Criar metas é o primeiro passo para transformar seus sonhos em realidade.'
-                : 'Nenhuma meta encontrada com os filtros atuais.'}
+                ? 'Criar metas é o primeiro passo para transformar seus sonhos em realidade. Que tal começar agora?'
+                : 'Nenhuma meta encontrada com os filtros atuais. Tente ajustar os filtros.'}
             </p>
+            {goals.length === 0 && (
+              <Button 
+                className="mt-4 gap-2"
+                onClick={() => setShowForm(true)}
+              >
+                <span>✨</span>
+                Criar minha primeira meta
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          {displayedGoals.map((goal, index) => {
-            const currentAmount = goal.current_amount || 0;
-            const targetAmount = goal.target_amount || 0;
-            const progress = targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0;
-            const isCompleted = progress >= 100;
-            
-            return (
-              <Card 
-                key={goal.id} 
-                className={`bg-card border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/20 animate-fade-in opacity-0 ${isCompleted ? 'border-secondary ring-1 ring-secondary/30' : ''}`}
-                style={{ 
-                  animationDelay: `${index * 50}ms`,
-                  animationFillMode: 'forwards'
-                }}
-              >
-                <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-3">
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                    <div className="min-w-0 flex-1">
-                      <CardTitle className="text-base sm:text-lg font-display text-primary truncate">
-                        {goal.name}
-                      </CardTitle>
-                      <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
-                        <Badge variant={getPriorityColor(goal.priority)} className="font-display text-xs">
-                          {getPriorityLabel(goal.priority)}
-                        </Badge>
-                        {isCompleted && (
-                          <Badge variant="default" className="bg-secondary text-secondary-foreground font-display text-xs">
-                            ✓ Concluída!
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-1 shrink-0 self-start">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="font-display border-secondary text-primary min-h-[40px] sm:min-h-[32px] text-xs sm:text-sm px-2 sm:px-3"
-                        onClick={() => {
-                          setDetailsGoal(goal);
-                          setShowDetailsModal(true);
-                        }}
-                      >
-                        Detalhes
-                      </Button>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            className="text-primary min-h-[40px] min-w-[40px] sm:min-h-[32px] sm:min-w-[32px]"
-                            onClick={() => setEditingGoal(goal)}
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle className="font-display text-primary">Editar Meta</DialogTitle>
-                          </DialogHeader>
-                          {editingGoal && (
-                            <GoalForm 
-                              goal={editingGoal}
-                              onSuccess={() => {
-                                setEditingGoal(null);
-                                fetchGoals();
-                              }}
-                              onCancel={() => setEditingGoal(null)}
-                            />
-                          )}
-                        </DialogContent>
-                      </Dialog>
-                      
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:bg-destructive/10 min-h-[40px] min-w-[40px] sm:min-h-[32px] sm:min-w-[32px]"
-                        onClick={() => deleteGoal(goal.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
-                  {/* Progress Bar */}
-                  <div>
-                    <div className="flex justify-between text-xs sm:text-sm mb-1.5 sm:mb-2">
-                      <span className="font-text text-muted-foreground">Progresso</span>
-                      <span className={`font-bold ${
-                        progress >= 100 ? 'text-secondary' :
-                        progress >= 75 ? 'text-[hsl(var(--card-success-accent))]' :
-                        'text-foreground'
-                      }`}>
-                        {progress.toFixed(1)}%
-                      </span>
-                    </div>
-                    <Progress 
-                      value={Math.min(progress, 100)} 
-                      className={`h-2 sm:h-3 ${
-                        progress >= 100 ? '[&>div]:bg-secondary' :
-                        progress >= 75 ? '[&>div]:bg-[hsl(var(--card-success-accent))]' :
-                        '[&>div]:bg-primary'
-                      }`} 
-                    />
-                  </div>
-                  
-                  {/* Values Grid */}
-                  <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                    <div className="p-2 sm:p-3 rounded-lg bg-muted/50">
-                      <div className="text-[10px] sm:text-xs text-muted-foreground font-text uppercase tracking-wide">Atual</div>
-                      <div className="font-bold text-secondary font-display text-xs sm:text-sm mt-0.5">
-                        R$ {currentAmount.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                      </div>
-                    </div>
-                    <div className="p-2 sm:p-3 rounded-lg bg-muted/50">
-                      <div className="text-[10px] sm:text-xs text-muted-foreground font-text uppercase tracking-wide">Meta</div>
-                      <div className="font-bold text-primary font-display text-xs sm:text-sm mt-0.5">
-                        R$ {targetAmount.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                      </div>
-                    </div>
-                    <div className="p-2 sm:p-3 rounded-lg bg-muted/50">
-                      <div className="text-[10px] sm:text-xs text-muted-foreground font-text uppercase tracking-wide">Faltam</div>
-                      <div className="font-bold text-foreground font-display text-xs sm:text-sm mt-0.5">
-                        R$ {Math.max(0, targetAmount - currentAmount).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Date and Note */}
-                  {goal.target_date && (
-                    <div className="text-xs sm:text-sm text-muted-foreground font-text flex items-center gap-1.5">
-                      <span>📅</span>
-                      <span>Prazo: {format(new Date(goal.target_date), "dd/MM/yyyy", { locale: ptBR })}</span>
-                    </div>
-                  )}
-
-                  {goal.note && (
-                    <div className="text-xs text-muted-foreground italic p-2 bg-muted/30 rounded-md">
-                      <span className="font-medium not-italic">📝 </span>{goal.note}
-                    </div>
-                  )}
-                  
-                  {/* Add Value Button */}
-                  {!isCompleted && (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          className="w-full font-display border-secondary text-primary hover:bg-secondary/10 min-h-[44px] sm:min-h-[40px]"
-                          onClick={() => setSelectedGoalId(goal.id)}
-                        >
-                          <TrendingUp className="w-4 h-4 mr-2 text-secondary" />
-                          Adicionar Valor
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Adicionar valor à meta</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <div>
-                            <Label htmlFor="amount">Valor a adicionar (R$)</Label>
-                            <Input
-                              id="amount"
-                              type="number"
-                              step="0.01"
-                              value={addingAmount}
-                              onChange={(e) => setAddingAmount(e.target.value)}
-                              placeholder="0,00"
-                              className="min-h-[44px]"
-                            />
-                          </div>
-                          <div className="flex gap-2">
-                            <Button 
-                              onClick={() => addAmountToGoal(goal.id, parseFloat(addingAmount))}
-                              disabled={!addingAmount || parseFloat(addingAmount) <= 0}
-                              className="flex-1 min-h-[44px]"
-                            >
-                              Adicionar
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              className="min-h-[44px]"
-                              onClick={() => {
-                                setAddingAmount('');
-                                setSelectedGoalId(null);
-                              }}
-                            >
-                              Cancelar
-                            </Button>
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
+          {displayedGoals.map((goal, index) => (
+            <GoalCard
+              key={goal.id}
+              goal={goal}
+              index={index}
+              onDetails={() => {
+                setDetailsGoal(goal);
+                setShowDetailsModal(true);
+              }}
+              onEdit={() => {
+                setEditingGoal(goal);
+                setShowEditForm(true);
+              }}
+              onDelete={() => deleteGoal(goal.id)}
+              onAddValue={() => {
+                setAddValueGoal(goal);
+                setShowAddValueModal(true);
+              }}
+            />
+          ))}
         </div>
       )}
       
@@ -569,14 +432,22 @@ export function GoalList() {
           </div>
         </div>
       )}
-      <GoalDetailsModal
+
+      {/* Modal de Detalhes Aprimorado */}
+      <GoalDetailsModalEnhanced
         open={showDetailsModal}
         onOpenChange={(open) => {
           setShowDetailsModal(open);
           if (!open) setDetailsGoal(null);
         }}
         goal={detailsGoal}
-        showDepositsHistory
+        onAddValue={() => {
+          if (detailsGoal) {
+            setAddValueGoal(detailsGoal);
+            setShowAddValueModal(true);
+          }
+        }}
+        onRefresh={fetchGoals}
       />
     </div>
   );
