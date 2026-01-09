@@ -9,7 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
-import { InvestmentCard } from "./InvestmentCard";
+import { InvestmentCardEnhanced } from "./InvestmentCardEnhanced";
+import { InvestmentDetailsModal } from "./InvestmentDetailsModal";
 import { InvestmentsAnalyticsCards } from "./InvestmentsAnalyticsCards";
 import { InvestmentProfitabilityAnalysis } from "./InvestmentProfitabilityAnalysis";
 import { InvestmentEvolutionChart } from "./InvestmentEvolutionChart";
@@ -23,8 +24,8 @@ interface Investment {
   name: string;
   type: string;
   amount: number;
-  expected_return: number;
-  purchase_date: string;
+  expected_return: number | null;
+  purchase_date: string | null;
 }
 
 const defaultFilters: InvestmentFilters = {
@@ -39,6 +40,8 @@ export function InvestmentList() {
   const [showForm, setShowForm] = useState(false);
   const [filters, setFilters] = useState<InvestmentFilters>(defaultFilters);
   const [showAnalytics, setShowAnalytics] = useState(true);
+  const [selectedInvestment, setSelectedInvestment] = useState<Investment | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const { toast } = useToast();
   const { user } = useAuth();
@@ -167,21 +170,29 @@ export function InvestmentList() {
     );
   }
 
-  // Paleta visual harmonizada conforme identidade (ajuste para combinar com estética e eliminar laranja em destaques/alertas!)
-  const getTypeStyles = (type: string) => {
-    const map: any = {
-      stocks:      { label: "Ações",       bg: "bg-primary",   text: "text-primary-foreground" },
-      bonds:       { label: "Títulos",     bg: "bg-secondary",   text: "text-secondary-foreground" },
-      crypto:      { label: "Criptomoedas",bg: "bg-accent/20",   text: "text-accent" },
-      real_estate: { label: "Imóveis",     bg: "bg-card border border-border", text: "text-secondary" },
-      funds:       { label: "Fundos",      bg: "bg-muted",   text: "text-foreground" },
-      savings:     { label: "Poupança",    bg: "bg-card border border-secondary/40", text: "text-secondary" },
-    };
-    return map[type] || { label: type, bg: "bg-primary", text: "text-primary-foreground" };
+  const handleOpenDetails = (investment: Investment) => {
+    setSelectedInvestment(investment);
+    setShowDetailsModal(true);
+  };
+
+  const handleEditFromDetails = () => {
+    setShowDetailsModal(false);
+    if (selectedInvestment) {
+      setEditingInvestment(selectedInvestment);
+    }
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Modal de Detalhes */}
+      <InvestmentDetailsModal
+        open={showDetailsModal}
+        onOpenChange={setShowDetailsModal}
+        investment={selectedInvestment}
+        allInvestments={filteredInvestments}
+        onEdit={handleEditFromDetails}
+      />
+
       {/* Modal/dialog de Novo Investimento */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent
@@ -202,6 +213,25 @@ export function InvestmentList() {
             }}
             onCancel={() => setShowForm(false)}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Edição */}
+      <Dialog open={!!editingInvestment} onOpenChange={(open) => !open && setEditingInvestment(null)}>
+        <DialogContent className="max-w-2xl bg-card rounded-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-foreground font-display">Editar Investimento</DialogTitle>
+          </DialogHeader>
+          {editingInvestment && (
+            <InvestmentForm
+              investment={editingInvestment}
+              onSuccess={() => {
+                setEditingInvestment(null);
+                fetchInvestments();
+              }}
+              onCancel={() => setEditingInvestment(null)}
+            />
+          )}
         </DialogContent>
       </Dialog>
 
@@ -304,23 +334,15 @@ export function InvestmentList() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {displayedInvestments.map((investment, index) => (
-                <div
+                <InvestmentCardEnhanced
                   key={investment.id}
-                  className="animate-fade-in opacity-0 transition-all duration-300 hover:scale-[1.02]"
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                    animationFillMode: 'forwards',
-                  }}
-                >
-                  <InvestmentCard
-                    investment={investment}
-                    cat={getTypeStyles(investment.type)}
-                    editingInvestment={editingInvestment}
-                    setEditingInvestment={setEditingInvestment}
-                    deleteInvestment={deleteInvestment}
-                    fetchInvestments={fetchInvestments}
-                  />
-                </div>
+                  investment={investment}
+                  index={index}
+                  totalPortfolio={totalInvested}
+                  onDetails={() => handleOpenDetails(investment)}
+                  onEdit={() => setEditingInvestment(investment)}
+                  onDelete={() => deleteInvestment(investment.id)}
+                />
               ))}
             </div>
             

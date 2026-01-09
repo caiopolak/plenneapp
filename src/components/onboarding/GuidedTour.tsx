@@ -127,12 +127,50 @@ export function GuidedTour({ active, onComplete, onSkip }: GuidedTourProps) {
   const step = tourSteps[currentStep];
   const isLastStep = currentStep === tourSteps.length - 1;
 
+  // Calculate clip path to create a "hole" in the overlay for the highlighted element
+  const getClipPath = () => {
+    if (!targetRect) return 'none';
+    
+    const padding = 8;
+    const x = targetRect.left - padding;
+    const y = targetRect.top - padding;
+    const width = targetRect.width + padding * 2;
+    const height = targetRect.height + padding * 2;
+    const radius = 12;
+    
+    // Create a polygon that covers the entire screen except for the target area
+    // Using inset with round corners for the "hole"
+    return `polygon(
+      0% 0%, 
+      0% 100%, 
+      ${x}px 100%, 
+      ${x}px ${y + radius}px,
+      ${x + radius}px ${y}px,
+      ${x + width - radius}px ${y}px,
+      ${x + width}px ${y + radius}px,
+      ${x + width}px ${y + height - radius}px,
+      ${x + width - radius}px ${y + height}px,
+      ${x + radius}px ${y + height}px,
+      ${x}px ${y + height - radius}px,
+      ${x}px 100%,
+      100% 100%, 
+      100% 0%
+    )`;
+  };
+
   return createPortal(
     <>
-      {/* Overlay */}
-      <div className="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm" />
+      {/* Dark overlay with cutout for the target element */}
+      <div 
+        className="fixed inset-0 z-[9998] transition-all duration-300"
+        style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          backdropFilter: 'blur(2px)',
+          clipPath: getClipPath(),
+        }}
+      />
       
-      {/* Highlight */}
+      {/* Highlight border around the visible element */}
       {targetRect && (
         <div
           className="fixed z-[9999] pointer-events-none"
@@ -141,11 +179,17 @@ export function GuidedTour({ active, onComplete, onSkip }: GuidedTourProps) {
             left: targetRect.left - 8,
             width: targetRect.width + 16,
             height: targetRect.height + 16,
-            boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
-            borderRadius: '12px'
+            borderRadius: '12px',
           }}
         >
           <div className="absolute inset-0 border-2 border-primary rounded-xl animate-pulse" />
+          {/* Glow effect */}
+          <div 
+            className="absolute inset-0 rounded-xl"
+            style={{
+              boxShadow: '0 0 20px 4px hsl(var(--primary) / 0.4)',
+            }}
+          />
         </div>
       )}
       
@@ -153,7 +197,7 @@ export function GuidedTour({ active, onComplete, onSkip }: GuidedTourProps) {
       <Card
         className={cn(
           "fixed z-[10000] w-[320px] p-4 shadow-2xl border-primary/20",
-          "animate-scale-in"
+          "animate-scale-in bg-card"
         )}
         style={{ top: position.top, left: position.left }}
       >
