@@ -1,8 +1,9 @@
 /**
  * Configuração de Versão do App Plenne
  * 
- * VERSÃO: Atualize manualmente a cada release significativo.
+ * VERSÃO: Lida automaticamente do changelog (ou defina manualmente)
  * BUILD e DATA: Gerados automaticamente a cada deploy/publicação.
+ * NOTAS: Lidas automaticamente do changelog.ts
  * 
  * Convenção de versionamento (SemVer):
  * - MAJOR: Mudanças incompatíveis ou redesign completo
@@ -10,19 +11,15 @@
  * - PATCH: Correções de bugs e pequenas melhorias
  */
 
+import { getCurrentVersion, getCurrentReleaseNotes, getLatestRelease, CHANGELOG } from "./changelog";
+
 // Declaração de tipos para variáveis injetadas pelo Vite
 declare const __BUILD_DATE__: string;
 declare const __BUILD_ID__: string;
 
-/** Versão manual - atualize quando fizer mudanças significativas */
-const MANUAL_VERSION = "2.2.0";
-
-/** Notas da versão atual - atualize junto com a versão */
-const RELEASE_NOTES = "Corrigido e atualizado nova funcionalidade de MODULOS DE APRENDIZADO, Educação Financeira e Alertas & Dicas Inteligentes, alem de melhorias no UX";
-
 export const APP_VERSION = {
-  /** Versão atual do app (SemVer) - MANUAL */
-  version: MANUAL_VERSION,
+  /** Versão atual do app (SemVer) - do changelog */
+  version: getCurrentVersion(),
   
   /** Data/hora do build (automático a cada deploy) */
   buildDate: typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : new Date().toISOString(),
@@ -30,8 +27,14 @@ export const APP_VERSION = {
   /** Build ID único (automático a cada deploy) */
   buildId: typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : "dev",
   
-  /** Notas da versão atual - MANUAL */
-  releaseNotes: RELEASE_NOTES,
+  /** Notas da versão atual - do changelog */
+  releaseNotes: getCurrentReleaseNotes(),
+  
+  /** Changelog completo */
+  changelog: CHANGELOG,
+  
+  /** Release mais recente */
+  latestRelease: getLatestRelease(),
 } as const;
 
 /**
