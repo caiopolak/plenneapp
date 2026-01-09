@@ -28,7 +28,7 @@ export function ProjectedBalanceChart() {
   const percentageChange = currentBalance !== 0 ? (balanceChange / Math.abs(currentBalance)) * 100 : 0;
 
   return (
-    <Card className="bg-card border-border">
+    <Card className="bg-card border-border h-full min-h-[480px] flex flex-col">
       <CardHeader>
         <CardTitle className="text-foreground flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -45,7 +45,7 @@ export function ProjectedBalanceChart() {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1 flex flex-col justify-center">
         <ResponsiveContainer width="100%" height={250}>
           <LineChart data={projectedData}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
