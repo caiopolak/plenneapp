@@ -7,18 +7,21 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { TransactionSummaryCards } from './TransactionSummaryCards';
 import { TransactionRow } from './TransactionRow';
 import { TransactionCategorySummary } from './TransactionCategorySummary';
+import { TransactionInsights } from './TransactionInsights';
+import { TransactionMonthlyComparison } from './TransactionMonthlyComparison';
 import { AdvancedTransactionFilters, TransactionFilters } from './AdvancedTransactionFilters';
 import { TransactionActionButtons } from './TransactionActionButtons';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
-import { format, isWithinInterval, parseISO } from 'date-fns';
+import { format, isWithinInterval, parseISO, startOfMonth, subMonths, isSameMonth } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { List, LayoutGrid } from 'lucide-react';
+import { List, LayoutGrid, BarChart3, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TransactionRowSkeleton, AnalyticsCardSkeleton } from '@/components/ui/loading-skeletons';
 import { usePaginatedLoad } from '@/hooks/useLazyLoad';
 import { safeLog } from '@/lib/security';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const initialFilters: TransactionFilters = {
   searchTerm: '',
@@ -36,6 +39,7 @@ export function TransactionList() {
   const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [showCategorySummary, setShowCategorySummary] = useState(true);
+  const [showAnalytics, setShowAnalytics] = useState(true);
 
   const { toast } = useToast();
   const { user } = useAuth();
@@ -119,6 +123,18 @@ export function TransactionList() {
     .reduce((sum, t) => sum + Number(t.amount), 0);
   const balance = totalIncome - totalExpense;
 
+  // Cálculos do mês anterior para comparação
+  const lastMonth = startOfMonth(subMonths(new Date(), 1));
+  const previousMonthTransactions = transactions.filter(t => 
+    isSameMonth(parseISO(t.date), lastMonth)
+  );
+  const previousIncome = previousMonthTransactions
+    .filter(t => t.type === 'income')
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+  const previousExpense = previousMonthTransactions
+    .filter(t => t.type === 'expense')
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+
   // Mapear transações para formato de exportação
   const transactionsForExport = filteredTransactions.map(t => ({
     date: t.date,
@@ -128,6 +144,13 @@ export function TransactionList() {
     amount: Number(t.amount),
     is_recurring: t.is_recurring || false,
     recurrence_pattern: t.recurrence_pattern || null,
+  }));
+
+  // Transações para sparkline
+  const transactionsForSparkline = transactions.map(t => ({
+    type: t.type,
+    amount: Number(t.amount),
+    date: t.date
   }));
 
   const deleteTransaction = async (id: string) => {
@@ -199,7 +222,7 @@ export function TransactionList() {
             Transações
           </h1>
           <p className="text-muted-foreground">
-            Acompanhe cada entrada e saída do seu dinheiro. Use filtros para encontrar transações específicas.
+            Acompanhe cada entrada e saída do seu dinheiro
           </p>
         </div>
         <TransactionActionButtons
@@ -229,33 +252,63 @@ export function TransactionList() {
         </DialogContent>
       </Dialog>
 
+      {/* Insights inteligentes */}
+      {transactions.length >= 5 && (
+        <TransactionInsights transactions={transactions.map(t => ({
+          ...t,
+          amount: Number(t.amount)
+        }))} />
+      )}
+
       {/* 1. Resumo cards - Visão geral no topo */}
       <TransactionSummaryCards 
         totalIncome={totalIncome}
         totalExpense={totalExpense}
         balance={balance}
+        transactions={transactionsForSparkline}
+        previousIncome={previousIncome}
+        previousExpense={previousExpense}
       />
 
-      {/* 2. Resumo por Categoria - Análise visual */}
-      <div className="space-y-3">
+      {/* 2. Seção de Análises - Colapsável */}
+      <Collapsible open={showAnalytics} onOpenChange={setShowAnalytics}>
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Análise por Categoria</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowCategorySummary(!showCategorySummary)}
-          >
-            {showCategorySummary ? <List className="h-4 w-4 mr-1" /> : <LayoutGrid className="h-4 w-4 mr-1" />}
-            {showCategorySummary ? 'Ocultar' : 'Mostrar'}
-          </Button>
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-primary" />
+            Análises Detalhadas
+          </h2>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm">
+              {showAnalytics ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {showAnalytics ? 'Ocultar' : 'Mostrar'}
+            </Button>
+          </CollapsibleTrigger>
         </div>
-        {showCategorySummary && (
-          <TransactionCategorySummary 
-            transactions={filteredTransactions}
-            filterType={filters.type}
-          />
-        )}
-      </div>
+        
+        <CollapsibleContent className="space-y-4 mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Comparação mensal com gráfico */}
+            <div className="lg:col-span-1">
+              <TransactionMonthlyComparison transactions={transactions.map(t => ({
+                ...t,
+                amount: Number(t.amount)
+              }))} />
+            </div>
+            
+            {/* Resumo por categoria */}
+            <div className="lg:col-span-2">
+              <TransactionCategorySummary 
+                transactions={filteredTransactions.map(t => ({
+                  type: t.type,
+                  amount: Number(t.amount),
+                  category: t.category
+                }))}
+                filterType={filters.type}
+              />
+            </div>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* 3. Filtros Avançados */}
       <Card className="bg-card border-border">
