@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthContext";
+import { safeLog } from "@/lib/security";
 
 interface Workspace {
   id: string;
@@ -33,13 +34,13 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
   const reload = async () => {
     if (!user) {
-      console.log("WorkspaceContext - No user, clearing workspaces");
+      safeLog("info", "WorkspaceContext - No user, clearing workspaces");
       setWorkspaces([]);
       setCurrent(null);
       return;
     }
 
-    console.log("WorkspaceContext - Reloading workspaces for user:", user.id);
+    safeLog("info", "WorkspaceContext - Reloading workspaces for user", { userId: user.id });
 
     // Primeiro, buscar todos os workspace_ids onde o user é membro:
     const { data: memberRecords, error: memberError } = await supabase
@@ -48,10 +49,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       .eq("user_id", user.id)
       .eq("status", "active");
 
-    console.log("WorkspaceContext - Member records:", memberRecords);
+    safeLog("info", "WorkspaceContext - Member records count", { count: memberRecords?.length || 0 });
 
     if (memberError || !memberRecords || memberRecords.length === 0) {
-      console.log("WorkspaceContext - No workspace members found, trying fallback to owner workspaces");
+      safeLog("info", "WorkspaceContext - No workspace members found, trying fallback to owner workspaces");
       
       // Fallback: try to load workspaces where user is owner
       const { data: ownedWorkspaces, error: ownerError } = await supabase
@@ -60,13 +61,13 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         .eq("owner_id", user.id);
 
       if (!ownerError && ownedWorkspaces && ownedWorkspaces.length > 0) {
-        console.log("WorkspaceContext - Found owner workspaces:", ownedWorkspaces);
+        safeLog("info", "WorkspaceContext - Found owner workspaces", { count: ownedWorkspaces.length });
         setWorkspaces(ownedWorkspaces);
         setCurrent(ownedWorkspaces[0]);
         return;
       }
 
-      console.log("WorkspaceContext - No workspaces found at all");
+      safeLog("info", "WorkspaceContext - No workspaces found at all");
       setWorkspaces([]);
       setCurrent(null);
       return;
@@ -74,10 +75,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     // Extrair array de IDs
     const workspaceIds = memberRecords.map((rec: any) => rec.workspace_id).filter(Boolean);
 
-    console.log("WorkspaceContext - Workspace IDs:", workspaceIds);
+    safeLog("info", "WorkspaceContext - Workspace IDs count", { count: workspaceIds.length });
 
     if (workspaceIds.length === 0) {
-      console.log("WorkspaceContext - No valid workspace IDs");
+      safeLog("info", "WorkspaceContext - No valid workspace IDs");
       setWorkspaces([]);
       setCurrent(null);
       return;
@@ -89,16 +90,16 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       .select("*")
       .in("id", workspaceIds);
 
-    console.log("WorkspaceContext - Workspaces loaded:", data);
+    safeLog("info", "WorkspaceContext - Workspaces loaded", { count: data?.length || 0 });
 
     if (!error && data && data.length > 0) {
       setWorkspaces(data);
       // Se não houver workspace atual OU o atual não está mais na lista, selecionar o primeiro
       const newCurrent = current && data.find((w: any) => w.id === current.id) ? current : data[0];
-      console.log("WorkspaceContext - Setting current workspace to:", newCurrent);
+      safeLog("info", "WorkspaceContext - Setting current workspace", { workspaceId: newCurrent?.id });
       setCurrent(newCurrent);
     } else {
-      console.log("WorkspaceContext - Error or no workspaces:", error);
+      safeLog("warn", "WorkspaceContext - Error or no workspaces", { error: error?.message });
       setWorkspaces([]);
       setCurrent(null);
     }

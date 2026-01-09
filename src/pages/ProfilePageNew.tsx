@@ -59,9 +59,9 @@ const ProfilePageNew = () => {
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'pro': return 'bg-[#f8961e] text-white';
-      case 'business': return 'bg-[#2f9e44] text-white';
-      default: return 'bg-[#003f5c] text-white';
+      case 'pro': return 'bg-warning text-warning-foreground';
+      case 'business': return 'bg-accent text-accent-foreground';
+      default: return 'bg-primary text-primary-foreground';
     }
   };
 
@@ -139,7 +139,7 @@ const ProfilePageNew = () => {
                               accept="image/*"
                               onChange={handleAvatarUpload}
                               disabled={avatarUploading}
-                              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-[#eaf6ee] file:text-[#003f5c] hover:file:bg-[#d1f2d1]"
+                              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-accent/20 file:text-primary hover:file:bg-accent/30"
                             />
                             <p className="text-xs text-muted-foreground">
                               JPG, PNG, WebP ou GIF - Máximo 5MB

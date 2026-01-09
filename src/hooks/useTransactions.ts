@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useToast } from '@/hooks/use-toast';
 import { Tables } from '@/integrations/supabase/types';
+import { safeLog } from '@/lib/security';
 
 type Transaction = Tables<'transactions'>;
 
@@ -15,12 +16,11 @@ export function useTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
-  console.log("useTransactions - current workspace:", current?.id);
-  console.log("useTransactions - user:", user?.id);
+  safeLog("info", "useTransactions - init", { workspaceId: current?.id, userId: user?.id });
 
   const fetchTransactions = useCallback(async () => {
     if (!user || !current?.id) {
-      console.log("useTransactions - No user or workspace, clearing transactions");
+      safeLog("info", "useTransactions - No user or workspace, clearing transactions");
       setTransactions([]);
       setLoading(false);
       return;
@@ -28,7 +28,7 @@ export function useTransactions() {
 
     setLoading(true);
     try {
-      console.log("useTransactions - Fetching transactions for workspace:", current.id);
+      safeLog("info", "useTransactions - Fetching transactions", { workspaceId: current.id });
 
       const { data, error } = await supabase
         .from('transactions')
@@ -39,10 +39,10 @@ export function useTransactions() {
 
       if (error) throw error;
       
-      console.log("useTransactions - Found transactions:", data?.length || 0);
+      safeLog("info", "useTransactions - Found transactions", { count: data?.length || 0 });
       setTransactions(data || []);
     } catch (error) {
-      console.error('useTransactions - Error fetching transactions:', error);
+      safeLog("error", "useTransactions - Error fetching transactions", { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
@@ -54,7 +54,7 @@ export function useTransactions() {
   }, [user, current?.id, toast]);
 
   useEffect(() => {
-    console.log("useTransactions - Effect triggered");
+    safeLog("info", "useTransactions - Effect triggered");
     fetchTransactions();
   }, [fetchTransactions]);
 
