@@ -146,7 +146,7 @@ export function WorkspaceInviteAccept() {
         {pendingInvites.map((invite) => (
           <div
             key={invite.id}
-            className="flex items-center justify-between p-4 bg-white border rounded-lg shadow-sm"
+            className="flex items-center justify-between p-4 bg-card border rounded-lg shadow-sm"
           >
             <div className="flex items-center gap-3">
               <Users className="w-8 h-8 text-blue-600" />

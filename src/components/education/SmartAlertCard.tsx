@@ -12,7 +12,7 @@ interface SmartAlert {
   id: string;
   title: string;
   message: string;
-  alert_type: 'spending' | 'goal' | 'investment' | 'tip' | 'challenge';
+  alert_type: 'spending' | 'goal' | 'investment' | 'tip' | 'challenge' | 'budget';
   priority: 'low' | 'medium' | 'high';
   is_read: boolean;
   created_at: string;
