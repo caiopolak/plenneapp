@@ -18,6 +18,10 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
         ghost: "hover:bg-accent/10 hover:text-accent hover:scale-105 active:scale-100",
         link: "text-primary underline-offset-4 hover:underline hover:text-primary/80",
+        // Nova variante premium com gradiente
+        premium: "bg-gradient-to-r from-primary via-primary/90 to-secondary text-primary-foreground hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-1 active:translate-y-0 border-0",
+        // Variante para ações principais com destaque
+        cta: "bg-secondary text-secondary-foreground hover:bg-secondary/90 hover:shadow-xl hover:shadow-secondary/30 hover:-translate-y-1 active:translate-y-0 animate-pulse-subtle",
       },
       size: {
         default: "h-12 px-6 py-2",

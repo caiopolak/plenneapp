@@ -386,3 +386,22 @@
   0%, 100% { box-shadow: 0 0 5px rgba(47, 158, 68, 0.3); }
   50% { box-shadow: 0 0 20px rgba(47, 158, 68, 0.5); }
 }
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+/* Utility classes for animations */
+.animate-shimmer {
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
