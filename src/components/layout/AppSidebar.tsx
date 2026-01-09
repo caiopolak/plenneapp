@@ -42,43 +42,50 @@ const mainItems = [
     title: "Visão Geral",
     url: "/app",
     icon: Home,
-    description: "Seu painel financeiro completo"
+    description: "Seu painel financeiro completo",
+    badge: null
   },
   {
     title: "Transações",
     url: "/app/transactions",
     icon: BarChart3,
-    description: "Receitas e despesas"
+    description: "Receitas e despesas",
+    badge: null
   },
   {
     title: "Metas",
     url: "/app/goals",
     icon: Target,
-    description: "Seus objetivos financeiros"
+    description: "Seus objetivos financeiros",
+    badge: null
   },
   {
     title: "Investimentos", 
     url: "/app/investments",
     icon: TrendingUp,
-    description: "Sua carteira de ativos"
+    description: "Sua carteira de ativos",
+    badge: null
   },
   {
     title: "Orçamentos",
     url: "/app/budgets",
     icon: PiggyBank,
-    description: "Controle por categoria"
+    description: "Controle por categoria",
+    badge: null
   },
   {
     title: "Análises",
     url: "/app/analytics",
     icon: BarChart3,
-    description: "Gráficos e insights"
+    description: "Gráficos e insights",
+    badge: null
   },
   {
     title: "Relatórios",
     url: "/app/reports",
     icon: FileText,
-    description: "Visão consolidada"
+    description: "Visão consolidada",
+    badge: "Novo"
   },
 ];
 
@@ -87,19 +94,22 @@ const educationItems = [
     title: "Aprender",
     url: "/app/education",
     icon: GraduationCap,
-    description: "Educação financeira"
+    description: "Educação financeira",
+    badge: "Novo"
   },
   {
     title: "Assistente IA",
     url: "/app/assistant",
     icon: MessageCircle,
-    description: "Tire suas dúvidas"
+    description: "Tire suas dúvidas",
+    badge: null
   },
   {
     title: "Alertas",
     url: "/app/alerts",
     icon: Bell,
-    description: "Notificações inteligentes"
+    description: "Notificações inteligentes",
+    badge: "Novo"
   },
 ];
 
@@ -108,25 +118,29 @@ const configItems = [
     title: "Meu Perfil",
     url: "/app/profile",
     icon: User,
-    description: "Seus dados pessoais"
+    description: "Seus dados pessoais",
+    badge: null
   },
   {
     title: "Workspaces",
     url: "/app/workspaces",
     icon: Building2,
-    description: "Ambientes separados"
+    description: "Ambientes separados",
+    badge: null
   },
   {
     title: "Planos",
     url: "/app/subscription",
     icon: CreditCard,
-    description: "Sua assinatura"
+    description: "Sua assinatura",
+    badge: null
   },
   {
     title: "Configurações",
     url: "/app/settings",
     icon: Settings,
-    description: "Preferências do app"
+    description: "Preferências do app",
+    badge: null
   },
 ];
 
@@ -142,6 +156,14 @@ export function AppSidebar() {
     navigate('/');
   };
 
+  // Check if current path matches item url (exact match for /app, startsWith for others)
+  const isActivePath = (itemUrl: string) => {
+    if (itemUrl === '/app') {
+      return location.pathname === '/app';
+    }
+    return location.pathname.startsWith(itemUrl);
+  };
+
   return (
     <Sidebar variant="inset" className="bg-background border-r">
       <SidebarContent className="space-y-2 bg-background overflow-y-auto">
@@ -150,52 +172,68 @@ export function AppSidebar() {
           <SidebarGroupLabel className="text-primary font-semibold text-sm md:text-xs px-3 py-2">💰 Finanças</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild
-                    isActive={location.pathname === item.url}
-                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary min-h-[44px] md:min-h-[36px] px-3"
-                  >
-                    <a href={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-5 w-5 md:h-4 md:w-4 shrink-0" />
-                      <span className="text-base md:text-sm">{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Menu Educação - Destacado */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-secondary font-semibold text-sm md:text-xs px-3 py-2">📚 Aprendizado</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
-              {educationItems.map((item, index) => {
-                const isLearn = item.title === "Aprender";
+              {mainItems.map((item) => {
+                const isActive = isActivePath(item.url);
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton 
                       asChild
-                      isActive={location.pathname === item.url}
+                      isActive={isActive}
                       className={`
                         min-h-[44px] md:min-h-[36px] px-3 transition-all duration-300
-                        ${isLearn 
-                          ? 'bg-gradient-to-r from-secondary/20 to-primary/10 hover:from-secondary/30 hover:to-primary/20 border border-secondary/30 rounded-xl shadow-sm hover:shadow-md data-[state=active]:from-secondary/40 data-[state=active]:to-primary/30 data-[state=active]:shadow-lg' 
-                          : 'hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary'
+                        ${isActive 
+                          ? 'bg-gradient-to-r from-primary/20 to-secondary/10 border border-primary/30 rounded-xl shadow-sm text-primary font-medium' 
+                          : 'hover:bg-secondary/10'
                         }
                       `}
                     >
                       <a href={item.url} className="flex items-center gap-3">
-                        <div className={isLearn ? "p-1.5 rounded-lg bg-secondary/20" : ""}>
-                          <item.icon className={`h-5 w-5 md:h-4 md:w-4 shrink-0 ${isLearn ? 'text-secondary' : ''}`} />
+                        <div className={isActive ? "p-1.5 rounded-lg bg-primary/20" : ""}>
+                          <item.icon className={`h-5 w-5 md:h-4 md:w-4 shrink-0 ${isActive ? 'text-primary' : ''}`} />
                         </div>
-                        <span className={`text-base md:text-sm ${isLearn ? 'font-semibold text-secondary' : ''}`}>{item.title}</span>
-                        {isLearn && (
+                        <span className="text-base md:text-sm">{item.title}</span>
+                        {item.badge && (
                           <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-5 bg-secondary/20 text-secondary border-secondary/30">
-                            Novo
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Menu Educação */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-secondary font-semibold text-sm md:text-xs px-3 py-2">📚 Aprendizado</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-1">
+              {educationItems.map((item) => {
+                const isActive = isActivePath(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild
+                      isActive={isActive}
+                      className={`
+                        min-h-[44px] md:min-h-[36px] px-3 transition-all duration-300
+                        ${isActive 
+                          ? 'bg-gradient-to-r from-secondary/20 to-primary/10 border border-secondary/30 rounded-xl shadow-sm text-secondary font-medium' 
+                          : 'hover:bg-secondary/10'
+                        }
+                      `}
+                    >
+                      <a href={item.url} className="flex items-center gap-3">
+                        <div className={isActive ? "p-1.5 rounded-lg bg-secondary/20" : ""}>
+                          <item.icon className={`h-5 w-5 md:h-4 md:w-4 shrink-0 ${isActive ? 'text-secondary' : ''}`} />
+                        </div>
+                        <span className="text-base md:text-sm">{item.title}</span>
+                        {item.badge && (
+                          <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-5 bg-secondary/20 text-secondary border-secondary/30">
+                            {item.badge}
                           </Badge>
                         )}
                       </a>
@@ -212,20 +250,36 @@ export function AppSidebar() {
           <SidebarGroupLabel className="text-muted-foreground font-semibold text-sm md:text-xs px-3 py-2">⚙️ Conta</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {configItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild
-                    isActive={location.pathname === item.url}
-                    className="hover:bg-secondary/10 data-[state=active]:bg-secondary/20 data-[state=active]:text-primary min-h-[44px] md:min-h-[36px] px-3"
-                  >
-                    <a href={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-5 w-5 md:h-4 md:w-4 shrink-0" />
-                      <span className="text-base md:text-sm">{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {configItems.map((item) => {
+                const isActive = isActivePath(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild
+                      isActive={isActive}
+                      className={`
+                        min-h-[44px] md:min-h-[36px] px-3 transition-all duration-300
+                        ${isActive 
+                          ? 'bg-gradient-to-r from-muted/40 to-muted/20 border border-border rounded-xl shadow-sm text-foreground font-medium' 
+                          : 'hover:bg-secondary/10'
+                        }
+                      `}
+                    >
+                      <a href={item.url} className="flex items-center gap-3">
+                        <div className={isActive ? "p-1.5 rounded-lg bg-muted" : ""}>
+                          <item.icon className={`h-5 w-5 md:h-4 md:w-4 shrink-0 ${isActive ? 'text-foreground' : ''}`} />
+                        </div>
+                        <span className="text-base md:text-sm">{item.title}</span>
+                        {item.badge && (
+                          <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-5 bg-secondary/20 text-secondary border-secondary/30">
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
