@@ -53,8 +53,6 @@ export function CompactGoalFilters({
     note: g.note || null,
   }));
 
-  const buttonGradient =
-    "bg-gradient-to-tr from-[hsl(var(--primary))]/80 to-[hsl(var(--secondary))]/60 text-white hover:from-[hsl(var(--primary))] hover:to-[hsl(var(--secondary))]";
 
   return (
     <div className="flex items-center gap-2">
@@ -159,7 +157,8 @@ export function CompactGoalFilters({
       {/* Botão Nova Meta */}
       <Button
         size="sm"
-        className={`${buttonGradient} font-display gap-1.5 h-9`}
+        variant="cta"
+        className="font-display gap-1.5 h-9"
         onClick={onNewGoal}
       >
         <Plus className="w-4 h-4" />

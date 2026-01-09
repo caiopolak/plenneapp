@@ -26,9 +26,6 @@ export function GoalActionButtons({
   showForm, 
   setShowForm 
 }: GoalActionButtonsProps) {
-  const buttonGradient =
-    "bg-gradient-to-tr from-[#003f5c]/80 to-[#2f9e44]/40 text-white hover:from-[#003f5c] hover:to-[#2f9e44]";
-
   // Mapear para o formato de exportação
   const goalsForExport: GoalExport[] = goals.map(g => ({
     name: g.name,
@@ -64,7 +61,8 @@ export function GoalActionButtons({
       />
       <Button
         size="sm"
-        className={`${buttonGradient} font-display flex gap-2 flex-1 sm:flex-none min-h-[44px] sm:min-h-[36px]`}
+        variant="cta"
+        className="font-display flex gap-2 flex-1 sm:flex-none min-h-[44px] sm:min-h-[36px]"
         onClick={() => setShowForm(true)}
       >
         <Plus className="w-4 h-4" />
