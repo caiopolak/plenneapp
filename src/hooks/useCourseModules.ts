@@ -22,6 +22,8 @@ export interface Lesson {
   content: string | null;
   video_url: string | null;
   video_file_url: string | null;
+  audio_url: string | null;
+  audio_file_url: string | null;
   thumbnail_url: string | null;
   duration_minutes: number | null;
   order_index: number | null;
