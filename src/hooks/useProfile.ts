@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { safeLog } from '@/lib/security';
 
 interface Profile {
   id: string;
@@ -44,7 +45,7 @@ export function useProfile() {
       if (error) throw error;
       setProfile(data);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      safeLog('error', 'Error fetching profile', { error: String(error) });
     } finally {
       setLoading(false);
     }
@@ -61,7 +62,7 @@ export function useProfile() {
       if (error) throw error;
       setSubscription(data);
     } catch (error) {
-      console.error('Error fetching subscription:', error);
+      safeLog('error', 'Error fetching subscription', { error: String(error) });
     }
   };
 
@@ -77,7 +78,7 @@ export function useProfile() {
       setProfile(prev => prev ? { ...prev, ...updates } : null);
       return { error: null };
     } catch (error) {
-      console.error('Error updating profile:', error);
+      safeLog('error', 'Error updating profile', { error: String(error) });
       return { error };
     }
   };

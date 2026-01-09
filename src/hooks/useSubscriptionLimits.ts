@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { safeLog } from '@/lib/security';
 
 export interface PlanLimits {
   transactions: number;
@@ -81,7 +82,7 @@ export function useSubscriptionLimits() {
 
       return canProceed;
     } catch (error) {
-      console.error('Error checking limits:', error);
+      safeLog('error', 'Error checking limits', { error: String(error) });
       return true; // Em caso de erro, permitir a ação
     }
   };

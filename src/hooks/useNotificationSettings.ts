@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { safeLog } from '@/lib/security';
 
 interface NotificationSettings {
   id?: string;
@@ -62,7 +63,7 @@ export function useNotificationSettings() {
         setSettings(newSettings);
       }
     } catch (error) {
-      console.error('Error fetching notification settings:', error);
+      safeLog('error', 'Error fetching notification settings', { error: String(error) });
     } finally {
       setLoading(false);
     }
@@ -80,7 +81,7 @@ export function useNotificationSettings() {
       setSettings(prev => prev ? { ...prev, ...updates } : null);
       return { error: null };
     } catch (error) {
-      console.error('Error updating notification settings:', error);
+      safeLog('error', 'Error updating notification settings', { error: String(error) });
       return { error };
     }
   };

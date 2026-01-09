@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { safeLog } from '@/lib/security';
 
 interface Alert {
   id: string;
@@ -153,7 +154,7 @@ export function SmartFinancialAlerts() {
 
       setAlerts(newAlerts);
     } catch (error) {
-      console.error('Erro ao gerar alertas:', error);
+      safeLog('error', 'Erro ao gerar alertas', { error: String(error) });
     } finally {
       setLoading(false);
     }

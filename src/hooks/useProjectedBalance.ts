@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { addDays, format } from 'date-fns';
 import { useUpcomingTransactions } from './useUpcomingTransactions';
+import { safeLog } from '@/lib/security';
 
 export interface ProjectedBalancePoint {
   date: string;
@@ -96,7 +97,7 @@ export function useProjectedBalance(daysAhead: number = 30) {
 
         setProjectedData(projectionPoints);
       } catch (error) {
-        console.error('Error calculating projected balance:', error);
+        safeLog('error', 'Error calculating projected balance', { error: String(error) });
       } finally {
         setLoading(false);
       }
