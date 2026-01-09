@@ -95,86 +95,44 @@ export default function SettingsPage() {
 
         {/* Aba de Aparência */}
         <TabsContent value="appearance" className="mt-6 space-y-6">
-        {/* Toggle Modo Escuro - Design Integrado */}
-          <Card className="overflow-hidden border-2 border-border/50 hover:border-primary/30 transition-all duration-300">
+        {/* Toggle Modo Escuro - Design Unificado */}
+          <Card className="overflow-hidden">
             <CardContent className="p-0">
-              <div className="flex items-center justify-between p-4 sm:p-6">
-                <div className="flex items-center gap-4">
-                  <div className={cn(
-                    "p-3 rounded-xl transition-all duration-500",
-                    isDarkMode 
-                      ? "bg-primary/20 text-primary" 
-                      : "bg-primary/10 text-primary"
-                  )}>
-                    {isDarkMode ? (
-                      <Moon className="h-6 w-6" />
-                    ) : (
-                      <Sun className="h-6 w-6" />
+              {/* Seletor único de modo */}
+              <div className="p-1.5 bg-muted/50">
+                <div className="grid grid-cols-2 gap-1">
+                  <button
+                    onClick={() => isDarkMode && toggleDarkMode()}
+                    className={cn(
+                      "flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all duration-300",
+                      !isDarkMode 
+                        ? "bg-card text-foreground shadow-md" 
+                        : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                     )}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">
-                      Modo {isDarkMode ? 'Escuro' : 'Claro'}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {isDarkMode 
-                        ? 'Interface escura para ambientes com pouca luz' 
-                        : 'Interface clara para uso durante o dia'}
-                    </p>
-                  </div>
+                  >
+                    <Sun className={cn(
+                      "h-5 w-5 transition-transform duration-300",
+                      !isDarkMode && "text-amber-500"
+                    )} />
+                    <span>Modo Claro</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => !isDarkMode && toggleDarkMode()}
+                    className={cn(
+                      "flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all duration-300",
+                      isDarkMode 
+                        ? "bg-card text-foreground shadow-md" 
+                        : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                    )}
+                  >
+                    <Moon className={cn(
+                      "h-5 w-5 transition-transform duration-300",
+                      isDarkMode && "text-primary"
+                    )} />
+                    <span>Modo Escuro</span>
+                  </button>
                 </div>
-                
-                {/* Toggle Switch Estilizado */}
-                <button
-                  onClick={() => toggleDarkMode()}
-                  className={cn(
-                    "relative w-16 h-8 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background",
-                    isDarkMode 
-                      ? "bg-primary" 
-                      : "bg-muted"
-                  )}
-                  aria-label="Alternar modo escuro"
-                >
-                  <div className={cn(
-                    "absolute top-1 w-6 h-6 rounded-full bg-card shadow-md transition-all duration-300 flex items-center justify-center border border-border/50",
-                    isDarkMode ? "left-9" : "left-1"
-                  )}>
-                    {isDarkMode ? (
-                      <Moon className="h-3.5 w-3.5 text-primary" />
-                    ) : (
-                      <Sun className="h-3.5 w-3.5 text-muted-foreground" />
-                    )}
-                  </div>
-                </button>
-              </div>
-              
-              {/* Barra de preview de modos */}
-              <div className="flex border-t border-border/50">
-                <button
-                  onClick={() => !isDarkMode || toggleDarkMode()}
-                  className={cn(
-                    "flex-1 py-2.5 text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5",
-                    !isDarkMode 
-                      ? "bg-primary/10 text-primary" 
-                      : "text-muted-foreground hover:bg-muted/50"
-                  )}
-                >
-                  <Sun className="h-3.5 w-3.5" />
-                  Claro
-                </button>
-                <div className="w-px bg-border/50" />
-                <button
-                  onClick={() => isDarkMode || toggleDarkMode()}
-                  className={cn(
-                    "flex-1 py-2.5 text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5",
-                    isDarkMode 
-                      ? "bg-primary/10 text-primary" 
-                      : "text-muted-foreground hover:bg-muted/50"
-                  )}
-                >
-                  <Moon className="h-3.5 w-3.5" />
-                  Escuro
-                </button>
               </div>
             </CardContent>
           </Card>
