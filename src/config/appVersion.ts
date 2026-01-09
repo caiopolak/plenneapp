@@ -18,9 +18,7 @@ declare const __BUILD_ID__: string;
 const MANUAL_VERSION = "2.2.0";
 
 /** Notas da versão atual - atualize junto com a versão */
-const RELEASE_NOTES = "Corrigido e atualizado nova funcionalidade de MODULOS DE APRENDIZADO, Educação Financeira e Alertas & Dicas Inteligentes,, alem de melhorias no UX";
-const RELEASE_NOTES = "Correções de cores no modo escuro e melhorias de UX nos workspaces";
-const RELEASE_NOTES = "Melhorias em Cards, dashboard principal, Melhorias de UX em Transações,Investimentos, entre outros Modulos"
+const RELEASE_NOTES = "Corrigido e atualizado nova funcionalidade de MODULOS DE APRENDIZADO, Educação Financeira e Alertas & Dicas Inteligentes, alem de melhorias no UX";
 
 export const APP_VERSION = {
   /** Versão atual do app (SemVer) - MANUAL */
