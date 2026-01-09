@@ -10,175 +10,211 @@ interface Theme {
   is_active: boolean;
 }
 
-interface DefaultTheme {
+export interface DefaultTheme {
   name: string;
   label: string;
   description: string;
+  plan: 'free' | 'pro' | 'business';
   colors: {
     light: Record<string, string>;
     dark: Record<string, string>;
   };
 }
 
+// Temas com paletas harmoniosas e categorizados por plano
 const defaultThemes: DefaultTheme[] = [
+  // ========== TEMAS FREE (5 temas) ==========
   {
     name: 'default',
     label: 'Esmeralda',
     description: 'Verde institucional Plenne, sofisticado e confiável',
+    plan: 'free',
     colors: {
       light: {
         primary: '158 64% 35%',
-        secondary: '142 76% 36%',
-        accent: '38 92% 50%',
+        secondary: '142 50% 42%',
+        accent: '43 96% 56%',
         background: '150 20% 98%',
         surface: '0 0% 100%',
         foreground: '158 30% 15%'
       },
       dark: {
-        primary: '158 64% 52%',
-        secondary: '142 76% 50%',
-        accent: '38 92% 55%',
-        background: '160 15% 6%',
-        surface: '160 12% 10%',
-        foreground: '0 0% 98%'
+        primary: '158 55% 48%',
+        secondary: '142 45% 52%',
+        accent: '43 90% 52%',
+        background: '160 18% 7%',
+        surface: '160 14% 11%',
+        foreground: '150 15% 95%'
       }
     }
   },
   {
     name: 'ocean',
     label: 'Oceano',
-    description: 'Azul profundo e sereno, transmite calma e profissionalismo',
+    description: 'Azul profundo inspirado no mar, transmite calma e confiança',
+    plan: 'free',
     colors: {
       light: {
-        primary: '199 89% 48%',
-        secondary: '188 86% 45%',
-        accent: '172 70% 50%',
-        background: '200 40% 98%',
+        primary: '205 85% 45%',
+        secondary: '195 70% 52%',
+        accent: '175 65% 48%',
+        background: '205 30% 98%',
         surface: '0 0% 100%',
-        foreground: '199 43% 18%'
+        foreground: '205 50% 15%'
       },
       dark: {
-        primary: '199 89% 60%',
-        secondary: '188 86% 55%',
-        accent: '172 70% 55%',
-        background: '200 25% 6%',
-        surface: '200 20% 10%',
-        foreground: '0 0% 98%'
+        primary: '205 75% 58%',
+        secondary: '195 65% 60%',
+        accent: '175 60% 55%',
+        background: '205 30% 7%',
+        surface: '205 25% 11%',
+        foreground: '200 20% 95%'
       }
     }
   },
   {
-    name: 'lavender',
-    label: 'Lavanda',
-    description: 'Roxo suave e elegante, sofisticação e criatividade',
+    name: 'slate',
+    label: 'Grafite',
+    description: 'Neutro e profissional, minimalismo elegante',
+    plan: 'free',
     colors: {
       light: {
-        primary: '262 72% 55%',
-        secondary: '280 60% 60%',
-        accent: '315 70% 60%',
-        background: '270 30% 98%',
+        primary: '220 15% 40%',
+        secondary: '215 12% 50%',
+        accent: '210 55% 55%',
+        background: '220 15% 98%',
         surface: '0 0% 100%',
-        foreground: '262 45% 20%'
+        foreground: '220 25% 12%'
       },
       dark: {
-        primary: '262 72% 68%',
-        secondary: '280 60% 70%',
-        accent: '315 70% 70%',
-        background: '270 20% 6%',
-        surface: '270 15% 10%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'sunset',
-    label: 'Pôr do Sol',
-    description: 'Tons quentes e acolhedores, energia e otimismo',
-    colors: {
-      light: {
-        primary: '25 95% 53%',
-        secondary: '38 95% 50%',
-        accent: '0 85% 60%',
-        background: '35 50% 97%',
-        surface: '0 0% 100%',
-        foreground: '25 50% 18%'
-      },
-      dark: {
-        primary: '25 95% 60%',
-        secondary: '38 95% 55%',
-        accent: '0 85% 65%',
-        background: '25 20% 6%',
-        surface: '25 15% 10%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'rose',
-    label: 'Rose Gold',
-    description: 'Rosa elegante e sofisticado, luxo discreto',
-    colors: {
-      light: {
-        primary: '346 75% 55%',
-        secondary: '330 70% 60%',
-        accent: '20 80% 55%',
-        background: '340 30% 98%',
-        surface: '0 0% 100%',
-        foreground: '346 40% 18%'
-      },
-      dark: {
-        primary: '346 75% 65%',
-        secondary: '330 70% 70%',
-        accent: '20 80% 60%',
-        background: '340 15% 6%',
-        surface: '340 12% 10%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'midnight',
-    label: 'Meia-Noite',
-    description: 'Azul escuro premium, executivo e impactante',
-    colors: {
-      light: {
-        primary: '222 85% 45%',
-        secondary: '215 75% 50%',
-        accent: '230 80% 65%',
-        background: '220 25% 97%',
-        surface: '0 0% 100%',
-        foreground: '222 50% 15%'
-      },
-      dark: {
-        primary: '222 85% 60%',
-        secondary: '215 75% 60%',
-        accent: '230 80% 70%',
-        background: '222 25% 5%',
-        surface: '222 20% 9%',
-        foreground: '0 0% 98%'
+        primary: '220 15% 60%',
+        secondary: '215 12% 65%',
+        accent: '210 55% 62%',
+        background: '220 18% 8%',
+        surface: '220 15% 12%',
+        foreground: '220 10% 95%'
       }
     }
   },
   {
     name: 'forest',
     label: 'Floresta',
-    description: 'Verde escuro natural, conexão com a natureza',
+    description: 'Verde natural e acolhedor, conexão com a natureza',
+    plan: 'free',
     colors: {
       light: {
-        primary: '150 45% 35%',
-        secondary: '140 40% 40%',
-        accent: '80 50% 45%',
+        primary: '145 40% 38%',
+        secondary: '130 35% 45%',
+        accent: '85 45% 50%',
         background: '140 20% 97%',
         surface: '0 0% 100%',
-        foreground: '150 35% 15%'
+        foreground: '145 35% 15%'
       },
       dark: {
-        primary: '150 45% 50%',
-        secondary: '140 40% 50%',
-        accent: '80 50% 55%',
-        background: '150 20% 5%',
-        surface: '150 15% 9%',
-        foreground: '0 0% 98%'
+        primary: '145 38% 50%',
+        secondary: '130 33% 55%',
+        accent: '85 42% 55%',
+        background: '145 22% 7%',
+        surface: '145 18% 11%',
+        foreground: '140 15% 95%'
+      }
+    }
+  },
+  {
+    name: 'midnight',
+    label: 'Meia-Noite',
+    description: 'Azul escuro elegante, executivo e impactante',
+    plan: 'free',
+    colors: {
+      light: {
+        primary: '225 65% 50%',
+        secondary: '215 55% 55%',
+        accent: '240 60% 65%',
+        background: '225 25% 97%',
+        surface: '0 0% 100%',
+        foreground: '225 50% 12%'
+      },
+      dark: {
+        primary: '225 60% 62%',
+        secondary: '215 52% 62%',
+        accent: '240 55% 70%',
+        background: '225 30% 6%',
+        surface: '225 25% 10%',
+        foreground: '225 15% 95%'
+      }
+    }
+  },
+
+  // ========== TEMAS PRO (8 temas) ==========
+  {
+    name: 'lavender',
+    label: 'Lavanda',
+    description: 'Roxo suave e relaxante, sofisticação e criatividade',
+    plan: 'pro',
+    colors: {
+      light: {
+        primary: '268 55% 55%',
+        secondary: '280 45% 60%',
+        accent: '300 50% 62%',
+        background: '270 25% 98%',
+        surface: '0 0% 100%',
+        foreground: '268 40% 18%'
+      },
+      dark: {
+        primary: '268 50% 65%',
+        secondary: '280 42% 68%',
+        accent: '300 48% 70%',
+        background: '270 22% 7%',
+        surface: '270 18% 11%',
+        foreground: '270 15% 95%'
+      }
+    }
+  },
+  {
+    name: 'sunset',
+    label: 'Pôr do Sol',
+    description: 'Laranja quente e vibrante, energia e otimismo',
+    plan: 'pro',
+    colors: {
+      light: {
+        primary: '25 90% 52%',
+        secondary: '35 88% 55%',
+        accent: '15 85% 58%',
+        background: '30 40% 98%',
+        surface: '0 0% 100%',
+        foreground: '25 45% 15%'
+      },
+      dark: {
+        primary: '25 85% 58%',
+        secondary: '35 82% 60%',
+        accent: '15 80% 62%',
+        background: '25 25% 7%',
+        surface: '25 20% 11%',
+        foreground: '30 20% 95%'
+      }
+    }
+  },
+  {
+    name: 'rose',
+    label: 'Rose Gold',
+    description: 'Rosa elegante e sofisticado, luxo discreto e feminino',
+    plan: 'pro',
+    colors: {
+      light: {
+        primary: '350 65% 55%',
+        secondary: '340 55% 60%',
+        accent: '20 70% 58%',
+        background: '350 25% 98%',
+        surface: '0 0% 100%',
+        foreground: '350 40% 15%'
+      },
+      dark: {
+        primary: '350 58% 62%',
+        secondary: '340 50% 68%',
+        accent: '20 65% 62%',
+        background: '350 20% 7%',
+        surface: '350 16% 11%',
+        foreground: '350 15% 95%'
       }
     }
   },
@@ -186,184 +222,289 @@ const defaultThemes: DefaultTheme[] = [
     name: 'coral',
     label: 'Coral',
     description: 'Vibrante e moderno, dinamismo e juventude',
+    plan: 'pro',
     colors: {
       light: {
-        primary: '12 90% 60%',
-        secondary: '25 85% 55%',
-        accent: '350 80% 58%',
-        background: '15 40% 98%',
+        primary: '12 80% 58%',
+        secondary: '20 75% 55%',
+        accent: '0 72% 60%',
+        background: '15 35% 98%',
         surface: '0 0% 100%',
-        foreground: '12 50% 18%'
+        foreground: '12 45% 15%'
       },
       dark: {
-        primary: '12 90% 65%',
-        secondary: '25 85% 60%',
-        accent: '350 80% 65%',
-        background: '12 20% 6%',
-        surface: '12 15% 10%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'slate',
-    label: 'Ardósia',
-    description: 'Neutro e profissional, minimalismo elegante',
-    colors: {
-      light: {
-        primary: '215 20% 40%',
-        secondary: '210 15% 50%',
-        accent: '200 60% 50%',
-        background: '210 20% 98%',
-        surface: '0 0% 100%',
-        foreground: '215 25% 15%'
-      },
-      dark: {
-        primary: '215 20% 60%',
-        secondary: '210 15% 60%',
-        accent: '200 60% 60%',
-        background: '215 20% 6%',
-        surface: '215 15% 10%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  // Novos temas premium
-  {
-    name: 'aurora',
-    label: 'Aurora Boreal',
-    description: 'Tons mágicos de verde e azul, inspiração nórdica',
-    colors: {
-      light: {
-        primary: '180 70% 40%',
-        secondary: '160 80% 45%',
-        accent: '200 85% 55%',
-        background: '175 35% 97%',
-        surface: '0 0% 100%',
-        foreground: '180 50% 15%'
-      },
-      dark: {
-        primary: '180 70% 55%',
-        secondary: '160 80% 55%',
-        accent: '200 85% 65%',
-        background: '180 25% 5%',
-        surface: '180 20% 9%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'mocha',
-    label: 'Mocha',
-    description: 'Tons de café e chocolate, aconchegante e premium',
-    colors: {
-      light: {
-        primary: '25 50% 35%',
-        secondary: '35 40% 45%',
-        accent: '15 60% 50%',
-        background: '30 30% 97%',
-        surface: '0 0% 100%',
-        foreground: '25 40% 15%'
-      },
-      dark: {
-        primary: '25 50% 50%',
-        secondary: '35 40% 55%',
-        accent: '15 60% 55%',
-        background: '25 25% 6%',
-        surface: '25 20% 10%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'amethyst',
-    label: 'Ametista',
-    description: 'Roxo profundo e misterioso, realeza e sabedoria',
-    colors: {
-      light: {
-        primary: '280 65% 45%',
-        secondary: '295 55% 50%',
-        accent: '320 70% 55%',
-        background: '280 25% 97%',
-        surface: '0 0% 100%',
-        foreground: '280 50% 18%'
-      },
-      dark: {
-        primary: '280 65% 60%',
-        secondary: '295 55% 65%',
-        accent: '320 70% 65%',
-        background: '280 25% 5%',
-        surface: '280 20% 9%',
-        foreground: '0 0% 98%'
+        primary: '12 75% 62%',
+        secondary: '20 70% 60%',
+        accent: '0 68% 65%',
+        background: '12 22% 7%',
+        surface: '12 18% 11%',
+        foreground: '15 15% 95%'
       }
     }
   },
   {
     name: 'mint',
     label: 'Menta',
-    description: 'Verde menta refrescante, leve e jovial',
+    description: 'Verde menta refrescante, leve e revitalizante',
+    plan: 'pro',
     colors: {
       light: {
-        primary: '168 76% 42%',
-        secondary: '158 70% 48%',
-        accent: '185 65% 50%',
-        background: '165 40% 97%',
+        primary: '168 62% 45%',
+        secondary: '175 55% 50%',
+        accent: '155 50% 48%',
+        background: '168 30% 97%',
         surface: '0 0% 100%',
-        foreground: '168 55% 15%'
+        foreground: '168 45% 15%'
       },
       dark: {
-        primary: '168 76% 55%',
-        secondary: '158 70% 58%',
-        accent: '185 65% 58%',
-        background: '168 25% 5%',
-        surface: '168 20% 9%',
-        foreground: '0 0% 98%'
+        primary: '168 55% 55%',
+        secondary: '175 50% 58%',
+        accent: '155 48% 55%',
+        background: '168 25% 7%',
+        surface: '168 20% 11%',
+        foreground: '168 15% 95%'
+      }
+    }
+  },
+  {
+    name: 'aurora',
+    label: 'Aurora Boreal',
+    description: 'Tons mágicos de verde e azul, inspiração nórdica',
+    plan: 'pro',
+    colors: {
+      light: {
+        primary: '180 55% 42%',
+        secondary: '165 60% 48%',
+        accent: '200 65% 55%',
+        background: '180 25% 97%',
+        surface: '0 0% 100%',
+        foreground: '180 45% 15%'
+      },
+      dark: {
+        primary: '180 50% 52%',
+        secondary: '165 55% 55%',
+        accent: '200 60% 62%',
+        background: '180 25% 6%',
+        surface: '180 20% 10%',
+        foreground: '180 15% 95%'
+      }
+    }
+  },
+  {
+    name: 'mocha',
+    label: 'Mocha',
+    description: 'Tons de café e chocolate, aconchegante e elegante',
+    plan: 'pro',
+    colors: {
+      light: {
+        primary: '28 45% 38%',
+        secondary: '35 40% 45%',
+        accent: '18 55% 50%',
+        background: '30 25% 97%',
+        surface: '0 0% 100%',
+        foreground: '28 40% 15%'
+      },
+      dark: {
+        primary: '28 42% 50%',
+        secondary: '35 38% 55%',
+        accent: '18 50% 55%',
+        background: '28 25% 7%',
+        surface: '28 20% 11%',
+        foreground: '28 15% 95%'
       }
     }
   },
   {
     name: 'cherry',
     label: 'Cereja',
-    description: 'Vermelho vibrante e elegante, paixão e energia',
+    description: 'Vermelho vibrante e apaixonado, energia e ousadia',
+    plan: 'pro',
     colors: {
       light: {
-        primary: '350 85% 50%',
-        secondary: '340 75% 55%',
-        accent: '15 80% 55%',
-        background: '350 30% 97%',
+        primary: '355 72% 52%',
+        secondary: '345 65% 58%',
+        accent: '10 70% 55%',
+        background: '355 25% 98%',
         surface: '0 0% 100%',
-        foreground: '350 50% 15%'
+        foreground: '355 45% 12%'
       },
       dark: {
-        primary: '350 85% 60%',
-        secondary: '340 75% 65%',
-        accent: '15 80% 60%',
-        background: '350 25% 5%',
-        surface: '350 20% 9%',
-        foreground: '0 0% 98%'
+        primary: '355 68% 58%',
+        secondary: '345 60% 65%',
+        accent: '10 65% 60%',
+        background: '355 25% 7%',
+        surface: '355 20% 11%',
+        foreground: '355 15% 95%'
+      }
+    }
+  },
+
+  // ========== TEMAS BUSINESS (7 temas exclusivos) ==========
+  {
+    name: 'gold',
+    label: 'Ouro Imperial',
+    description: 'Dourado luxuoso e exclusivo, riqueza e prestígio',
+    plan: 'business',
+    colors: {
+      light: {
+        primary: '45 85% 48%',
+        secondary: '38 80% 52%',
+        accent: '30 75% 50%',
+        background: '45 30% 97%',
+        surface: '0 0% 100%',
+        foreground: '45 50% 12%'
+      },
+      dark: {
+        primary: '45 80% 55%',
+        secondary: '38 75% 58%',
+        accent: '30 70% 55%',
+        background: '45 28% 6%',
+        surface: '45 22% 10%',
+        foreground: '45 20% 95%'
       }
     }
   },
   {
-    name: 'gold',
-    label: 'Ouro',
-    description: 'Dourado luxuoso, riqueza e exclusividade',
+    name: 'amethyst',
+    label: 'Ametista',
+    description: 'Roxo profundo e místico, realeza e sabedoria',
+    plan: 'business',
     colors: {
       light: {
-        primary: '45 90% 45%',
-        secondary: '38 85% 50%',
-        accent: '30 80% 45%',
-        background: '45 40% 97%',
+        primary: '275 55% 50%',
+        secondary: '290 48% 55%',
+        accent: '260 50% 58%',
+        background: '275 22% 97%',
         surface: '0 0% 100%',
-        foreground: '45 60% 15%'
+        foreground: '275 45% 15%'
       },
       dark: {
-        primary: '45 90% 55%',
-        secondary: '38 85% 58%',
-        accent: '30 80% 55%',
-        background: '45 25% 5%',
-        surface: '45 20% 9%',
-        foreground: '0 0% 98%'
+        primary: '275 50% 60%',
+        secondary: '290 45% 65%',
+        accent: '260 48% 65%',
+        background: '275 25% 6%',
+        surface: '275 20% 10%',
+        foreground: '275 15% 95%'
+      }
+    }
+  },
+  {
+    name: 'obsidian',
+    label: 'Obsidiana',
+    description: 'Preto refinado com toques de azul, poder e elegância',
+    plan: 'business',
+    colors: {
+      light: {
+        primary: '230 25% 35%',
+        secondary: '220 22% 42%',
+        accent: '210 45% 52%',
+        background: '230 18% 97%',
+        surface: '0 0% 100%',
+        foreground: '230 30% 10%'
+      },
+      dark: {
+        primary: '230 22% 55%',
+        secondary: '220 20% 60%',
+        accent: '210 42% 60%',
+        background: '230 25% 5%',
+        surface: '230 20% 9%',
+        foreground: '230 12% 95%'
+      }
+    }
+  },
+  {
+    name: 'sapphire',
+    label: 'Safira',
+    description: 'Azul precioso e profundo, sofisticação atemporal',
+    plan: 'business',
+    colors: {
+      light: {
+        primary: '215 72% 48%',
+        secondary: '225 65% 55%',
+        accent: '200 60% 52%',
+        background: '215 28% 97%',
+        surface: '0 0% 100%',
+        foreground: '215 55% 12%'
+      },
+      dark: {
+        primary: '215 68% 58%',
+        secondary: '225 60% 62%',
+        accent: '200 55% 58%',
+        background: '215 30% 6%',
+        surface: '215 25% 10%',
+        foreground: '215 15% 95%'
+      }
+    }
+  },
+  {
+    name: 'emerald',
+    label: 'Esmeralda Real',
+    description: 'Verde esmeralda intenso e vibrante, luxo natural',
+    plan: 'business',
+    colors: {
+      light: {
+        primary: '152 62% 40%',
+        secondary: '165 55% 45%',
+        accent: '140 50% 48%',
+        background: '152 25% 97%',
+        surface: '0 0% 100%',
+        foreground: '152 50% 12%'
+      },
+      dark: {
+        primary: '152 58% 50%',
+        secondary: '165 52% 55%',
+        accent: '140 48% 55%',
+        background: '152 28% 6%',
+        surface: '152 22% 10%',
+        foreground: '152 15% 95%'
+      }
+    }
+  },
+  {
+    name: 'wine',
+    label: 'Vinho Nobre',
+    description: 'Bordô sofisticado e intenso, requinte e tradição',
+    plan: 'business',
+    colors: {
+      light: {
+        primary: '345 55% 42%',
+        secondary: '355 48% 48%',
+        accent: '335 45% 52%',
+        background: '345 22% 97%',
+        surface: '0 0% 100%',
+        foreground: '345 45% 12%'
+      },
+      dark: {
+        primary: '345 50% 52%',
+        secondary: '355 45% 58%',
+        accent: '335 42% 58%',
+        background: '345 28% 6%',
+        surface: '345 22% 10%',
+        foreground: '345 15% 95%'
+      }
+    }
+  },
+  {
+    name: 'platinum',
+    label: 'Platina',
+    description: 'Cinza prateado premium, modernidade e exclusividade',
+    plan: 'business',
+    colors: {
+      light: {
+        primary: '210 12% 45%',
+        secondary: '200 10% 52%',
+        accent: '220 35% 58%',
+        background: '210 15% 98%',
+        surface: '0 0% 100%',
+        foreground: '210 20% 10%'
+      },
+      dark: {
+        primary: '210 12% 62%',
+        secondary: '200 10% 68%',
+        accent: '220 32% 65%',
+        background: '210 18% 6%',
+        surface: '210 14% 10%',
+        foreground: '210 10% 96%'
       }
     }
   }
@@ -477,13 +618,14 @@ export function useThemes() {
     // Salvar no localStorage
     localStorage.setItem(DARK_MODE_STORAGE_KEY, String(newDarkMode));
     
+    // Reaplicar tema com novo modo
+    applyTheme(currentTheme, newDarkMode);
+    
     // Salvar no banco se usuário estiver logado
     if (user) {
       try {
-        // Garante que existe uma linha ativa para o tema atual e atualiza apenas o darkMode
         const now = new Date().toISOString();
 
-        // 1) Upsert da linha do tema atual (chave única user_id, theme_name)
         const { error: upsertErr } = await supabase
           .from('user_themes')
           .upsert({
@@ -495,176 +637,96 @@ export function useThemes() {
           }, { onConflict: 'user_id,theme_name' });
         if (upsertErr) throw upsertErr;
 
-        // 2) Opcional: garantir que outros temas fiquem inativos
         await supabase
           .from('user_themes')
           .update({ is_active: false })
           .eq('user_id', user.id)
           .neq('theme_name', currentTheme);
       } catch (error) {
-        console.error('Erro ao salvar preferência de modo escuro:', error);
+        console.error('Erro ao salvar modo escuro:', error);
       }
     }
   };
 
   const saveTheme = async (themeName: string) => {
-    // Aplicar o tema imediatamente
-    applyTheme(themeName);
-
-    if (!user) {
-      toast({
-        title: "Tema aplicado!",
-        description: "Faça login para salvar suas preferências."
-      });
-      return;
-    }
-
-    try {
-      // Persistir preferências do usuário garantindo exclusividade por (user_id, theme_name)
-      const now = new Date().toISOString();
-
-      // 1) Desativar outros temas do usuário
-      const { error: deactivateErr } = await supabase
-        .from('user_themes')
-        .update({ is_active: false })
-        .eq('user_id', user.id);
-      if (deactivateErr) throw deactivateErr;
-
-      // 2) Upsert do tema escolhido como ativo
-      const { error: upsertErr } = await supabase
-        .from('user_themes')
-        .upsert({
-          user_id: user.id,
-          theme_name: themeName,
-          is_active: true,
-          custom_colors: { darkMode: isDarkMode },
-          updated_at: now,
-        }, { onConflict: 'user_id,theme_name' });
-      if (upsertErr) throw upsertErr;
-      
-      toast({
-        title: "Tema salvo!",
-        description: `Tema ${defaultThemes.find(t => t.name === themeName)?.label} aplicado em todas as páginas.`
-      });
-    } catch (error) {
-      console.error('Erro ao salvar tema:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao salvar tema, mas foi aplicado localmente."
-      });
+    applyTheme(themeName, isDarkMode);
+    
+    toast({
+      title: "Tema aplicado",
+      description: `O tema foi alterado com sucesso.`,
+    });
+    
+    if (user) {
+      try {
+        const now = new Date().toISOString();
+        
+        await supabase
+          .from('user_themes')
+          .update({ is_active: false, updated_at: now })
+          .eq('user_id', user.id);
+        
+        const { error } = await supabase
+          .from('user_themes')
+          .upsert({
+            user_id: user.id,
+            theme_name: themeName,
+            is_active: true,
+            custom_colors: { darkMode: isDarkMode },
+            updated_at: now,
+          }, { onConflict: 'user_id,theme_name' });
+        
+        if (error) throw error;
+      } catch (error) {
+        console.error('Erro ao salvar tema:', error);
+      }
     }
   };
 
   const loadUserTheme = async () => {
-    // Carregar preferência de dark mode do localStorage primeiro
-    const savedDarkMode = localStorage.getItem(DARK_MODE_STORAGE_KEY) === 'true';
-    setIsDarkMode(savedDarkMode);
+    setLoading(true);
     
-    if (!user) {
-      // Tentar carregar do localStorage se não estiver logado
-      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      if (savedTheme) {
-        applyTheme(savedTheme, savedDarkMode);
-      } else {
-        applyTheme('default', savedDarkMode);
-      }
-      setLoading(false);
-      return;
+    // 1. Tentar carregar do localStorage primeiro (resposta instantânea)
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const storedDarkMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);
+    
+    if (storedTheme) {
+      const darkMode = storedDarkMode === 'true';
+      setIsDarkMode(darkMode);
+      applyTheme(storedTheme, darkMode);
     }
-
-    try {
-      const { data } = await supabase
-        .from('user_themes')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('is_active', { ascending: false })
-        .order('updated_at', { ascending: false })
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: false })
-        .limit(1);
-
-      const row = Array.isArray(data) ? data[0] : data;
-      const savedThemeLS = localStorage.getItem(THEME_STORAGE_KEY) || undefined;
-
-      if (row) {
-        const customColors = row.custom_colors as { darkMode?: boolean } | null;
-        const darkModeFromDb = customColors?.darkMode ?? savedDarkMode;
-
-        // Preferir SEMPRE o valor do banco para usuários logados
-        const isValidDb = defaultThemes.some(t => t.name === row.theme_name);
-        const isValidLocal = savedThemeLS && defaultThemes.some(t => t.name === savedThemeLS);
-        const finalTheme = isValidDb ? row.theme_name : (isValidLocal ? (savedThemeLS as string) : 'default');
-
-        // Aplicar e persistir localmente
-        setIsDarkMode(darkModeFromDb);
-        localStorage.setItem(DARK_MODE_STORAGE_KEY, String(darkModeFromDb));
-        localStorage.setItem(THEME_STORAGE_KEY, finalTheme);
-        applyTheme(finalTheme, darkModeFromDb);
-
-        // Se o tema do banco for inválido, sincronizar com o tema final calculado
-        if (!isValidDb && finalTheme !== row.theme_name) {
-          try {
-            const { error: syncErr } = await supabase
-              .from('user_themes')
-              .update({
-                theme_name: finalTheme,
-                custom_colors: { darkMode: darkModeFromDb },
-                is_active: true,
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', row.id);
-            if (syncErr) throw syncErr;
-          } catch (e) {
-            console.warn('Falha ao sincronizar tema com o banco, mantendo local:', e);
-          }
+    
+    // 2. Se usuário logado, sincronizar com o banco
+    if (user) {
+      try {
+        const { data, error } = await supabase
+          .from('user_themes')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .single();
+        
+        if (data && !error) {
+          const customColors = data.custom_colors as Record<string, unknown> | null;
+          const darkMode = customColors?.darkMode === true;
+          
+          setIsDarkMode(darkMode);
+          applyTheme(data.theme_name, darkMode);
+          
+          // Sincronizar localStorage com banco
+          localStorage.setItem(THEME_STORAGE_KEY, data.theme_name);
+          localStorage.setItem(DARK_MODE_STORAGE_KEY, String(darkMode));
         }
-      } else {
-        // Sem linha no banco: usar localStorage e criar registro
-        const finalTheme = (savedThemeLS && defaultThemes.some(t => t.name === savedThemeLS))
-          ? (savedThemeLS as string)
-          : 'default';
-
-        localStorage.setItem(THEME_STORAGE_KEY, finalTheme);
-        applyTheme(finalTheme, savedDarkMode);
-
-        try {
-          const { error: insertErr } = await supabase
-            .from('user_themes')
-            .insert({
-              user_id: user.id,
-              theme_name: finalTheme,
-              is_active: true,
-              custom_colors: { darkMode: savedDarkMode }
-            });
-          if (insertErr) throw insertErr;
-        } catch (e) {
-          console.warn('Não foi possível criar registro de tema. Continuando com configuração local.', e);
-        }
+      } catch (error) {
+        // Silently fail - já temos o tema do localStorage
       }
-    } catch (error) {
-      // Se ocorrer erro, tentar localStorage
-      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      if (savedTheme) {
-        applyTheme(savedTheme, savedDarkMode);
-      } else {
-        applyTheme('default', savedDarkMode);
-      }
-    } finally {
-      setLoading(false);
     }
+    
+    setLoading(false);
   };
 
-  // Carregar tema quando o usuário mudar
   useEffect(() => {
     loadUserTheme();
-  }, [user?.id]);
-
-  // Aplicar tema sempre que o componente renderizar (garantir persistência)
-  // Re-aplicar dark mode quando mudar
-  useEffect(() => {
-    applyTheme(currentTheme, isDarkMode);
-  }, [isDarkMode]);
+  }, [user]);
 
   return {
     themes: defaultThemes,
@@ -673,6 +735,7 @@ export function useThemes() {
     loading,
     applyTheme,
     saveTheme,
-    toggleDarkMode
+    toggleDarkMode,
+    loadUserTheme
   };
 }
