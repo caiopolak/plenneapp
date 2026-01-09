@@ -19,9 +19,6 @@ export function InvestmentActionButtons({
   showForm, 
   setShowForm 
 }: InvestmentActionButtonsProps) {
-  const buttonGradient =
-    "bg-gradient-to-tr from-primary/80 to-accent/60 text-primary-foreground hover:from-primary hover:to-accent";
-
   // Mapear para o formato de exportação
   const investmentsForExport: InvestmentExport[] = investments.map(inv => ({
     name: inv.name,
@@ -39,7 +36,8 @@ export function InvestmentActionButtons({
       />
       <Button
         size="sm"
-        className={`${buttonGradient} font-display flex gap-2 flex-1 sm:flex-none min-h-[44px] sm:min-h-[36px]`}
+        variant="cta"
+        className="font-display flex gap-2 flex-1 sm:flex-none min-h-[44px] sm:min-h-[36px]"
         onClick={() => setShowForm(true)}
       >
         <Plus className="w-4 h-4" />

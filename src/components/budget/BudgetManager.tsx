@@ -375,7 +375,7 @@ export function BudgetManager() {
                       Nenhum orçamento encontrado para {months[selectedMonth - 1]} de {selectedYear}. 
                       Crie orçamentos por categoria para ter controle total do seu dinheiro.
                     </p>
-                    <Button onClick={() => setShowForm(true)} className="mt-4 min-h-[44px]">
+                    <Button variant="cta" onClick={() => setShowForm(true)} className="mt-4 min-h-[44px]">
                       <Plus className="h-4 w-4 mr-2" />
                       Criar Primeiro Orçamento
                     </Button>
