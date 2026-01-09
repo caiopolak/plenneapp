@@ -123,7 +123,7 @@ export function MonthlyComparisonCard() {
   const lastMonthName = format(subMonths(now, 1), 'MMMM', { locale: ptBR });
 
   return (
-    <Card className="bg-card border-border shadow-lg">
+    <Card className="bg-card border-border shadow-lg h-full min-h-[420px] flex flex-col">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
@@ -135,7 +135,7 @@ export function MonthlyComparisonCard() {
           </Badge>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1 flex flex-col justify-center">
         <div className="space-y-4">
           {/* Receitas */}
           <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">

@@ -186,7 +186,7 @@ export function FinancialHealthCard() {
   const StatusIcon = config.icon;
 
   return (
-    <Card className={`relative overflow-hidden ${config.bg} ${config.border} border shadow-xl`}>
+    <Card className={`relative overflow-hidden ${config.bg} ${config.border} border shadow-xl h-full min-h-[420px] flex flex-col`}>
       {/* Efeito de brilho animado no topo */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-current to-transparent opacity-50 animate-shimmer" 
            style={{ color: `hsl(var(--${health.status === 'excellent' ? 'card-success-accent' : health.status === 'good' ? 'card-info-accent' : health.status === 'attention' ? 'card-warning-accent' : 'card-error-accent'}))` }} />
@@ -206,7 +206,7 @@ export function FinancialHealthCard() {
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-5">
+      <CardContent className="space-y-5 flex-1 flex flex-col">
         {/* Score Principal - Maior e mais impactante */}
         <div className="flex items-center gap-6">
           <div className="relative">
