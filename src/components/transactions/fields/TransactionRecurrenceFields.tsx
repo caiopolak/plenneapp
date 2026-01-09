@@ -29,11 +29,9 @@ export function TransactionRecurrenceFields({
   canUseRecurring = true,
   mode = 'immediate'
 }: TransactionRecurrenceFieldsProps) {
-  // In immediate mode, recurring means "start now and repeat"
-  // In scheduled mode, recurring means "start on date and repeat"
-  const recurringLabel = mode === 'scheduled' 
-    ? "Repetir periodicamente" 
-    : "Transação recorrente";
+  // Usar mesmo label para ambos os modos - é a mesma funcionalidade
+  const recurringLabel = "Transação recorrente";
+  
   return (
     <div className="space-y-3">
       <div className={cn(
