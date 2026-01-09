@@ -156,8 +156,7 @@ export function GoalForm({ onSuccess, goal, onCancel }: GoalFormProps) {
         setNote('');
       }
 
-    } catch (error) {
-      console.error('Error saving goal:', error);
+    } catch (error: unknown) {
       toast({
         variant: "destructive",
         title: "Erro",

@@ -103,17 +103,22 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
     setLoading(true);
 
     try {
+      const investmentAmount = parseFloat(amount);
       const investmentData = {
         user_id: user.id,
         workspace_id: workspaceId,
         name,
         type,
-        amount: parseFloat(amount),
+        amount: investmentAmount,
         expected_return: expectedReturn ? parseFloat(expectedReturn) : null,
         purchase_date: format(purchaseDate, 'yyyy-MM-dd')
       };
 
       if (investment) {
+        // Ao editar, calcular diferença para ajustar transação
+        const previousAmount = investment.amount || 0;
+        const difference = investmentAmount - previousAmount;
+
         const { error } = await supabase
           .from('investments')
           .update(investmentData)
@@ -121,20 +126,53 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
 
         if (error) throw error;
 
+        // Se houve aumento no valor, criar transação de saída para a diferença
+        if (difference > 0) {
+          await supabase.from('transactions').insert([{
+            user_id: user.id,
+            workspace_id: workspaceId,
+            type: 'expense',
+            amount: difference,
+            category: 'Investimento',
+            description: `Aporte adicional: ${name}`,
+            date: format(purchaseDate, 'yyyy-MM-dd'),
+            is_recurring: false
+          }]);
+        }
+
         toast({
           title: "Sucesso!",
           description: "Investimento atualizado com sucesso"
         });
       } else {
+        // Novo investimento
         const { error } = await supabase
           .from('investments')
           .insert([investmentData]);
 
         if (error) throw error;
 
+        // Criar transação de saída para refletir no saldo
+        const { error: transactionError } = await supabase
+          .from('transactions')
+          .insert([{
+            user_id: user.id,
+            workspace_id: workspaceId,
+            type: 'expense',
+            amount: investmentAmount,
+            category: 'Investimento',
+            description: `Novo investimento: ${name}`,
+            date: format(purchaseDate, 'yyyy-MM-dd'),
+            is_recurring: false
+          }]);
+
+        if (transactionError) {
+          safeLog('warn', 'Failed to create investment transaction', { error: String(transactionError) });
+        }
+
         toast({
           title: "Sucesso!",
-          description: "Investimento adicionado com sucesso"
+          description: "Investimento adicionado (saldo atualizado)"
         });
       }
 
@@ -151,7 +189,7 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
       }
 
     } catch (error) {
-      console.error('Error saving investment:', error);
+      safeLog('error', 'Error saving investment', { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",
