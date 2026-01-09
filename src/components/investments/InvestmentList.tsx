@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit2, Trash2, Plus, TrendingUp, TrendingDown, Lightbulb, Import } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronDown, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { InvestmentForm } from './InvestmentForm';
-import { InvestmentPortfolioSummary } from "./InvestmentPortfolioSummary";
-import { exportInvestmentsCsv } from './utils/exportInvestmentsCsv';
-import { ImportGoalsCSV } from "../goals/ImportGoalsCSV";
-import { InvestmentActionButtons } from "./InvestmentActionButtons";
 import { InvestmentCard } from "./InvestmentCard";
 import { InvestmentsAnalyticsCards } from "./InvestmentsAnalyticsCards";
-import { InvestmentsHeaderActions } from "./InvestmentsHeaderActions";
 import { InvestmentProfitabilityAnalysis } from "./InvestmentProfitabilityAnalysis";
+import { InvestmentInsights } from "./InvestmentInsights";
+import { CompactInvestmentFilters, InvestmentFilters } from "./CompactInvestmentFilters";
 import { InvestmentCardSkeleton, AnalyticsCardSkeleton } from "@/components/ui/loading-skeletons";
 import { usePaginatedLoad } from "@/hooks/useLazyLoad";
 
@@ -30,11 +26,18 @@ interface Investment {
   purchase_date: string;
 }
 
+const defaultFilters: InvestmentFilters = {
+  searchTerm: '',
+  type: 'all',
+};
+
 export function InvestmentList() {
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingInvestment, setEditingInvestment] = useState<Investment | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [filters, setFilters] = useState<InvestmentFilters>(defaultFilters);
+  const [showAnalytics, setShowAnalytics] = useState(true);
 
   const { toast } = useToast();
   const { user } = useAuth();
@@ -91,7 +94,7 @@ export function InvestmentList() {
   };
 
   const getTypeLabel = (type: string) => {
-    const types = {
+    const types: Record<string, string> = {
       stocks: 'Ações',
       bonds: 'Títulos',
       crypto: 'Criptomoedas',
@@ -99,57 +102,45 @@ export function InvestmentList() {
       funds: 'Fundos',
       savings: 'Poupança'
     };
-    return types[type as keyof typeof types] || type;
+    return types[type] || type;
   };
 
-  const getTypeColor = (type: string) => {
-    const colors = {
-      stocks: 'primary',
-      bonds: 'secondary',
-      crypto: 'destructive',
-      real_estate: 'outline',
-      funds: 'secondary',
-      savings: 'primary'
-    };
-    return colors[type as keyof typeof colors] || 'default';
-  };
+  // Filtrar investimentos
+  const filteredInvestments = useMemo(() => {
+    return investments.filter(inv => {
+      const matchesSearch = !filters.searchTerm || 
+        inv.name.toLowerCase().includes(filters.searchTerm.toLowerCase());
+      const matchesType = filters.type === 'all' || inv.type === filters.type;
+      return matchesSearch && matchesType;
+    });
+  }, [investments, filters]);
 
-  const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
-  const averageReturn = investments.length > 0 
-    ? investments.reduce((sum, inv) => sum + (inv.expected_return || 0), 0) / investments.length 
+  const totalInvested = filteredInvestments.reduce((sum, inv) => sum + inv.amount, 0);
+  const averageReturn = filteredInvestments.length > 0 
+    ? filteredInvestments.reduce((sum, inv) => sum + (inv.expected_return || 0), 0) / filteredInvestments.length 
     : 0;
 
-  const handleExportCsv = () => {
-    try {
-      exportInvestmentsCsv(
-        investments.map(inv => ({
-          name: inv.name,
-          type: getTypeLabel(inv.type),
-          amount: inv.amount,
-          expected_return: inv.expected_return,
-          purchase_date: inv.purchase_date
-        }))
-      );
-      toast({
-        title: "Exportação concluída",
-        description: "Os investimentos foram exportados para CSV.",
-      });
-    } catch (e) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao exportar",
-        description: "Não foi possível exportar os investimentos.",
-      });
+  const resetFilters = () => setFilters(defaultFilters);
+
+  const activeFilterTags = useMemo(() => {
+    const tags: { label: string; key: keyof InvestmentFilters; value: string }[] = [];
+    if (filters.type !== 'all') {
+      tags.push({ label: `Tipo: ${getTypeLabel(filters.type)}`, key: 'type', value: 'all' });
     }
+    return tags;
+  }, [filters]);
+
+  const removeFilterTag = (key: keyof InvestmentFilters, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  // Lazy loading para investimentos
+  // Lazy loading
   const {
     displayedItems: displayedInvestments,
     hasMore,
     loadMoreRef,
   } = usePaginatedLoad({
-    items: investments,
+    items: filteredInvestments,
     pageSize: 6,
     initialLoad: 6,
   });
@@ -213,47 +204,94 @@ export function InvestmentList() {
         </DialogContent>
       </Dialog>
 
-      {/* Header */}
+      {/* Header com filtros compactos */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
             Investimentos
           </h1>
-          <p className="text-muted-foreground">
-            Construa seu patrimônio com inteligência. Acompanhe cada ativo, analise a rentabilidade e tome decisões informadas.
+          <p className="text-muted-foreground text-sm">
+            Acompanhe cada ativo, analise a rentabilidade e tome decisões informadas.
           </p>
         </div>
-        <InvestmentsHeaderActions
+        <CompactInvestmentFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          onReset={resetFilters}
           investments={investments}
           onImportSuccess={fetchInvestments}
-          onCreateClick={() => setShowForm(true)}
-          showForm={showForm}
-          setShowForm={setShowForm}
+          onNewInvestment={() => setShowForm(true)}
         />
       </div>
 
-      {/* 1. Cards informativos - Resumo no topo */}
+      {/* Tags de filtros ativos */}
+      {activeFilterTags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {activeFilterTags.map((tag) => (
+            <Badge key={tag.key} variant="secondary" className="gap-1 pr-1">
+              {tag.label}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-4 w-4 p-0 hover:bg-transparent"
+                onClick={() => removeFilterTag(tag.key, tag.value)}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </Badge>
+          ))}
+          <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={resetFilters}>
+            Limpar todos
+          </Button>
+        </div>
+      )}
+
+      {/* Insights inteligentes */}
+      <InvestmentInsights investments={filteredInvestments} />
+
+      {/* Cards de resumo */}
       <InvestmentsAnalyticsCards
         totalInvested={totalInvested}
-        totalInvestments={investments.length}
+        totalInvestments={filteredInvestments.length}
         averageReturn={averageReturn}
       />
 
-      {/* 2. Análise de Rentabilidade */}
-      {investments.length > 0 && (
-        <InvestmentProfitabilityAnalysis investments={investments} />
+      {/* Análise de Rentabilidade - Colapsável */}
+      {filteredInvestments.length > 0 && (
+        <Collapsible open={showAnalytics} onOpenChange={setShowAnalytics}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full justify-between p-0 h-auto hover:bg-transparent">
+              <h2 className="text-lg font-bold text-foreground font-display">Análise de Rentabilidade</h2>
+              <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${showAnalytics ? 'rotate-180' : ''}`} />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-4">
+            <InvestmentProfitabilityAnalysis investments={filteredInvestments} />
+          </CollapsibleContent>
+        </Collapsible>
       )}
 
-      {/* 3. Lista de investimentos */}
+      {/* Lista de investimentos */}
       <div className="space-y-4">
-        <h2 className="text-xl font-bold text-foreground font-display">Meus Investimentos</h2>
-        {investments.length === 0 ? (
+        <h2 className="text-lg font-bold text-foreground font-display">Meus Investimentos</h2>
+        {filteredInvestments.length === 0 ? (
           <Card className="bg-card border border-border shadow-card">
             <CardContent className="p-8 text-center">
-              <p className="text-lg font-bold text-foreground font-display">Hora de fazer seu dinheiro trabalhar! 📈</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Cadastre seus investimentos para ter uma visão completa do seu patrimônio. Ações, fundos, renda fixa, cripto - organize tudo em um só lugar.
-              </p>
+              {investments.length === 0 ? (
+                <>
+                  <p className="text-lg font-bold text-foreground font-display">Hora de fazer seu dinheiro trabalhar! 📈</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Cadastre seus investimentos para ter uma visão completa do seu patrimônio.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-lg font-bold text-foreground font-display">Nenhum resultado encontrado</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Tente ajustar os filtros para ver mais investimentos.
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
         ) : (
