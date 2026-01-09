@@ -61,7 +61,7 @@ export function FinancialModules() {
       )}
       {/* Form para criar novo módulo (igual antes) */}
       {showForm && (
-        <form className="p-4 bg-white rounded-lg shadow space-y-2" onSubmit={async (e) => {
+        <form className="p-4 bg-card rounded-lg shadow space-y-2" onSubmit={async (e) => {
           e.preventDefault();
           if (!user) {
             toast({ title: "Faça login para criar aulas.", variant: "destructive" });

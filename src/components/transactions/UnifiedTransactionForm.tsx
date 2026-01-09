@@ -251,7 +251,7 @@ export function UnifiedTransactionForm({
       }
 
     } catch (error) {
-      console.error('Error saving transaction:', error);
+      safeLog('error', 'Error saving transaction', { error: String(error) });
       toast({
         variant: "destructive",
         title: "Erro",

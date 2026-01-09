@@ -1,47 +1,29 @@
-
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, AlertTriangle, TrendingUp, DollarSign, Info, CheckCircle } from 'lucide-react'; // <-- add missing imports
+import { Bell, AlertTriangle, TrendingUp, DollarSign, Info, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
-import { useSmartAlerts } from "@/hooks/useSmartAlerts";
-import { supabase } from '@/integrations/supabase/client';
+import { useIntelligentAlerts, IntelligentAlert } from "@/hooks/useIntelligentAlerts";
 import { SmartAlertCard } from "./SmartAlertCard";
 
-interface SmartAlert {
-  id: string;
-  title: string;
-  message: string;
-  alert_type: 'spending' | 'goal' | 'investment' | 'tip' | 'challenge';
-  priority: 'low' | 'medium' | 'high';
-  is_read: boolean;
-  created_at: string;
-}
-
 export function SmartAlerts() {
-  const alerts = useSmartAlerts();
+  const { alerts, markAsRead, deleteAlert } = useIntelligentAlerts();
   const [filter, setFilter] = useState<string>('all');
   const { toast } = useToast();
-  const { user } = useAuth();
 
-  const markAsRead = async (alertId: string) => {
-    if (!user) return;
-    await supabase.from("financial_alerts").update({ is_read: true }).eq("id", alertId).eq("user_id", user.id);
+  const handleMarkAsRead = async (alertId: string) => {
+    await markAsRead(alertId);
     toast({ title: "Alerta marcado como lido." });
-    // Poderíamos implementar um refetch nos hooks, mas como é um caso menos frequente, o próprio supabase listener pode cuidar disso.
   };
-  const deleteAlert = async (alertId: string) => {
-    if (!user) return;
-    await supabase.from("financial_alerts").delete().eq("id", alertId).eq("user_id", user.id);
+  
+  const handleDeleteAlert = async (alertId: string) => {
+    await deleteAlert(alertId);
     toast({
       title: "Alerta removido",
       description: "O alerta foi removido com sucesso"
     });
-    // idem acima; refetch idealmente seria disparado por listener ou pelo hook caso necessário
   };
-
   const getAlertIcon = (type: string) => {
     switch (type) {
       case 'spending': return <AlertTriangle className="w-5 h-5" />;
@@ -83,13 +65,13 @@ export function SmartAlerts() {
   };
 
   // Filtro dos alertas conforme seleção
-  const filteredAlerts = alerts.filter(alert => {
+  const filteredAlerts = alerts.filter((alert: IntelligentAlert) => {
     if (filter === 'all') return true;
     if (filter === 'unread') return !alert.is_read;
     return alert.alert_type === filter;
   });
 
-  const unreadCount = alerts.filter(alert => !alert.is_read).length;
+  const unreadCount = alerts.filter((alert: IntelligentAlert) => !alert.is_read).length;
 
   return (
     <div className="space-y-6">
@@ -141,12 +123,12 @@ export function SmartAlerts() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {filteredAlerts.map((alert) => (
+          {filteredAlerts.map((alert: IntelligentAlert) => (
             <SmartAlertCard
               key={alert.id}
               alert={alert}
-              onMarkAsRead={markAsRead}
-              onDelete={deleteAlert}
+              onMarkAsRead={handleMarkAsRead}
+              onDelete={handleDeleteAlert}
             />
           ))}
         </div>

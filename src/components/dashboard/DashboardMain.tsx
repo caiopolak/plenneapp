@@ -125,7 +125,7 @@ export function DashboardMain() {
         </div>
         <Button 
           onClick={() => setShowTransactionForm(true)}
-          className="bg-[#2f9e44] hover:bg-[#2f9e44]/90 text-white"
+          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
           data-tour="add-transaction"
         >
           <Plus className="w-4 h-4 mr-2" />

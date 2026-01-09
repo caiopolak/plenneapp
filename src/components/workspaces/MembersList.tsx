@@ -60,7 +60,7 @@ export function MembersList({
           {members.map((member) => (
             <div
               key={member.id}
-              className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm"
+              className="flex items-center justify-between p-4 border rounded-lg bg-card shadow-sm"
             >
               <div className="flex items-center gap-3">
                 {member.status === "invited" ? (

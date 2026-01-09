@@ -12,7 +12,7 @@ export function AuthTabs({ onForgot }: { onForgot: () => void }) {
   const [tab, setTab] = useState<AuthTab>("signin");
 
   return (
-    <Card className="w-full max-w-md border-none shadow-xl bg-white/90 animate-scale-in p-1">
+    <Card className="w-full max-w-md border-none shadow-xl bg-card/95 backdrop-blur-sm animate-scale-in p-1">
       <CardHeader className="text-center space-y-2">
         <div className="flex justify-center items-center mb-2">
           <LogoPlenne className="scale-110 drop-shadow-none" />
