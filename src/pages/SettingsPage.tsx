@@ -37,7 +37,7 @@ import {
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const { profile } = useCurrentProfile();
+  const profile = useCurrentProfile();
   const { themes, currentTheme, isDarkMode, saveTheme, toggleDarkMode } = useTheme();
   const [showEmail, setShowEmail] = useState(false);
 
