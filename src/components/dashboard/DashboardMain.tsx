@@ -185,58 +185,56 @@ export function DashboardMain() {
       {activeView === 'consolidated' ? (
         <ConsolidatedHealthDashboard />
       ) : (
-        <>
+        <div className="space-y-6">
+          {/* 1. Welcome Card - Topo com informações do usuário */}
+          <div data-tour="welcome-card" className="animate-fade-in stagger-1">
+            <WelcomeCard 
+              name={userProfile?.name}
+              plan={userProfile?.plan}
+              balance={balanceData?.balance}
+              goalsCount={goalsData?.totalGoals}
+              savingsRate={balanceData?.savingsRate}
+            />
+          </div>
 
-      {/* Welcome Card - Topo com informações do usuário */}
-      <div data-tour="welcome-card" className="animate-fade-in stagger-1">
-        <WelcomeCard 
-          name={userProfile?.name}
-          plan={userProfile?.plan}
-          balance={balanceData?.balance}
-          goalsCount={goalsData?.totalGoals}
-          savingsRate={balanceData?.savingsRate}
-        />
-      </div>
+          {/* 2. Saúde Financeira e Comparativo Mensal - Grid 2 colunas */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div data-tour="health-card" className="animate-fade-in stagger-2 h-full">
+              <FinancialHealthCard />
+            </div>
+            <div className="animate-fade-in stagger-3 h-full">
+              <MonthlyComparisonCard />
+            </div>
+          </div>
 
-      {/* Saúde Financeira e Comparativo Mensal */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div data-tour="health-card" className="animate-fade-in stagger-2">
-          <FinancialHealthCard />
-        </div>
-        <div className="animate-fade-in stagger-3">
-          <MonthlyComparisonCard />
-        </div>
-      </div>
+          {/* 3. Resumo Geral Informativo - Full width */}
+          <div data-tour="overview" className="animate-fade-in stagger-4">
+            <DashboardOverview />
+          </div>
 
-      {/* Resumo Geral Informativo */}
-      <div data-tour="overview" className="animate-fade-in stagger-4">
-        <DashboardOverview />
-      </div>
+          {/* 4. Próximas Transações e Saldo Projetado - Grid 2 colunas */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="animate-fade-in stagger-5 h-full">
+              <UpcomingTransactionsCard />
+            </div>
+            <div className="animate-fade-in stagger-6 h-full">
+              <ProjectedBalanceChart />
+            </div>
+          </div>
 
-      {/* Próximas Transações e Saldo Projetado */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="animate-fade-in stagger-5">
-          <UpcomingTransactionsCard />
+          {/* 5. Dicas, Desafios e Alertas - Grid 3 colunas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="animate-fade-in stagger-7 h-full">
+              <DashboardTipsCard />
+            </div>
+            <div className="animate-fade-in stagger-8 h-full">
+              <DashboardChallengesCard />
+            </div>
+            <div className="animate-fade-in stagger-9 h-full md:col-span-2 lg:col-span-1">
+              <DashboardAlertsCard />
+            </div>
+          </div>
         </div>
-        <div className="animate-fade-in stagger-6">
-          <ProjectedBalanceChart />
-        </div>
-      </div>
-
-      {/* Cards de Dicas, Desafios e Alertas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="animate-fade-in stagger-7">
-          <DashboardTipsCard />
-        </div>
-        <div className="animate-fade-in stagger-8">
-          <DashboardChallengesCard />
-        </div>
-      </div>
-
-      <div className="animate-fade-in stagger-9">
-        <DashboardAlertsCard />
-      </div>
-        </>
       )}
 
       {/* Modal de Nova Transação */}
