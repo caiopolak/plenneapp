@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,11 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, Edit2, Check, X } from "lucide-react";
+import { Trash2, Edit2, Check, X, Plus } from "lucide-react";
 import { useBudgets } from "@/hooks/useBudgets";
 import { useCategories } from "@/hooks/useCategories";
 import { BudgetForm } from "./BudgetForm";
-import { ImportBudgetsCSV } from "./ImportBudgetsCSV";
+import { BudgetInsights } from "./BudgetInsights";
+import { CompactBudgetFilters, BudgetFiltersState } from "./CompactBudgetFilters";
 import { BudgetExport } from "@/utils/dataExport";
 import { useConfetti } from "@/hooks/useConfetti";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +21,11 @@ const months = [
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
+const defaultFilters: BudgetFiltersState = {
+  searchTerm: '',
+  status: 'all',
+};
+
 export function BudgetManager() {
   const { budgets, loading, fetchBudgets, updateBudget, deleteBudget } = useBudgets();
   const { expenseCategories } = useCategories();
@@ -28,6 +34,7 @@ export function BudgetManager() {
   const [showForm, setShowForm] = useState(false);
   const [editingBudget, setEditingBudget] = useState<string | null>(null);
   const [editAmount, setEditAmount] = useState("");
+  const [filters, setFilters] = useState<BudgetFiltersState>(defaultFilters);
   const { fireSubtle } = useConfetti();
   const { toast } = useToast();
   const celebratedBudgets = useRef<Set<string>>(new Set());
@@ -157,9 +164,47 @@ export function BudgetManager() {
     );
   }
 
-  const totalBudget = budgets.reduce((sum, budget) => sum + budget.amount_limit, 0);
-  const totalSpent = budgets.reduce((sum, budget) => sum + budget.spent, 0);
+  // Filtrar orçamentos
+  const filteredBudgets = useMemo(() => {
+    return budgets.filter(budget => {
+      const matchesSearch = !filters.searchTerm || 
+        budget.category.toLowerCase().includes(filters.searchTerm.toLowerCase());
+      
+      let matchesStatus = true;
+      if (filters.status === 'exceeded') matchesStatus = budget.percentage >= 100;
+      else if (filters.status === 'warning') matchesStatus = budget.percentage >= 80 && budget.percentage < 100;
+      else if (filters.status === 'good') matchesStatus = budget.percentage < 80;
+      
+      return matchesSearch && matchesStatus;
+    });
+  }, [budgets, filters]);
+
+  const totalBudget = filteredBudgets.reduce((sum, budget) => sum + budget.amount_limit, 0);
+  const totalSpent = filteredBudgets.reduce((sum, budget) => sum + budget.spent, 0);
   const totalPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+  const resetFilters = () => setFilters(defaultFilters);
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      exceeded: 'Estourados',
+      warning: 'Em alerta',
+      good: 'Sob controle',
+    };
+    return labels[status] || status;
+  };
+
+  const activeFilterTags = useMemo(() => {
+    const tags: { label: string; key: keyof BudgetFiltersState; value: string }[] = [];
+    if (filters.status !== 'all') {
+      tags.push({ label: `Status: ${getStatusLabel(filters.status)}`, key: 'status', value: 'all' });
+    }
+    return tags;
+  }, [filters]);
+
+  const removeFilterTag = (key: keyof BudgetFiltersState, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
 
   // Preparar dados para exportação
   const budgetsForExport: BudgetExport[] = budgets.map(b => ({
@@ -174,28 +219,47 @@ export function BudgetManager() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header com filtros compactos */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
             Orçamentos
           </h1>
-          <p className="text-muted-foreground">
-            Controle seus gastos por categoria e mantenha suas finanças equilibradas mês a mês.
+          <p className="text-muted-foreground text-sm">
+            Controle seus gastos por categoria e mantenha suas finanças equilibradas.
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <ImportBudgetsCSV 
-            onSuccess={() => fetchBudgets(selectedYear, selectedMonth)}
-            budgets={budgetsForExport}
-          />
-          <Button onClick={() => setShowForm(true)} size="sm" className="min-h-[44px] sm:min-h-[36px]">
-            <Plus className="h-4 w-4 mr-2" />
-            <span className="hidden sm:inline">Novo Orçamento</span>
-            <span className="sm:hidden">Novo</span>
+        <CompactBudgetFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          onReset={resetFilters}
+          budgets={budgetsForExport}
+          onImportSuccess={() => fetchBudgets(selectedYear, selectedMonth)}
+          onNewBudget={() => setShowForm(true)}
+        />
+      </div>
+
+      {/* Tags de filtros ativos */}
+      {activeFilterTags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {activeFilterTags.map((tag) => (
+            <Badge key={tag.key} variant="secondary" className="gap-1 pr-1">
+              {tag.label}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-4 w-4 p-0 hover:bg-transparent"
+                onClick={() => removeFilterTag(tag.key, tag.value)}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </Badge>
+          ))}
+          <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={resetFilters}>
+            Limpar todos
           </Button>
         </div>
-      </div>
+      )}
 
       {/* Controles de Período */}
       <Card className="bg-card border-border">
@@ -231,8 +295,11 @@ export function BudgetManager() {
         </CardContent>
       </Card>
 
+      {/* Insights inteligentes */}
+      <BudgetInsights budgets={filteredBudgets} />
+
       {/* Resumo Geral - Cards Estilizados */}
-      {budgets.length > 0 && (
+      {filteredBudgets.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="bg-[hsl(var(--card-info-bg))] border-[hsl(var(--card-info-border))] card-hover">
             <CardContent className="p-4">
@@ -297,25 +364,36 @@ export function BudgetManager() {
       {/* Lista de Orçamentos */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Orçamentos por Categoria</h2>
-        {budgets.length === 0 ? (
+        {filteredBudgets.length === 0 ? (
           <Card className="bg-card border-border">
             <CardContent className="py-8 sm:py-12">
               <div className="text-center">
-                <p className="text-lg font-semibold text-foreground">Comece a controlar seus gastos! 📊</p>
-                <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
-                  Nenhum orçamento encontrado para {months[selectedMonth - 1]} de {selectedYear}. 
-                  Crie orçamentos por categoria para ter controle total do seu dinheiro.
-                </p>
-                <Button onClick={() => setShowForm(true)} className="mt-4 min-h-[44px]">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Criar Primeiro Orçamento
-                </Button>
+                {budgets.length === 0 ? (
+                  <>
+                    <p className="text-lg font-semibold text-foreground">Comece a controlar seus gastos! 📊</p>
+                    <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+                      Nenhum orçamento encontrado para {months[selectedMonth - 1]} de {selectedYear}. 
+                      Crie orçamentos por categoria para ter controle total do seu dinheiro.
+                    </p>
+                    <Button onClick={() => setShowForm(true)} className="mt-4 min-h-[44px]">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Criar Primeiro Orçamento
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-lg font-semibold text-foreground">Nenhum resultado encontrado</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Tente ajustar os filtros para ver mais orçamentos.
+                    </p>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-3 sm:gap-4">
-            {budgets.map((budget, index) => (
+            {filteredBudgets.map((budget, index) => (
               <Card 
                 key={budget.id} 
                 className="bg-card border-border card-hover animate-fade-in opacity-0"
