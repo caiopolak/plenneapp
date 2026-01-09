@@ -323,12 +323,12 @@ export function AdvancedAnalytics({ period }: AdvancedAnalyticsProps) {
                       <span>Gasto: R$ {budget.spent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                       <span>Limite: R$ {Number(budget.amount_limit).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div
                         className={`h-2 rounded-full ${
-                          budget.status === 'exceeded' ? 'bg-red-500' :
-                          budget.status === 'warning' ? 'bg-yellow-500' :
-                          'bg-green-500'
+                          budget.status === 'exceeded' ? 'bg-destructive' :
+                          budget.status === 'warning' ? 'bg-[hsl(var(--card-warning-accent))]' :
+                          'bg-[hsl(var(--chart-2))]'
                         }`}
                         style={{ width: `${Math.min(budget.percentUsed, 100)}%` }}
                       />
@@ -372,12 +372,12 @@ export function AdvancedAnalytics({ period }: AdvancedAnalyticsProps) {
                       <span>Atual: R$ {Number(goal.current_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                       <span>Meta: R$ {Number(goal.target_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div
                         className={`h-2 rounded-full ${
-                          goal.status === 'completed' ? 'bg-green-500' :
-                          goal.status === 'close' ? 'bg-blue-500' :
-                          'bg-gray-400'
+                          goal.status === 'completed' ? 'bg-[hsl(var(--chart-2))]' :
+                          goal.status === 'close' ? 'bg-primary' :
+                          'bg-muted-foreground/40'
                         }`}
                         style={{ width: `${Math.min(goal.progress, 100)}%` }}
                       />
@@ -415,7 +415,7 @@ export function AdvancedAnalytics({ period }: AdvancedAnalyticsProps) {
                       {investment.expected_return && (
                         <div className="flex justify-between">
                           <span className="text-sm text-muted-foreground">Retorno Esperado:</span>
-                          <span className="font-medium text-green-600">
+                          <span className="font-medium text-[hsl(var(--chart-2))]">
                             {Number(investment.expected_return).toFixed(1)}%
                           </span>
                         </div>

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { 
   Wallet, 
@@ -13,7 +14,9 @@ import {
   ArrowRight,
   CheckCircle2,
   Clock,
-  Banknote
+  Banknote,
+  FileDown,
+  Loader2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
@@ -22,6 +25,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { format, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';
+import { NetWorthEvolutionChart } from './NetWorthEvolutionChart';
+import { generateConsolidatedPDF } from '@/utils/pdfExport';
+import { useToast } from '@/hooks/use-toast';
 
 interface ConsolidatedData {
   // Saldo
@@ -55,6 +61,8 @@ interface ConsolidatedData {
 export function ConsolidatedFinancialReport() {
   const { user } = useAuth();
   const { current: workspace } = useWorkspace();
+  const { toast } = useToast();
+  const [exporting, setExporting] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ['consolidated-report', user?.id, workspace?.id],
@@ -210,21 +218,98 @@ export function ConsolidatedFinancialReport() {
   const currentMonth = format(new Date(), 'MMMM yyyy', { locale: ptBR });
   const balanceChange = data.upcomingIncome - data.upcomingExpenses;
 
+  // Função para exportar PDF
+  const handleExportPDF = async () => {
+    setExporting(true);
+    try {
+      // Buscar dados adicionais para o PDF
+      const { data: goals } = await supabase
+        .from('financial_goals')
+        .select('name, target_amount, current_amount')
+        .eq('user_id', user!.id)
+        .eq('workspace_id', workspace!.id);
+
+      const { data: investments } = await supabase
+        .from('investments')
+        .select('name, type, amount, expected_return')
+        .eq('user_id', user!.id)
+        .eq('workspace_id', workspace!.id);
+
+      await generateConsolidatedPDF({
+        netWorth: data.netWorth,
+        currentBalance: data.currentBalance,
+        totalInvested: data.totalInvested,
+        totalGoalsCurrent: data.totalGoalsCurrent,
+        monthlyIncome: data.monthlyIncome,
+        monthlyExpenses: data.monthlyExpenses,
+        savingsRate: data.monthlyIncome > 0 
+          ? ((data.monthlyIncome - data.monthlyExpenses) / data.monthlyIncome) * 100 
+          : 0,
+        goals: (goals || []).map(g => ({
+          name: g.name,
+          progress: Number(g.target_amount) > 0 
+            ? (Number(g.current_amount || 0) / Number(g.target_amount)) * 100 
+            : 0,
+          current: Number(g.current_amount || 0),
+          target: Number(g.target_amount)
+        })),
+        investments: (investments || []).map(i => ({
+          name: i.name,
+          type: i.type,
+          amount: Number(i.amount),
+          return: i.expected_return ? Number(i.expected_return) : null
+        })),
+        upcomingTransactions: data.pendingTransactionsCount,
+        projectedBalance: data.projectedBalance30Days
+      });
+
+      toast({
+        title: "PDF exportado!",
+        description: "O relatório foi salvo com sucesso."
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao exportar",
+        description: "Não foi possível gerar o PDF."
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
-    <Card className="bg-gradient-to-br from-card via-card to-muted/20 border-border shadow-xl">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Banknote className="h-6 w-6 text-primary" />
+    <div className="space-y-6">
+      <Card className="bg-gradient-to-br from-card via-card to-muted/20 border-border shadow-xl">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Banknote className="h-6 w-6 text-primary" />
+              </div>
+              Relatório Financeiro Consolidado
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-muted-foreground capitalize text-sm">
+                📅 {currentMonth}
+              </Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportPDF}
+                disabled={exporting}
+                className="flex items-center gap-2"
+              >
+                {exporting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <FileDown className="h-4 w-4" />
+                )}
+                Exportar PDF
+              </Button>
             </div>
-            Relatório Financeiro Consolidado
-          </CardTitle>
-          <Badge variant="outline" className="text-muted-foreground capitalize text-sm">
-            📅 {currentMonth}
-          </Badge>
-        </div>
-      </CardHeader>
+          </div>
+        </CardHeader>
 
       <CardContent className="space-y-6">
         {/* Patrimônio Líquido - Destaque Principal */}
@@ -437,5 +522,9 @@ export function ConsolidatedFinancialReport() {
         </div>
       </CardContent>
     </Card>
+
+    {/* Gráfico de Evolução Patrimonial */}
+    <NetWorthEvolutionChart />
+    </div>
   );
 }

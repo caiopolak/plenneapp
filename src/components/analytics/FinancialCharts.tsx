@@ -99,13 +99,13 @@ export function FinancialCharts({ period = '1month' }: FinancialChartsProps) {
     return (
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="h-80 bg-gray-100 rounded-xl animate-pulse"></div>
-          <div className="h-80 bg-gray-100 rounded-xl animate-pulse"></div>
+          <div className="h-80 bg-muted rounded-xl animate-pulse"></div>
+          <div className="h-80 bg-muted rounded-xl animate-pulse"></div>
         </div>
-        <div className="h-80 bg-gray-100 rounded-xl animate-pulse"></div>
+        <div className="h-80 bg-muted rounded-xl animate-pulse"></div>
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="h-80 bg-gray-100 rounded-xl animate-pulse"></div>
-          <div className="h-80 bg-gray-100 rounded-xl animate-pulse"></div>
+          <div className="h-80 bg-muted rounded-xl animate-pulse"></div>
+          <div className="h-80 bg-muted rounded-xl animate-pulse"></div>
         </div>
       </div>
     );
