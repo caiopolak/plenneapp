@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useBudgets } from "@/hooks/useBudgets";
+import { useCategories } from "@/hooks/useCategories";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { budgetSchema, validateInput, isValidationError, requireAuth } from "@/lib/validation";
@@ -13,7 +14,6 @@ import { checkRateLimit } from "@/lib/security";
 interface BudgetFormProps {
   year: number;
   month: number;
-  categories: string[];
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -23,8 +23,9 @@ const months = [
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
-export function BudgetForm({ year, month, categories, onClose, onSuccess }: BudgetFormProps) {
+export function BudgetForm({ year, month, onClose, onSuccess }: BudgetFormProps) {
   const { createBudget } = useBudgets();
+  const { expenseCategories } = useCategories();
   const { user } = useAuth();
   const { toast } = useToast();
   const [category, setCategory] = useState("");
@@ -102,7 +103,7 @@ export function BudgetForm({ year, month, categories, onClose, onSuccess }: Budg
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((cat) => (
+                {expenseCategories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
                   </SelectItem>

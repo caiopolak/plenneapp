@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Edit2, Check, X } from "lucide-react";
 import { useBudgets } from "@/hooks/useBudgets";
+import { useCategories } from "@/hooks/useCategories";
 import { BudgetForm } from "./BudgetForm";
 import { ImportBudgetsCSV } from "./ImportBudgetsCSV";
 import { BudgetExport } from "@/utils/dataExport";
@@ -19,13 +20,9 @@ const months = [
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
-const expenseCategories = [
-  "Alimentação", "Transporte", "Moradia", "Saúde", "Educação",
-  "Lazer", "Vestuário", "Tecnologia", "Seguros", "Outros"
-];
-
 export function BudgetManager() {
   const { budgets, loading, fetchBudgets, updateBudget, deleteBudget } = useBudgets();
+  const { expenseCategories } = useCategories();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [showForm, setShowForm] = useState(false);
@@ -413,7 +410,6 @@ export function BudgetManager() {
         <BudgetForm
           year={selectedYear}
           month={selectedMonth}
-          categories={expenseCategories}
           onClose={() => setShowForm(false)}
           onSuccess={() => {
             setShowForm(false);

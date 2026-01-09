@@ -9,7 +9,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Input validation constants
 const MAX_MESSAGES = 50;
 const MAX_CONTENT_LENGTH = 5000;
 const VALID_ROLES = ["user", "assistant"];
@@ -20,12 +19,10 @@ interface ChatMessage {
 }
 
 function validateMessages(messages: unknown): { valid: boolean; error?: string; data?: ChatMessage[] } {
-  // Check if messages is an array
   if (!messages || !Array.isArray(messages)) {
     return { valid: false, error: "Invalid messages format - must be an array" };
   }
 
-  // Check array length
   if (messages.length === 0) {
     return { valid: false, error: "Messages array cannot be empty" };
   }
@@ -34,16 +31,13 @@ function validateMessages(messages: unknown): { valid: boolean; error?: string; 
     return { valid: false, error: `Too many messages - maximum is ${MAX_MESSAGES}` };
   }
 
-  // Validate each message
   for (let i = 0; i < messages.length; i++) {
     const msg = messages[i];
 
-    // Check message structure
     if (!msg || typeof msg !== "object") {
       return { valid: false, error: `Invalid message at index ${i}` };
     }
 
-    // Check role exists and is valid
     if (!msg.role || typeof msg.role !== "string") {
       return { valid: false, error: `Missing or invalid role at message ${i}` };
     }
@@ -52,12 +46,10 @@ function validateMessages(messages: unknown): { valid: boolean; error?: string; 
       return { valid: false, error: `Invalid role "${msg.role}" at message ${i} - must be "user" or "assistant"` };
     }
 
-    // Check content exists and is valid
     if (!msg.content || typeof msg.content !== "string") {
       return { valid: false, error: `Missing or invalid content at message ${i}` };
     }
 
-    // Check content length
     if (msg.content.length > MAX_CONTENT_LENGTH) {
       return { valid: false, error: `Content too long at message ${i} - maximum is ${MAX_CONTENT_LENGTH} characters` };
     }
@@ -66,14 +58,109 @@ function validateMessages(messages: unknown): { valid: boolean; error?: string; 
   return { valid: true, data: messages as ChatMessage[] };
 }
 
+async function getFinancialContext(supabaseClient: any, userId: string) {
+  try {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+    const todayStr = today.toISOString().split('T')[0];
+
+    // Buscar transações do mês atual
+    const { data: transactions } = await supabaseClient
+      .from('transactions')
+      .select('type, amount, category, date')
+      .eq('user_id', userId)
+      .gte('date', startOfMonth)
+      .lte('date', todayStr)
+      .order('date', { ascending: false })
+      .limit(100);
+
+    // Calcular totais
+    let totalIncome = 0;
+    let totalExpense = 0;
+    const categorySummary: Record<string, number> = {};
+
+    (transactions || []).forEach((t: any) => {
+      if (t.type === 'income') {
+        totalIncome += Number(t.amount);
+      } else {
+        totalExpense += Number(t.amount);
+        categorySummary[t.category] = (categorySummary[t.category] || 0) + Number(t.amount);
+      }
+    });
+
+    // Buscar orçamentos do mês
+    const { data: budgets } = await supabaseClient
+      .from('budgets')
+      .select('category, amount_limit')
+      .eq('user_id', userId)
+      .eq('year', today.getFullYear())
+      .eq('month', today.getMonth() + 1);
+
+    // Buscar metas financeiras
+    const { data: goals } = await supabaseClient
+      .from('financial_goals')
+      .select('name, target_amount, current_amount, target_date')
+      .eq('user_id', userId)
+      .limit(5);
+
+    // Buscar investimentos
+    const { data: investments } = await supabaseClient
+      .from('investments')
+      .select('name, type, amount, expected_return')
+      .eq('user_id', userId)
+      .limit(10);
+
+    // Montar contexto
+    const balance = totalIncome - totalExpense;
+    
+    // Top 5 categorias de gasto
+    const topCategories = Object.entries(categorySummary)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([cat, val]) => `${cat}: R$ ${val.toFixed(2)}`)
+      .join(', ');
+
+    // Orçamentos com status
+    const budgetStatus = (budgets || []).map((b: any) => {
+      const spent = categorySummary[b.category] || 0;
+      const percentage = b.amount_limit > 0 ? ((spent / b.amount_limit) * 100).toFixed(0) : 0;
+      return `${b.category}: ${percentage}% usado (R$ ${spent.toFixed(2)} de R$ ${b.amount_limit.toFixed(2)})`;
+    }).join('; ');
+
+    // Metas
+    const goalsStatus = (goals || []).map((g: any) => {
+      const progress = g.target_amount > 0 ? ((g.current_amount / g.target_amount) * 100).toFixed(0) : 0;
+      return `${g.name}: ${progress}% concluído`;
+    }).join('; ');
+
+    // Total investido
+    const totalInvested = (investments || []).reduce((sum: number, i: any) => sum + Number(i.amount), 0);
+
+    return `
+CONTEXTO FINANCEIRO DO USUÁRIO (Mês atual: ${today.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}):
+- Receitas do mês: R$ ${totalIncome.toFixed(2)}
+- Despesas do mês: R$ ${totalExpense.toFixed(2)}
+- Saldo do mês: R$ ${balance.toFixed(2)}
+- Principais gastos: ${topCategories || 'Nenhum gasto registrado'}
+${budgetStatus ? `- Orçamentos: ${budgetStatus}` : ''}
+${goalsStatus ? `- Metas: ${goalsStatus}` : ''}
+${totalInvested > 0 ? `- Total investido: R$ ${totalInvested.toFixed(2)}` : ''}
+
+Use estas informações para dar conselhos personalizados e relevantes.
+`;
+  } catch (error) {
+    console.error("Error fetching financial context:", error);
+    return "";
+  }
+}
+
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Authentication check
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       console.error("Missing authorization header");
@@ -83,7 +170,6 @@ serve(async (req) => {
       );
     }
 
-    // Verify user is authenticated
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
@@ -101,7 +187,6 @@ serve(async (req) => {
 
     console.log("Authenticated user:", user.id);
 
-    // Parse and validate input
     const body = await req.json();
     const validation = validateMessages(body.messages);
 
@@ -115,18 +200,46 @@ serve(async (req) => {
 
     const messages = validation.data!;
 
-    // Build Gemini payload
+    // Buscar contexto financeiro do usuário
+    const financialContext = await getFinancialContext(supabaseClient, user.id);
+
+    // System prompt com contexto financeiro
+    const systemPrompt = `Você é a Plenne, uma assistente financeira inteligente, amigável e especializada em finanças pessoais brasileiras. 
+Você ajuda os usuários a gerenciar suas finanças, economizar dinheiro, entender investimentos e alcançar metas financeiras.
+
+Diretrizes:
+- Sempre responda em português brasileiro
+- Seja empática e encorajadora
+- Dê conselhos práticos e acionáveis
+- Use os dados financeiros do usuário para personalizar suas respostas
+- Quando apropriado, sugira ações específicas como criar orçamentos, ajustar gastos ou poupar mais
+- Evite jargões técnicos complexos, explique de forma simples
+- Se não souber algo específico sobre a situação do usuário, pergunte
+
+${financialContext}
+`;
+
+    // Construir payload para Gemini
     const geminiPayload = {
-      contents: messages.map((msg) => ({
-        role: msg.role === "assistant" ? "model" : "user",
-        parts: [{ text: msg.content }],
-      })),
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: systemPrompt }]
+        },
+        {
+          role: "model", 
+          parts: [{ text: "Entendido! Sou a Plenne, sua assistente financeira. Estou pronta para ajudar com suas finanças pessoais de forma personalizada. Como posso ajudar você hoje?" }]
+        },
+        ...messages.map((msg) => ({
+          role: msg.role === "assistant" ? "model" : "user",
+          parts: [{ text: msg.content }],
+        }))
+      ],
       generationConfig: {
-        temperature: 0.6,
+        temperature: 0.7,
         topK: 40,
         topP: 0.95,
         maxOutputTokens: 1024,
-        stopSequences: [],
       },
     };
 
@@ -142,7 +255,6 @@ serve(async (req) => {
     );
     const data = await r.json();
 
-    // Check for Gemini API error
     if (data.error) {
       console.error("Gemini API error:", JSON.stringify(data.error));
       return new Response(JSON.stringify({ error: data.error.message || data.error }), {
@@ -153,7 +265,7 @@ serve(async (req) => {
 
     const answer =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Desculpe, não consegui gerar uma resposta agora.";
+      "Desculpe, não consegui gerar uma resposta agora. Tente novamente.";
 
     return new Response(JSON.stringify({ answer }), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
