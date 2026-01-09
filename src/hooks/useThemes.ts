@@ -10,113 +10,36 @@ interface Theme {
   is_active: boolean;
 }
 
+interface DefaultTheme {
+  name: string;
+  label: string;
+  description: string;
+  colors: {
+    light: Record<string, string>;
+    dark: Record<string, string>;
+  };
+}
+
 const defaultThemes = [
   {
     name: 'default',
-    label: 'Padrão Verde',
+    label: 'Esmeralda',
+    description: 'Verde institucional Plenne',
     colors: {
       light: {
-        primary: '216 87% 18%',
+        primary: '158 64% 35%',
         secondary: '142 76% 36%',
-        accent: '24 95% 53%',
-        background: '210 40% 98%',
+        accent: '38 92% 50%',
+        background: '150 20% 98%',
         surface: '0 0% 100%',
-        foreground: '240 10% 4%'
+        foreground: '158 30% 15%'
       },
       dark: {
-        primary: '199 89% 65%',
-        secondary: '142 76% 55%',
-        accent: '24 95% 60%',
-        background: '240 10% 3.9%',
-        surface: '240 10% 8%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'blue',
-    label: 'Azul Profissional',
-    colors: {
-      light: {
-        primary: '217 91% 60%',
-        secondary: '220 91% 54%',
-        accent: '239 84% 67%',
-        background: '210 40% 98%',
-        surface: '0 0% 100%',
-        foreground: '217 33% 17%'
-      },
-      dark: {
-        primary: '217 91% 70%',
-        secondary: '220 91% 65%',
-        accent: '239 84% 75%',
-        background: '240 10% 3.9%',
-        surface: '240 10% 8%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'purple',
-    label: 'Roxo Moderno',
-    colors: {
-      light: {
-        primary: '262 83% 58%',
-        secondary: '258 90% 66%',
-        accent: '330 81% 60%',
-        background: '300 20% 99%',
-        surface: '0 0% 100%',
-        foreground: '262 47% 25%'
-      },
-      dark: {
-        primary: '262 83% 70%',
-        secondary: '258 90% 75%',
-        accent: '330 81% 70%',
-        background: '240 10% 3.9%',
-        surface: '240 10% 8%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'emerald',
-    label: 'Verde Esmeralda',
-    colors: {
-      light: {
         primary: '158 64% 52%',
-        secondary: '160 84% 39%',
-        accent: '142 76% 36%',
-        background: '152 81% 96%',
-        surface: '0 0% 100%',
-        foreground: '158 36% 17%'
-      },
-      dark: {
-        primary: '158 64% 65%',
-        secondary: '160 84% 55%',
-        accent: '142 76% 50%',
-        background: '240 10% 3.9%',
-        surface: '240 10% 8%',
-        foreground: '0 0% 98%'
-      }
-    }
-  },
-  {
-    name: 'sunset',
-    label: 'Pôr do Sol',
-    colors: {
-      light: {
-        primary: '25 95% 53%',
-        secondary: '45 93% 47%',
-        accent: '0 84% 60%',
-        background: '48 100% 96%',
-        surface: '0 0% 100%',
-        foreground: '25 47% 25%'
-      },
-      dark: {
-        primary: '25 95% 65%',
-        secondary: '45 93% 60%',
-        accent: '0 84% 70%',
-        background: '240 10% 3.9%',
-        surface: '240 10% 8%',
+        secondary: '142 76% 50%',
+        accent: '38 92% 55%',
+        background: '160 15% 6%',
+        surface: '160 12% 10%',
         foreground: '0 0% 98%'
       }
     }
@@ -124,21 +47,183 @@ const defaultThemes = [
   {
     name: 'ocean',
     label: 'Oceano',
+    description: 'Tons azuis calmos e profissionais',
     colors: {
       light: {
         primary: '199 89% 48%',
-        secondary: '188 86% 53%',
-        accent: '180 78% 60%',
-        background: '204 100% 97%',
+        secondary: '188 86% 45%',
+        accent: '172 70% 50%',
+        background: '200 40% 98%',
         surface: '0 0% 100%',
-        foreground: '199 43% 20%'
+        foreground: '199 43% 18%'
       },
       dark: {
-        primary: '199 89% 65%',
-        secondary: '188 86% 65%',
-        accent: '180 78% 70%',
-        background: '240 10% 3.9%',
-        surface: '240 10% 8%',
+        primary: '199 89% 60%',
+        secondary: '188 86% 55%',
+        accent: '172 70% 55%',
+        background: '200 25% 6%',
+        surface: '200 20% 10%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'lavender',
+    label: 'Lavanda',
+    description: 'Roxo suave e elegante',
+    colors: {
+      light: {
+        primary: '262 72% 55%',
+        secondary: '280 60% 60%',
+        accent: '315 70% 60%',
+        background: '270 30% 98%',
+        surface: '0 0% 100%',
+        foreground: '262 45% 20%'
+      },
+      dark: {
+        primary: '262 72% 68%',
+        secondary: '280 60% 70%',
+        accent: '315 70% 70%',
+        background: '270 20% 6%',
+        surface: '270 15% 10%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'sunset',
+    label: 'Pôr do Sol',
+    description: 'Tons quentes e acolhedores',
+    colors: {
+      light: {
+        primary: '25 95% 53%',
+        secondary: '38 95% 50%',
+        accent: '0 85% 60%',
+        background: '35 50% 97%',
+        surface: '0 0% 100%',
+        foreground: '25 50% 18%'
+      },
+      dark: {
+        primary: '25 95% 60%',
+        secondary: '38 95% 55%',
+        accent: '0 85% 65%',
+        background: '25 20% 6%',
+        surface: '25 15% 10%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'rose',
+    label: 'Rose Gold',
+    description: 'Rosa elegante e sofisticado',
+    colors: {
+      light: {
+        primary: '346 75% 55%',
+        secondary: '330 70% 60%',
+        accent: '20 80% 55%',
+        background: '340 30% 98%',
+        surface: '0 0% 100%',
+        foreground: '346 40% 18%'
+      },
+      dark: {
+        primary: '346 75% 65%',
+        secondary: '330 70% 70%',
+        accent: '20 80% 60%',
+        background: '340 15% 6%',
+        surface: '340 12% 10%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'midnight',
+    label: 'Meia-Noite',
+    description: 'Azul escuro premium',
+    colors: {
+      light: {
+        primary: '222 85% 45%',
+        secondary: '215 75% 50%',
+        accent: '230 80% 65%',
+        background: '220 25% 97%',
+        surface: '0 0% 100%',
+        foreground: '222 50% 15%'
+      },
+      dark: {
+        primary: '222 85% 60%',
+        secondary: '215 75% 60%',
+        accent: '230 80% 70%',
+        background: '222 25% 5%',
+        surface: '222 20% 9%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'forest',
+    label: 'Floresta',
+    description: 'Verde escuro natural',
+    colors: {
+      light: {
+        primary: '150 45% 35%',
+        secondary: '140 40% 40%',
+        accent: '80 50% 45%',
+        background: '140 20% 97%',
+        surface: '0 0% 100%',
+        foreground: '150 35% 15%'
+      },
+      dark: {
+        primary: '150 45% 50%',
+        secondary: '140 40% 50%',
+        accent: '80 50% 55%',
+        background: '150 20% 5%',
+        surface: '150 15% 9%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'coral',
+    label: 'Coral',
+    description: 'Vibrante e moderno',
+    colors: {
+      light: {
+        primary: '12 90% 60%',
+        secondary: '25 85% 55%',
+        accent: '350 80% 58%',
+        background: '15 40% 98%',
+        surface: '0 0% 100%',
+        foreground: '12 50% 18%'
+      },
+      dark: {
+        primary: '12 90% 65%',
+        secondary: '25 85% 60%',
+        accent: '350 80% 65%',
+        background: '12 20% 6%',
+        surface: '12 15% 10%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'slate',
+    label: 'Ardósia',
+    description: 'Neutro e profissional',
+    colors: {
+      light: {
+        primary: '215 20% 40%',
+        secondary: '210 15% 50%',
+        accent: '200 60% 50%',
+        background: '210 20% 98%',
+        surface: '0 0% 100%',
+        foreground: '215 25% 15%'
+      },
+      dark: {
+        primary: '215 20% 60%',
+        secondary: '210 15% 60%',
+        accent: '200 60% 60%',
+        background: '215 20% 6%',
+        surface: '215 15% 10%',
         foreground: '0 0% 98%'
       }
     }
