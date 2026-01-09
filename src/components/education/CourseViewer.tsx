@@ -6,12 +6,13 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   BookOpen, Play, Lock, CheckCircle, Clock, FileText, 
-  Download, ChevronLeft, ChevronRight, Video
+  Download, ChevronLeft, ChevronRight, Video, Headphones
 } from "lucide-react";
 import { useCourseModules, CourseModule, Lesson } from "@/hooks/useCourseModules";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { LessonReadingMode } from "./LessonReadingMode";
 
 export function CourseViewer() {
   const { user } = useAuth();
@@ -19,6 +20,7 @@ export function CourseViewer() {
   const [selectedModule, setSelectedModule] = useState<CourseModule | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [showReadingMode, setShowReadingMode] = useState(false);
 
   const { data: lessons = [] } = useLessons(selectedModule?.id || null);
   const { data: materials = [] } = useMaterials(selectedLesson?.id || null);
@@ -139,9 +141,27 @@ export function CourseViewer() {
     return <div className="text-center py-8">Carregando cursos...</div>;
   }
 
+  // Modo de Leitura
+  if (showReadingMode && selectedLesson) {
+    return (
+      <LessonReadingMode
+        lesson={selectedLesson}
+        materials={materials}
+        onClose={() => setShowReadingMode(false)}
+        onNext={hasNext ? goToNext : undefined}
+        onPrevious={hasPrevious ? goToPrevious : undefined}
+        hasNext={hasNext}
+        hasPrevious={hasPrevious}
+        onComplete={markAsCompleted}
+        isCompleted={userProgress[selectedLesson.id]?.completed}
+      />
+    );
+  }
+
   // Visualização de aula
   if (showPlayer && selectedLesson) {
     const isCompleted = userProgress[selectedLesson.id]?.completed;
+    const hasAudio = selectedLesson.audio_url || selectedLesson.audio_file_url;
 
     return (
       <div className="space-y-6">
@@ -154,6 +174,17 @@ export function CourseViewer() {
             <h2 className="text-xl font-bold">{selectedLesson.title}</h2>
             <p className="text-muted-foreground text-sm">{selectedModule?.title}</p>
           </div>
+          
+          {/* Botão modo leitura */}
+          <Button 
+            variant="outline" 
+            onClick={() => setShowReadingMode(true)}
+            className="gap-2"
+          >
+            <BookOpen className="w-4 h-4" />
+            Modo Leitura
+            {hasAudio && <Headphones className="w-4 h-4" />}
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

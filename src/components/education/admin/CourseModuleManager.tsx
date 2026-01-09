@@ -12,11 +12,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Plus, BookOpen, Play, Trash2, Edit, Upload, FileText, Video, 
-  GripVertical, Eye, EyeOff, Clock, Download, ChevronRight, Settings
+  GripVertical, Eye, EyeOff, Clock, Download, ChevronRight, Settings, FileAudio
 } from "lucide-react";
 import { useCourseModules, CourseModule, Lesson, LessonMaterial } from "@/hooks/useCourseModules";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useToast } from "@/hooks/use-toast";
+import { LessonEditor } from "./LessonEditor";
 
 export function CourseModuleManager() {
   const { isAdmin, isLoading: adminLoading } = useIsAdmin();
@@ -44,6 +45,7 @@ export function CourseModuleManager() {
   const [showMaterialForm, setShowMaterialForm] = useState(false);
   const [editingModule, setEditingModule] = useState<CourseModule | null>(null);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
+  const [showLessonEditor, setShowLessonEditor] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -492,6 +494,12 @@ Aqui você pode escrever o conteúdo em markdown...
                                     Vídeo
                                   </span>
                                 )}
+                                {((lesson as any).audio_url || (lesson as any).audio_file_url) && (
+                                  <span className="flex items-center gap-1">
+                                    <FileAudio className="w-3 h-3" />
+                                    Áudio
+                                  </span>
+                                )}
                                 {lesson.content && (
                                   <span className="flex items-center gap-1">
                                     <FileText className="w-3 h-3" />
@@ -502,6 +510,18 @@ Aqui você pode escrever o conteúdo em markdown...
                             </div>
                           </div>
                           <div className="flex gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingLesson(lesson);
+                                setShowLessonEditor(true);
+                              }}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
                             <Button 
                               variant="ghost" 
                               size="icon" 
@@ -645,6 +665,22 @@ Aqui você pode escrever o conteúdo em markdown...
           </CardContent>
         </Card>
       </div>
+
+      {/* Lesson Editor Modal */}
+      {showLessonEditor && editingLesson && selectedModule && (
+        <LessonEditor
+          lesson={editingLesson}
+          moduleId={selectedModule.id}
+          onClose={() => {
+            setShowLessonEditor(false);
+            setEditingLesson(null);
+          }}
+          onSave={() => {
+            setShowLessonEditor(false);
+            setEditingLesson(null);
+          }}
+        />
+      )}
     </div>
   );
 }

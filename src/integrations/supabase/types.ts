@@ -143,6 +143,8 @@ export type Database = {
       }
       education_lessons: {
         Row: {
+          audio_file_url: string | null
+          audio_url: string | null
           content: string | null
           created_at: string | null
           description: string | null
@@ -158,6 +160,8 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          audio_file_url?: string | null
+          audio_url?: string | null
           content?: string | null
           created_at?: string | null
           description?: string | null
@@ -173,6 +177,8 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          audio_file_url?: string | null
+          audio_url?: string | null
           content?: string | null
           created_at?: string | null
           description?: string | null
