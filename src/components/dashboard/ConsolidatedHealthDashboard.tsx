@@ -1,10 +1,9 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import { 
-  Wallet, TrendingUp, Target, PiggyBank, 
-  AlertTriangle, CheckCircle2, ArrowUpRight, ArrowDownRight
+  Wallet, TrendingUp, Target, 
+  ArrowUpRight
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
@@ -102,27 +101,6 @@ export function ConsolidatedHealthDashboard() {
       // Patrimônio total
       const netWorth = balance + totalInvested + totalGoalsCurrent;
 
-      // Taxa de poupança
-      const savingsRate = monthlyIncome > 0 ? ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100 : 0;
-
-      // Variação de gastos
-      const expenseChange = lastMonthExpenses > 0 
-        ? ((monthlyExpenses - lastMonthExpenses) / lastMonthExpenses) * 100 
-        : 0;
-
-      // Pontuação de saúde (0-100)
-      let healthScore = 50;
-      if (savingsRate >= 20) healthScore += 15;
-      else if (savingsRate >= 10) healthScore += 10;
-      else if (savingsRate < 0) healthScore -= 15;
-      
-      if (budgetUsage <= 80) healthScore += 15;
-      else if (budgetUsage > 100) healthScore -= 10;
-      
-      if (completedGoals > 0) healthScore += 10;
-      if (investments?.length && investments.length >= 3) healthScore += 10;
-      
-      healthScore = Math.max(0, Math.min(100, healthScore));
 
       // Dados para gráfico de evolução (últimos 6 meses)
       const evolutionData = [];
@@ -163,10 +141,7 @@ export function ConsolidatedHealthDashboard() {
         completedGoals,
         totalGoals: goals?.length || 0,
         avgReturn,
-        savingsRate,
         budgetUsage,
-        healthScore,
-        expenseChange,
         monthlyIncome,
         monthlyExpenses,
         evolutionData,
@@ -190,124 +165,87 @@ export function ConsolidatedHealthDashboard() {
 
   const formatCurrency = (value: number) => `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
-  const getHealthColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-500';
-    if (score >= 60) return 'text-blue-500';
-    if (score >= 40) return 'text-amber-500';
-    return 'text-red-500';
-  };
-
-  const getHealthLabel = (score: number) => {
-    if (score >= 80) return 'Excelente';
-    if (score >= 60) return 'Bom';
-    if (score >= 40) return 'Regular';
-    return 'Atenção';
-  };
 
   return (
     <div className="space-y-6">
-      {/* Header com Score de Saúde */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        {/* Score de Saúde Financeira */}
-        <Card className="lg:col-span-1 bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
-          <CardContent className="p-6 text-center">
-            <div className="relative inline-flex items-center justify-center">
-              <svg className="w-24 h-24 -rotate-90">
-                <circle
-                  cx="48"
-                  cy="48"
-                  r="40"
-                  stroke="currentColor"
-                  strokeWidth="8"
-                  fill="none"
-                  className="text-muted"
-                />
-                <circle
-                  cx="48"
-                  cy="48"
-                  r="40"
-                  stroke="currentColor"
-                  strokeWidth="8"
-                  fill="none"
-                  strokeDasharray={`${(data.healthScore / 100) * 251.2} 251.2`}
-                  className={getHealthColor(data.healthScore)}
-                />
-              </svg>
-              <div className="absolute flex flex-col items-center">
-                <span className={`text-2xl font-bold ${getHealthColor(data.healthScore)}`}>{data.healthScore}</span>
-                <span className="text-xs text-muted-foreground">de 100</span>
+      {/* Header com Patrimônio e Orçamento - Métricas exclusivas desta view */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Patrimônio Total */}
+        <Card className="bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <Wallet className="w-5 h-5" />
+              <span className="text-sm font-medium">Patrimônio Total</span>
+            </div>
+            <p className="text-3xl font-bold text-primary">{formatCurrency(data.netWorth)}</p>
+            <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+              <div className="flex justify-between">
+                <span>Saldo disponível</span>
+                <span className="font-medium text-foreground">{formatCurrency(data.balance)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Investimentos</span>
+                <span className="font-medium text-foreground">{formatCurrency(data.totalInvested)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Metas acumuladas</span>
+                <span className="font-medium text-foreground">{formatCurrency(data.totalGoalsCurrent)}</span>
               </div>
             </div>
-            <h3 className="text-lg font-bold mt-2">Saúde Financeira</h3>
-            <Badge variant="secondary" className="mt-1">
-              {getHealthLabel(data.healthScore)}
-            </Badge>
-          </CardContent>
-        </Card>
-
-        {/* Patrimônio Total */}
-        <Card className="lg:col-span-1">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Wallet className="w-4 h-4" />
-              <span className="text-sm">Patrimônio Total</span>
-            </div>
-            <p className="text-2xl font-bold text-primary">{formatCurrency(data.netWorth)}</p>
-            <div className="mt-2 space-y-1 text-xs text-muted-foreground">
-              <p>Saldo: {formatCurrency(data.balance)}</p>
-              <p>Investimentos: {formatCurrency(data.totalInvested)}</p>
-              <p>Metas: {formatCurrency(data.totalGoalsCurrent)}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Taxa de Poupança */}
-        <Card className="lg:col-span-1">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <PiggyBank className="w-4 h-4" />
-              <span className="text-sm">Taxa de Poupança</span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <p className={`text-2xl font-bold ${data.savingsRate >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                {data.savingsRate.toFixed(1)}%
-              </p>
-              {data.savingsRate >= 20 && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-              {data.savingsRate < 0 && <AlertTriangle className="w-5 h-5 text-red-500" />}
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              {data.savingsRate >= 20 ? 'Ótimo! Acima da meta de 20%' : 
-               data.savingsRate >= 10 ? 'Bom, mas pode melhorar' : 
-               'Tente economizar mais este mês'}
-            </p>
           </CardContent>
         </Card>
 
         {/* Uso de Orçamento */}
-        <Card className="lg:col-span-1">
+        <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Target className="w-4 h-4" />
-              <span className="text-sm">Uso de Orçamento</span>
+              <Target className="w-5 h-5" />
+              <span className="text-sm font-medium">Uso de Orçamento</span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <p className={`text-2xl font-bold ${
+            <div className="flex items-baseline gap-2 mb-3">
+              <p className={`text-3xl font-bold ${
                 data.budgetUsage <= 80 ? 'text-emerald-500' : 
                 data.budgetUsage <= 100 ? 'text-amber-500' : 'text-red-500'
               }`}>
                 {data.budgetUsage.toFixed(0)}%
               </p>
+              <span className="text-sm text-muted-foreground">utilizado</span>
             </div>
             <Progress 
               value={Math.min(data.budgetUsage, 100)} 
-              className={`h-2 mt-2 ${
+              className={`h-3 ${
                 data.budgetUsage <= 80 ? '[&>div]:bg-emerald-500' : 
                 data.budgetUsage <= 100 ? '[&>div]:bg-amber-500' : '[&>div]:bg-red-500'
               }`}
             />
             <p className="text-xs text-muted-foreground mt-2">
-              {data.budgetsCount} orçamento(s) definido(s)
+              {data.budgetsCount === 0 
+                ? 'Nenhum orçamento definido este mês' 
+                : `${data.budgetsCount} categoria(s) orçada(s)`}
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Fluxo de Caixa Mensal */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <TrendingUp className="w-5 h-5" />
+              <span className="text-sm font-medium">Fluxo de Caixa Mensal</span>
+            </div>
+            <p className={`text-3xl font-bold ${data.monthlyIncome - data.monthlyExpenses >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+              {formatCurrency(data.monthlyIncome - data.monthlyExpenses)}
+            </p>
+            <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+              <div className="flex justify-between">
+                <span>Receitas</span>
+                <span className="font-medium text-emerald-500">{formatCurrency(data.monthlyIncome)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Despesas</span>
+                <span className="font-medium text-red-500">{formatCurrency(data.monthlyExpenses)}</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -422,19 +360,23 @@ export function ConsolidatedHealthDashboard() {
         </Card>
       </div>
 
-      {/* Resumo por Área */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Resumo por Área - Detalhes exclusivos */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Metas */}
         <Card className="border-l-4 border-l-blue-500">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Metas</span>
+              <span className="text-sm text-muted-foreground">Progresso das Metas</span>
               <Target className="w-4 h-4 text-blue-500" />
             </div>
             <p className="text-xl font-bold">{data.completedGoals}/{data.totalGoals}</p>
-            <p className="text-xs text-muted-foreground">
+            <Progress 
+              value={data.totalGoalsTarget > 0 ? (data.totalGoalsCurrent / data.totalGoalsTarget) * 100 : 0}
+              className="h-2 mt-2 [&>div]:bg-blue-500"
+            />
+            <p className="text-xs text-muted-foreground mt-2">
               {data.totalGoalsTarget > 0 
-                ? `${((data.totalGoalsCurrent / data.totalGoalsTarget) * 100).toFixed(0)}% do objetivo total`
+                ? `${((data.totalGoalsCurrent / data.totalGoalsTarget) * 100).toFixed(0)}% do objetivo total (${formatCurrency(data.totalGoalsCurrent)} de ${formatCurrency(data.totalGoalsTarget)})`
                 : 'Nenhuma meta definida'}
             </p>
           </CardContent>
@@ -444,46 +386,20 @@ export function ConsolidatedHealthDashboard() {
         <Card className="border-l-4 border-l-emerald-500">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Investimentos</span>
+              <span className="text-sm text-muted-foreground">Portfólio de Investimentos</span>
               <TrendingUp className="w-4 h-4 text-emerald-500" />
             </div>
             <p className="text-xl font-bold">{formatCurrency(data.totalInvested)}</p>
-            <p className="text-xs text-muted-foreground">
-              {data.investmentsCount} ativo(s) • {data.avgReturn.toFixed(1)}% retorno médio
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Variação de Gastos */}
-        <Card className={`border-l-4 ${data.expenseChange <= 0 ? 'border-l-emerald-500' : 'border-l-red-500'}`}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Var. Gastos</span>
-              {data.expenseChange <= 0 
-                ? <ArrowDownRight className="w-4 h-4 text-emerald-500" />
-                : <ArrowUpRight className="w-4 h-4 text-red-500" />
-              }
+            <div className="flex items-center gap-4 mt-2">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-xs text-muted-foreground">{data.investmentsCount} ativo(s)</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">{data.avgReturn.toFixed(1)}% retorno médio esperado</span>
+              </div>
             </div>
-            <p className={`text-xl font-bold ${data.expenseChange <= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-              {data.expenseChange >= 0 ? '+' : ''}{data.expenseChange.toFixed(1)}%
-            </p>
-            <p className="text-xs text-muted-foreground">vs. mês anterior</p>
-          </CardContent>
-        </Card>
-
-        {/* Fluxo do Mês */}
-        <Card className={`border-l-4 ${data.monthlyIncome - data.monthlyExpenses >= 0 ? 'border-l-emerald-500' : 'border-l-red-500'}`}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Fluxo do Mês</span>
-              <Wallet className="w-4 h-4 text-primary" />
-            </div>
-            <p className={`text-xl font-bold ${data.monthlyIncome - data.monthlyExpenses >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-              {formatCurrency(data.monthlyIncome - data.monthlyExpenses)}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Receita: {formatCurrency(data.monthlyIncome)}
-            </p>
           </CardContent>
         </Card>
       </div>
