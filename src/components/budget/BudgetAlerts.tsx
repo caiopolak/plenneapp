@@ -43,8 +43,8 @@ export function BudgetAlerts() {
         {alertBudgets.map((budget) => (
           <Alert key={budget.id} className={`border-l-4 ${
             budget.percentage >= 100 
-              ? 'border-l-red-500 bg-red-50' 
-              : 'border-l-yellow-500 bg-yellow-50'
+              ? 'border-l-destructive bg-destructive/10' 
+              : 'border-l-warning bg-warning/10'
           }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
