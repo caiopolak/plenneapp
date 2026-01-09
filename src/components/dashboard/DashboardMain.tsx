@@ -9,6 +9,7 @@ import { DashboardAlertsCard } from './DashboardAlertsCard';
 import { DashboardChallengesCard } from './DashboardChallengesCard';
 import { DashboardTipsCard } from './DashboardTipsCard';
 import { ConsolidatedHealthDashboard } from './ConsolidatedHealthDashboard';
+import { GoalsWidget } from './GoalsWidget';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UnifiedTransactionForm } from '@/components/transactions/UnifiedTransactionForm';
 import { Button } from '@/components/ui/button';
@@ -207,30 +208,35 @@ export function DashboardMain() {
             </div>
           </div>
 
-          {/* 3. Resumo Geral Informativo - Full width */}
-          <div data-tour="overview" className="animate-fade-in stagger-4">
-            <DashboardOverview />
+          {/* 3. Metas e Resumo - Grid 2 colunas */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1 animate-fade-in stagger-4">
+              <GoalsWidget />
+            </div>
+            <div data-tour="overview" className="lg:col-span-2 animate-fade-in stagger-5">
+              <DashboardOverview />
+            </div>
           </div>
 
           {/* 4. Próximas Transações e Saldo Projetado - Grid 2 colunas */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="animate-fade-in stagger-5 h-full">
+            <div className="animate-fade-in stagger-6 h-full">
               <UpcomingTransactionsCard />
             </div>
-            <div className="animate-fade-in stagger-6 h-full">
+            <div className="animate-fade-in stagger-7 h-full">
               <ProjectedBalanceChart />
             </div>
           </div>
 
           {/* 5. Dicas, Desafios e Alertas - Grid 3 colunas */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="animate-fade-in stagger-7 h-full">
+            <div className="animate-fade-in stagger-8 h-full">
               <DashboardTipsCard />
             </div>
-            <div className="animate-fade-in stagger-8 h-full">
+            <div className="animate-fade-in stagger-9 h-full">
               <DashboardChallengesCard />
             </div>
-            <div className="animate-fade-in stagger-9 h-full md:col-span-2 lg:col-span-1">
+            <div className="animate-fade-in stagger-10 h-full md:col-span-2 lg:col-span-1">
               <DashboardAlertsCard />
             </div>
           </div>
