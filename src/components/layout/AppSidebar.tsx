@@ -13,7 +13,8 @@ import {
   Bell,
   Clock,
   Target,
-  TrendingUp
+  TrendingUp,
+  FileText
 } from "lucide-react";
 
 import {
@@ -72,6 +73,12 @@ const mainItems = [
     url: "/app/analytics",
     icon: BarChart3,
     description: "Gráficos e insights"
+  },
+  {
+    title: "Relatórios",
+    url: "/app/reports",
+    icon: FileText,
+    description: "Visão consolidada"
   },
 ];
 

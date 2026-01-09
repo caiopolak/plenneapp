@@ -9,6 +9,7 @@ import AssistantPage from "./AssistantPage";
 import SettingsPage from "./SettingsPage";
 import IncomingPage from "./IncomingPage";
 import AlertsPage from "./AlertsPage";
+import ReportsPage from "./ReportsPage";
 import { WorkspaceManager } from "@/components/workspaces/WorkspaceManager";
 import { SubscriptionPlans } from "@/components/subscription/SubscriptionPlans";
 import { TransactionList } from "@/components/transactions/TransactionList";
@@ -19,7 +20,7 @@ import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 import { GuidedTour } from "@/components/onboarding/GuidedTour";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useConfetti } from "@/hooks/useConfetti";
-import { useEffect } from "react";
+import { ConsolidatedFinancialReport } from "@/components/dashboard/ConsolidatedFinancialReport";
 
 export default function FinancieApp() {
   const { 
@@ -60,6 +61,7 @@ export default function FinancieApp() {
             <Route path="/app/budgets" element={<BudgetPage />} />
             <Route path="/app/analytics" element={<EnhancedDashboard />} />
             <Route path="/app/alerts" element={<AlertsPage />} />
+            <Route path="/app/reports" element={<ConsolidatedFinancialReport />} />
             <Route path="/app/education" element={<EducationNew />} />
             <Route path="/app/assistant" element={<AssistantPage />} />
             <Route path="/app/subscription" element={<SubscriptionPlans />} />
@@ -81,6 +83,7 @@ export default function FinancieApp() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/incoming" element={<IncomingPage />} />
             <Route path="/alerts" element={<AlertsPage />} />
+            <Route path="/reports" element={<ConsolidatedFinancialReport />} />
             <Route path="/transactions" element={<TransactionList />} />
             <Route path="/goals" element={<GoalList />} />
             <Route path="/investments" element={<InvestmentList />} />
