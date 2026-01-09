@@ -70,6 +70,9 @@
     /* Sombras */
     --shadow-card: 0 4px 32px 0 rgba(44, 63, 92, 0.12);
     --shadow-accent: 0 2px 16px 0 rgba(47, 158, 68, 0.08), 0 6px 32px 0 rgba(0,63,92,0.10);
+    
+    /* Transição de tema */
+    --theme-transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
@@ -129,6 +132,12 @@
 
   body {
     @apply bg-background text-foreground min-h-screen font-text;
+    transition: background-color var(--theme-transition), color var(--theme-transition);
+  }
+  
+  /* Transição suave global para mudanças de tema */
+  *, *::before, *::after {
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
   
   body:not(.dark) {
