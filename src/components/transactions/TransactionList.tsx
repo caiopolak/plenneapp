@@ -9,14 +9,14 @@ import { TransactionRow } from './TransactionRow';
 import { TransactionCategorySummary } from './TransactionCategorySummary';
 import { TransactionInsights } from './TransactionInsights';
 import { TransactionMonthlyComparison } from './TransactionMonthlyComparison';
-import { AdvancedTransactionFilters, TransactionFilters } from './AdvancedTransactionFilters';
+import { CompactTransactionFilters, TransactionFilters } from './AdvancedTransactionFilters';
 import { TransactionActionButtons } from './TransactionActionButtons';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { format, isWithinInterval, parseISO, startOfMonth, subMonths, isSameMonth } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { List, LayoutGrid, BarChart3, ChevronDown, ChevronUp } from 'lucide-react';
+import { BarChart3, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TransactionRowSkeleton, AnalyticsCardSkeleton } from '@/components/ui/loading-skeletons';
 import { usePaginatedLoad } from '@/hooks/useLazyLoad';
@@ -38,7 +38,6 @@ export function TransactionList() {
   const [filters, setFilters] = useState<TransactionFilters>(initialFilters);
   const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
-  const [showCategorySummary, setShowCategorySummary] = useState(true);
   const [showAnalytics, setShowAnalytics] = useState(true);
 
   const { toast } = useToast();
@@ -179,6 +178,16 @@ export function TransactionList() {
     setFilters(initialFilters);
   };
 
+  // Contagem de filtros ativos para mostrar tags
+  const activeFiltersCount = [
+    filters.type !== 'all',
+    filters.category !== 'all',
+    filters.minAmount,
+    filters.maxAmount,
+    filters.startDate,
+    filters.endDate
+  ].filter(Boolean).length;
+
   // Lazy loading para transações
   const {
     displayedItems: displayedTransactions,
@@ -215,22 +224,76 @@ export function TransactionList() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
-            Transações
-          </h1>
-          <p className="text-muted-foreground">
-            Acompanhe cada entrada e saída do seu dinheiro
-          </p>
+      {/* Header com filtros integrados */}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1">
+            <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
+              Transações
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Acompanhe cada entrada e saída do seu dinheiro
+            </p>
+          </div>
+          
+          {/* Filtros + Ações no mesmo nível */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <CompactTransactionFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              categories={categories}
+              onReset={resetFilters}
+            />
+            <TransactionActionButtons
+              onImportSuccess={fetchTransactions}
+              showForm={showForm}
+              setShowForm={setShowForm}
+              transactions={transactionsForExport}
+            />
+          </div>
         </div>
-        <TransactionActionButtons
-          onImportSuccess={fetchTransactions}
-          showForm={showForm}
-          setShowForm={setShowForm}
-          transactions={transactionsForExport}
-        />
+
+        {/* Tags de filtros ativos */}
+        {activeFiltersCount > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {filters.type !== 'all' && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                {filters.type === 'income' ? 'Receitas' : 'Despesas'}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, type: 'all' }))} />
+              </Badge>
+            )}
+            {filters.category !== 'all' && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                {filters.category}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, category: 'all' }))} />
+              </Badge>
+            )}
+            {filters.minAmount && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                Min: R$ {filters.minAmount}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, minAmount: '' }))} />
+              </Badge>
+            )}
+            {filters.maxAmount && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                Max: R$ {filters.maxAmount}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, maxAmount: '' }))} />
+              </Badge>
+            )}
+            {filters.startDate && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                De: {format(filters.startDate, "dd/MM")}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, startDate: undefined }))} />
+              </Badge>
+            )}
+            {filters.endDate && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                Até: {format(filters.endDate, "dd/MM")}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, endDate: undefined }))} />
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Nova Transação Modal */}
@@ -310,24 +373,9 @@ export function TransactionList() {
         </CollapsibleContent>
       </Collapsible>
 
-      {/* 3. Filtros Avançados */}
+      {/* 3. Lista de Transações */}
       <Card className="bg-card border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold text-foreground">Filtros</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <AdvancedTransactionFilters
-            filters={filters}
-            onFiltersChange={setFilters}
-            categories={categories}
-            onReset={resetFilters}
-          />
-        </CardContent>
-      </Card>
-
-      {/* 4. Lista de Transações */}
-      <Card className="bg-card border-border">
-        <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground flex items-center justify-between">
             <span>Lista de Transações</span>
             <Badge variant="outline" className="font-normal">
