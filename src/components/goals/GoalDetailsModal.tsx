@@ -95,7 +95,11 @@ export function GoalDetailsModal({ open, onOpenChange, goal, showDepositsHistory
             <>
               <GoalProgressChart goalId={goal.id} targetAmount={targetAmount} />
               <div className="mt-4">
-                <GoalDepositsHistory goalId={goal.id} />
+                <GoalDepositsHistory 
+                  goalId={goal.id} 
+                  goalName={goal.name}
+                  workspaceId={goal.workspace_id || undefined}
+                />
               </div>
             </>
           )}
