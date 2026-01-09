@@ -24,13 +24,17 @@ export function KPICards() {
     queryFn: async (): Promise<KPIData> => {
       if (!user) throw new Error('User not authenticated');
 
-      // Data do mês atual
-      const currentMonth = new Date().getMonth() + 1;
-      const currentYear = new Date().getFullYear();
+      // Data do mês atual - só até hoje (não incluir transações futuras)
+      const today = new Date();
+      const currentMonth = today.getMonth() + 1;
+      const currentYear = today.getFullYear();
       const startOfMonth = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-01`;
-      const endOfMonth = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
+      const todayStr = today.toISOString().split('T')[0];
+      // Usar a menor data entre fim do mês e hoje (para não incluir transações futuras)
+      const endOfMonthDate = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
+      const endOfMonth = todayStr < endOfMonthDate ? todayStr : endOfMonthDate;
 
-      // Buscar transações do mês atual
+      // Buscar transações do mês atual (somente até hoje)
       const { data: currentTransactions } = await supabase
         .from('transactions')
         .select('type, amount')

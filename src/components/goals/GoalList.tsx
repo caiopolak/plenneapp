@@ -53,8 +53,7 @@ export function GoalList() {
 
       if (error) throw error;
       setGoals(data || []);
-    } catch (error) {
-      console.error('Error fetching goals:', error);
+    } catch (error: unknown) {
       toast({
         variant: "destructive",
         title: "Erro",
@@ -84,8 +83,7 @@ export function GoalList() {
       });
       
       fetchGoals();
-    } catch (error) {
-      console.error('Error deleting goal:', error);
+    } catch (error: unknown) {
       toast({
         variant: "destructive",
         title: "Erro",
@@ -94,15 +92,15 @@ export function GoalList() {
     }
   };
 
-  // Adiciona valor na meta E gera registro no histórico (goal_deposits)
+  // Adiciona valor na meta, gera transação de saída E registra no histórico (goal_deposits)
   const addAmountToGoal = async (goalId: string, amount: number) => {
     try {
       const goal = goals.find(g => g.id === goalId);
-      if (!goal) return;
+      if (!goal || !user) return;
 
       const newCurrentAmount = (goal.current_amount || 0) + amount;
 
-      // Atualiza goal
+      // 1. Atualiza goal
       const { error: updateError } = await supabase
         .from('financial_goals')
         .update({ current_amount: newCurrentAmount })
@@ -110,20 +108,35 @@ export function GoalList() {
 
       if (updateError) throw updateError;
 
-      // Salva depósito no histórico
+      // 2. Salva depósito no histórico
       const { error: depositError } = await supabase
         .from('goal_deposits')
         .insert([{
           goal_id: goalId,
           user_id: user.id,
           amount: amount,
-          note: null // pode ser expandido depois
+          note: `Aporte na meta "${goal.name}"`
         }]);
       if (depositError) throw depositError;
 
+      // 3. Gera transação de saída (despesa) para refletir no saldo
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .insert([{
+          user_id: user.id,
+          workspace_id: goal.workspace_id,
+          type: 'expense',
+          amount: amount,
+          category: 'Meta Financeira',
+          description: `Aporte: ${goal.name}`,
+          date: new Date().toISOString().split('T')[0],
+          is_recurring: false
+        }]);
+      if (transactionError) throw transactionError;
+
       toast({
         title: "Sucesso!",
-        description: `R$ ${amount.toFixed(2)} adicionado à meta`
+        description: `R$ ${amount.toFixed(2)} adicionado à meta (saldo atualizado)`
       });
 
       setAddingAmount('');

@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { toast } from 'sonner';
 import { addDays, addWeeks, addMonths, addYears, isBefore, parseISO } from 'date-fns';
+import { safeLog } from '@/lib/security';
 
 export interface UpcomingTransaction {
   id: string;
@@ -93,8 +94,8 @@ export function useUpcomingTransactions(daysAhead: number = 7) {
           .sort((a, b) => a.expected_date.localeCompare(b.expected_date));
 
         setTransactions(allTransactions);
-      } catch (error: any) {
-        console.error('Error fetching upcoming transactions:', error);
+      } catch (error: unknown) {
+        safeLog('error', 'Error fetching upcoming transactions', { error: String(error) });
         toast.error('Erro ao buscar transações futuras');
       } finally {
         setLoading(false);

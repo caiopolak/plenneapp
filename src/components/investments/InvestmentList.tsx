@@ -51,8 +51,7 @@ export function InvestmentList() {
 
       if (error) throw error;
       setInvestments(data || []);
-    } catch (error) {
-      console.error('Error fetching investments:', error);
+    } catch (error: unknown) {
       toast({
         variant: "destructive",
         title: "Erro",
@@ -82,8 +81,7 @@ export function InvestmentList() {
       });
       
       fetchInvestments();
-    } catch (error) {
-      console.error('Error deleting investment:', error);
+    } catch (error: unknown) {
       toast({
         variant: "destructive",
         title: "Erro",
