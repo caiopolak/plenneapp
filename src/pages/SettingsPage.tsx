@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,11 +35,23 @@ import {
 } from "@/config/appVersion";
 import { cn } from "@/lib/utils";
 
+// Função para aplicar preview temporário
+const applyPreviewTheme = (colors: Record<string, string>, isDark: boolean) => {
+  const root = document.documentElement;
+  Object.entries(colors).forEach(([key, value]) => {
+    if (key === 'primary') root.style.setProperty('--primary', value);
+    if (key === 'secondary') root.style.setProperty('--secondary', value);
+    if (key === 'accent') root.style.setProperty('--accent', value);
+  });
+};
+
 export default function SettingsPage() {
   const { user } = useAuth();
   const profile = useCurrentProfile();
-  const { themes, currentTheme, isDarkMode, saveTheme, toggleDarkMode } = useTheme();
+  const { themes, currentTheme, isDarkMode, saveTheme, toggleDarkMode, applyTheme } = useTheme();
   const [showEmail, setShowEmail] = useState(false);
+  const [hoveredTheme, setHoveredTheme] = useState<string | null>(null);
+  const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const environment = getEnvironment();
   const environmentLabel = getEnvironmentLabel();
@@ -83,71 +95,91 @@ export default function SettingsPage() {
 
         {/* Aba de Aparência */}
         <TabsContent value="appearance" className="mt-6 space-y-6">
-          {/* Toggle Modo Escuro - Destaque Principal */}
-          <Card className="overflow-hidden">
-            <div className={cn(
-              "p-6 transition-all duration-300",
-              isDarkMode 
-                ? "bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900" 
-                : "bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50"
-            )}>
-              <div className="flex items-center justify-between gap-4">
+        {/* Toggle Modo Escuro - Design Integrado */}
+          <Card className="overflow-hidden border-2 border-border/50 hover:border-primary/30 transition-all duration-300">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between p-4 sm:p-6">
                 <div className="flex items-center gap-4">
                   <div className={cn(
-                    "relative p-4 rounded-2xl transition-all duration-500 shadow-lg",
+                    "p-3 rounded-xl transition-all duration-500",
                     isDarkMode 
-                      ? "bg-gradient-to-br from-indigo-600 to-purple-700" 
-                      : "bg-gradient-to-br from-amber-400 to-orange-500"
+                      ? "bg-primary/20 text-primary" 
+                      : "bg-primary/10 text-primary"
                   )}>
                     {isDarkMode ? (
-                      <Moon className="h-8 w-8 text-white" />
+                      <Moon className="h-6 w-6" />
                     ) : (
-                      <Sun className="h-8 w-8 text-white" />
+                      <Sun className="h-6 w-6" />
                     )}
-                    <Sparkles className={cn(
-                      "absolute -top-1 -right-1 h-4 w-4 transition-opacity duration-300",
-                      isDarkMode ? "text-purple-300 opacity-100" : "text-amber-300 opacity-100"
-                    )} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold">
+                    <h3 className="font-semibold text-foreground">
                       Modo {isDarkMode ? 'Escuro' : 'Claro'}
                     </h3>
                     <p className="text-sm text-muted-foreground">
                       {isDarkMode 
-                        ? 'Interface escura, ideal para ambientes com pouca luz' 
-                        : 'Interface clara, ideal para uso durante o dia'}
+                        ? 'Interface escura para ambientes com pouca luz' 
+                        : 'Interface clara para uso durante o dia'}
                     </p>
                   </div>
                 </div>
                 
-                {/* Toggle Button Personalizado */}
+                {/* Toggle Switch Estilizado */}
                 <button
                   onClick={() => toggleDarkMode()}
                   className={cn(
-                    "relative w-20 h-10 rounded-full transition-all duration-300 focus:outline-none focus:ring-4",
+                    "relative w-16 h-8 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background",
                     isDarkMode 
-                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 focus:ring-purple-500/30" 
-                      : "bg-gradient-to-r from-amber-400 to-orange-500 focus:ring-amber-500/30"
+                      ? "bg-primary" 
+                      : "bg-muted"
                   )}
                   aria-label="Alternar modo escuro"
                 >
                   <div className={cn(
-                    "absolute top-1 w-8 h-8 rounded-full bg-white shadow-md transition-all duration-300 flex items-center justify-center",
-                    isDarkMode ? "left-11" : "left-1"
+                    "absolute top-1 w-6 h-6 rounded-full bg-card shadow-md transition-all duration-300 flex items-center justify-center border border-border/50",
+                    isDarkMode ? "left-9" : "left-1"
                   )}>
                     {isDarkMode ? (
-                      <Moon className="h-4 w-4 text-purple-600" />
+                      <Moon className="h-3.5 w-3.5 text-primary" />
                     ) : (
-                      <Sun className="h-4 w-4 text-amber-500" />
+                      <Sun className="h-3.5 w-3.5 text-muted-foreground" />
                     )}
                   </div>
                 </button>
               </div>
-            </div>
+              
+              {/* Barra de preview de modos */}
+              <div className="flex border-t border-border/50">
+                <button
+                  onClick={() => !isDarkMode || toggleDarkMode()}
+                  className={cn(
+                    "flex-1 py-2.5 text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5",
+                    !isDarkMode 
+                      ? "bg-primary/10 text-primary" 
+                      : "text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  <Sun className="h-3.5 w-3.5" />
+                  Claro
+                </button>
+                <div className="w-px bg-border/50" />
+                <button
+                  onClick={() => isDarkMode || toggleDarkMode()}
+                  className={cn(
+                    "flex-1 py-2.5 text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5",
+                    isDarkMode 
+                      ? "bg-primary/10 text-primary" 
+                      : "text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  <Moon className="h-3.5 w-3.5" />
+                  Escuro
+                </button>
+              </div>
+            </CardContent>
           </Card>
 
-          {/* Seleção de Temas */}
+          {/* Seleção de Temas com Preview */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -155,7 +187,7 @@ export default function SettingsPage() {
                 Tema de Cores
               </CardTitle>
               <CardDescription>
-                Escolha um esquema de cores que combine com seu estilo. Os temas funcionam tanto no modo claro quanto escuro.
+                Passe o mouse sobre um tema para pré-visualizar. Clique para aplicar permanentemente.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -163,30 +195,65 @@ export default function SettingsPage() {
                 {themes.map((theme) => {
                   const colors = isDarkMode ? theme.colors.dark : theme.colors.light;
                   const isActive = currentTheme === theme.name;
+                  const isHovered = hoveredTheme === theme.name;
+                  
                   return (
                     <button
                       key={theme.name}
-                      onClick={() => saveTheme(theme.name)}
+                      onClick={() => {
+                        saveTheme(theme.name);
+                        setHoveredTheme(null);
+                      }}
+                      onMouseEnter={() => {
+                        // Limpar timeout anterior
+                        if (previewTimeoutRef.current) {
+                          clearTimeout(previewTimeoutRef.current);
+                        }
+                        // Delay pequeno para evitar flickering
+                        previewTimeoutRef.current = setTimeout(() => {
+                          setHoveredTheme(theme.name);
+                          applyPreviewTheme(colors, isDarkMode);
+                        }, 100);
+                      }}
+                      onMouseLeave={() => {
+                        if (previewTimeoutRef.current) {
+                          clearTimeout(previewTimeoutRef.current);
+                        }
+                        setHoveredTheme(null);
+                        // Restaurar tema atual
+                        applyTheme(currentTheme);
+                      }}
                       className={cn(
-                        "group relative p-4 rounded-xl border-2 transition-all duration-200 text-left",
-                        "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary/50",
+                        "group relative p-4 rounded-xl border-2 transition-all duration-300 text-left",
+                        "hover:shadow-xl hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-primary/50",
                         isActive 
-                          ? "border-primary bg-primary/5 shadow-md" 
-                          : "border-border hover:border-primary/50"
+                          ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20" 
+                          : isHovered
+                            ? "border-primary/60 bg-primary/5 shadow-lg"
+                            : "border-border hover:border-primary/50"
                       )}
                     >
-                      {/* Círculos de cores */}
+                      {/* Círculos de cores com animação */}
                       <div className="flex gap-1.5 mb-3">
                         <div
-                          className="w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10"
+                          className={cn(
+                            "w-7 h-7 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300",
+                            (isHovered || isActive) && "scale-110"
+                          )}
                           style={{ backgroundColor: `hsl(${colors.primary})` }}
                         />
                         <div
-                          className="w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10"
+                          className={cn(
+                            "w-7 h-7 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-75",
+                            (isHovered || isActive) && "scale-110"
+                          )}
                           style={{ backgroundColor: `hsl(${colors.secondary})` }}
                         />
                         <div
-                          className="w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10"
+                          className={cn(
+                            "w-7 h-7 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-150",
+                            (isHovered || isActive) && "scale-110"
+                          )}
                           style={{ backgroundColor: `hsl(${colors.accent})` }}
                         />
                       </div>
@@ -194,7 +261,7 @@ export default function SettingsPage() {
                       {/* Nome e descrição */}
                       <div className="space-y-0.5">
                         <span className="text-sm font-semibold block">{theme.label}</span>
-                        <span className="text-xs text-muted-foreground line-clamp-1">
+                        <span className="text-xs text-muted-foreground line-clamp-2">
                           {theme.description}
                         </span>
                       </div>
@@ -202,9 +269,18 @@ export default function SettingsPage() {
                       {/* Indicador de selecionado */}
                       {isActive && (
                         <div className="absolute top-2 right-2">
-                          <div className="bg-primary text-primary-foreground rounded-full p-1">
-                            <CheckCircle className="h-3.5 w-3.5" />
+                          <div className="bg-primary text-primary-foreground rounded-full p-1 animate-scale-in">
+                            <CheckCircle className="h-4 w-4" />
                           </div>
+                        </div>
+                      )}
+                      
+                      {/* Preview badge */}
+                      {isHovered && !isActive && (
+                        <div className="absolute top-2 right-2">
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 animate-fade-in">
+                            Preview
+                          </Badge>
                         </div>
                       )}
                     </button>
@@ -214,7 +290,7 @@ export default function SettingsPage() {
               
               <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1.5">
                 <Sparkles className="h-3.5 w-3.5" />
-                Os temas são salvos automaticamente na sua conta
+                {themes.length} temas disponíveis • Salvos automaticamente na sua conta
               </p>
             </CardContent>
           </Card>

@@ -20,11 +20,11 @@ interface DefaultTheme {
   };
 }
 
-const defaultThemes = [
+const defaultThemes: DefaultTheme[] = [
   {
     name: 'default',
     label: 'Esmeralda',
-    description: 'Verde institucional Plenne',
+    description: 'Verde institucional Plenne, sofisticado e confiável',
     colors: {
       light: {
         primary: '158 64% 35%',
@@ -47,7 +47,7 @@ const defaultThemes = [
   {
     name: 'ocean',
     label: 'Oceano',
-    description: 'Tons azuis calmos e profissionais',
+    description: 'Azul profundo e sereno, transmite calma e profissionalismo',
     colors: {
       light: {
         primary: '199 89% 48%',
@@ -70,7 +70,7 @@ const defaultThemes = [
   {
     name: 'lavender',
     label: 'Lavanda',
-    description: 'Roxo suave e elegante',
+    description: 'Roxo suave e elegante, sofisticação e criatividade',
     colors: {
       light: {
         primary: '262 72% 55%',
@@ -93,7 +93,7 @@ const defaultThemes = [
   {
     name: 'sunset',
     label: 'Pôr do Sol',
-    description: 'Tons quentes e acolhedores',
+    description: 'Tons quentes e acolhedores, energia e otimismo',
     colors: {
       light: {
         primary: '25 95% 53%',
@@ -116,7 +116,7 @@ const defaultThemes = [
   {
     name: 'rose',
     label: 'Rose Gold',
-    description: 'Rosa elegante e sofisticado',
+    description: 'Rosa elegante e sofisticado, luxo discreto',
     colors: {
       light: {
         primary: '346 75% 55%',
@@ -139,7 +139,7 @@ const defaultThemes = [
   {
     name: 'midnight',
     label: 'Meia-Noite',
-    description: 'Azul escuro premium',
+    description: 'Azul escuro premium, executivo e impactante',
     colors: {
       light: {
         primary: '222 85% 45%',
@@ -162,7 +162,7 @@ const defaultThemes = [
   {
     name: 'forest',
     label: 'Floresta',
-    description: 'Verde escuro natural',
+    description: 'Verde escuro natural, conexão com a natureza',
     colors: {
       light: {
         primary: '150 45% 35%',
@@ -185,7 +185,7 @@ const defaultThemes = [
   {
     name: 'coral',
     label: 'Coral',
-    description: 'Vibrante e moderno',
+    description: 'Vibrante e moderno, dinamismo e juventude',
     colors: {
       light: {
         primary: '12 90% 60%',
@@ -208,7 +208,7 @@ const defaultThemes = [
   {
     name: 'slate',
     label: 'Ardósia',
-    description: 'Neutro e profissional',
+    description: 'Neutro e profissional, minimalismo elegante',
     colors: {
       light: {
         primary: '215 20% 40%',
@@ -224,6 +224,145 @@ const defaultThemes = [
         accent: '200 60% 60%',
         background: '215 20% 6%',
         surface: '215 15% 10%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  // Novos temas premium
+  {
+    name: 'aurora',
+    label: 'Aurora Boreal',
+    description: 'Tons mágicos de verde e azul, inspiração nórdica',
+    colors: {
+      light: {
+        primary: '180 70% 40%',
+        secondary: '160 80% 45%',
+        accent: '200 85% 55%',
+        background: '175 35% 97%',
+        surface: '0 0% 100%',
+        foreground: '180 50% 15%'
+      },
+      dark: {
+        primary: '180 70% 55%',
+        secondary: '160 80% 55%',
+        accent: '200 85% 65%',
+        background: '180 25% 5%',
+        surface: '180 20% 9%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'mocha',
+    label: 'Mocha',
+    description: 'Tons de café e chocolate, aconchegante e premium',
+    colors: {
+      light: {
+        primary: '25 50% 35%',
+        secondary: '35 40% 45%',
+        accent: '15 60% 50%',
+        background: '30 30% 97%',
+        surface: '0 0% 100%',
+        foreground: '25 40% 15%'
+      },
+      dark: {
+        primary: '25 50% 50%',
+        secondary: '35 40% 55%',
+        accent: '15 60% 55%',
+        background: '25 25% 6%',
+        surface: '25 20% 10%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'amethyst',
+    label: 'Ametista',
+    description: 'Roxo profundo e misterioso, realeza e sabedoria',
+    colors: {
+      light: {
+        primary: '280 65% 45%',
+        secondary: '295 55% 50%',
+        accent: '320 70% 55%',
+        background: '280 25% 97%',
+        surface: '0 0% 100%',
+        foreground: '280 50% 18%'
+      },
+      dark: {
+        primary: '280 65% 60%',
+        secondary: '295 55% 65%',
+        accent: '320 70% 65%',
+        background: '280 25% 5%',
+        surface: '280 20% 9%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'mint',
+    label: 'Menta',
+    description: 'Verde menta refrescante, leve e jovial',
+    colors: {
+      light: {
+        primary: '168 76% 42%',
+        secondary: '158 70% 48%',
+        accent: '185 65% 50%',
+        background: '165 40% 97%',
+        surface: '0 0% 100%',
+        foreground: '168 55% 15%'
+      },
+      dark: {
+        primary: '168 76% 55%',
+        secondary: '158 70% 58%',
+        accent: '185 65% 58%',
+        background: '168 25% 5%',
+        surface: '168 20% 9%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'cherry',
+    label: 'Cereja',
+    description: 'Vermelho vibrante e elegante, paixão e energia',
+    colors: {
+      light: {
+        primary: '350 85% 50%',
+        secondary: '340 75% 55%',
+        accent: '15 80% 55%',
+        background: '350 30% 97%',
+        surface: '0 0% 100%',
+        foreground: '350 50% 15%'
+      },
+      dark: {
+        primary: '350 85% 60%',
+        secondary: '340 75% 65%',
+        accent: '15 80% 60%',
+        background: '350 25% 5%',
+        surface: '350 20% 9%',
+        foreground: '0 0% 98%'
+      }
+    }
+  },
+  {
+    name: 'gold',
+    label: 'Ouro',
+    description: 'Dourado luxuoso, riqueza e exclusividade',
+    colors: {
+      light: {
+        primary: '45 90% 45%',
+        secondary: '38 85% 50%',
+        accent: '30 80% 45%',
+        background: '45 40% 97%',
+        surface: '0 0% 100%',
+        foreground: '45 60% 15%'
+      },
+      dark: {
+        primary: '45 90% 55%',
+        secondary: '38 85% 58%',
+        accent: '30 80% 55%',
+        background: '45 25% 5%',
+        surface: '45 20% 9%',
         foreground: '0 0% 98%'
       }
     }
