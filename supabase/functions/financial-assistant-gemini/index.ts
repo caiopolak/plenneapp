@@ -215,6 +215,7 @@ serve(async (req) => {
 
     const body = await req.json();
     const validation = validateMessages(body.messages);
+    const stream = body.stream === true;
 
     if (!validation.valid) {
       console.error("Input validation failed:", validation.error);
@@ -266,9 +267,10 @@ ${financialContext}
       ],
       temperature: 0.7,
       max_tokens: 1024,
+      stream: stream,
     };
 
-    console.log("Sending payload to Lovable AI Gateway for user:", user.id);
+    console.log("Sending payload to Lovable AI Gateway for user:", user.id, "streaming:", stream);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -302,6 +304,15 @@ ${financialContext}
       );
     }
 
+    // Se streaming, retornar o stream diretamente
+    if (stream) {
+      console.log("Returning streaming response for user:", user.id);
+      return new Response(response.body, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      });
+    }
+
+    // Resposta normal (não streaming)
     const data = await response.json();
     const answer = data?.choices?.[0]?.message?.content || 
       "Desculpe, não consegui gerar uma resposta agora. Tente novamente.";
