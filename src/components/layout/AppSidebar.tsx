@@ -37,6 +37,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProfile } from "@/hooks/useProfile";
 import { usePlenneSlogan } from "@/hooks/usePlenneSlogan";
 import { Badge } from "@/components/ui/badge";
+import { WorkspaceSwitcher } from "@/components/workspaces/WorkspaceSwitcher";
 
 const mainItems = [
   {
@@ -175,6 +176,12 @@ export function AppSidebar() {
   return (
     <Sidebar variant="inset" className="bg-background border-r">
       <SidebarContent className="space-y-2 bg-background overflow-y-auto">
+        {/* Seletor de Workspace */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-muted-foreground font-semibold text-sm md:text-xs px-3 py-1">🏠 Workspace Ativo</SidebarGroupLabel>
+          <WorkspaceSwitcher />
+        </SidebarGroup>
+        
         {/* Menu Principal - Financeiro */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-primary font-semibold text-sm md:text-xs px-3 py-2">💰 Finanças</SidebarGroupLabel>
