@@ -15,6 +15,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.6.1",
+    date: "2025-01-10",
+    notes: "Sistema inteligente de badges 'Novo' e histórico completo de atualizações",
+    changes: [
+      "Badges 'Novo' agora são automáticos baseados no changelog",
+      "Badge desaparece após 14 dias OU quando o usuário visitar a página",
+      "Histórico completo de atualizações expandível nas Configurações",
+      "Estatísticas de versões e melhorias no histórico",
+      "Correção de vulnerabilidade XSS com sanitização DOMPurify",
+      "Mapeamento automático de features por keywords do changelog"
+    ]
+  },
+  {
     version: "2.6.0",
     date: "2025-01-10",
     notes: "Sistema de convites por e-mail para workspaces e melhorias de colaboração",
