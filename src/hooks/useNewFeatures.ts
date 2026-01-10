@@ -37,11 +37,11 @@ function saveVisitedFeatures(visited: VisitedFeatures): void {
   }
 }
 
-// Limpar badges de versões antigas ao inicializar
-function cleanupOldVisits(): void {
+// Limpar badges de versões antigas ao inicializar (executado uma vez no carregamento)
+function cleanupOldVisits(): VisitedFeatures {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return;
+    if (!stored) return {};
     
     const visited = JSON.parse(stored) as VisitedFeatures;
     const cleaned = Object.entries(visited).reduce((acc, [key, val]) => {
@@ -58,20 +58,23 @@ function cleanupOldVisits(): void {
     if (Object.keys(cleaned).length !== Object.keys(visited).length) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
     }
+    
+    return cleaned;
   } catch {
-    // Ignore
+    return {};
   }
+}
+
+// Função de inicialização que limpa e retorna visitas
+function getInitialVisitedFeatures(): VisitedFeatures {
+  return cleanupOldVisits();
 }
 
 export function useNewFeatures() {
   const location = useLocation();
   
-  // Limpar visitas antigas na inicialização
-  useEffect(() => {
-    cleanupOldVisits();
-  }, []);
-  
-  const [visitedFeatures, setVisitedFeatures] = useState<VisitedFeatures>(getVisitedFeatures);
+  // IMPORTANTE: useState DEVE vir antes de qualquer useEffect
+  const [visitedFeatures, setVisitedFeatures] = useState<VisitedFeatures>(getInitialVisitedFeatures);
 
   // Marcar página atual como visitada
   useEffect(() => {
