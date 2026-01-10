@@ -20,43 +20,63 @@ export interface FeatureMapping {
 export const FEATURE_URL_MAP: FeatureMapping[] = [
   {
     url: "/app/reports",
-    versions: ["2.4.0", "2.5.0"],
+    versions: ["2.4.0", "2.5.0", "2.6.0", "2.6.2"],
     keywords: ["relatório", "report", "pdf", "exportação"]
   },
   {
     url: "/app/assistant",
-    versions: ["2.5.0", "2.5.1"],
+    versions: ["2.5.0", "2.5.1", "2.6.0", "2.6.2"],
     keywords: ["assistente", "ia", "ai", "gemini", "streaming"]
   },
   {
     url: "/app/education",
-    versions: ["2.4.0"],
-    keywords: ["educação", "curso", "aula", "aprender", "módulo"]
+    versions: ["2.4.0", "2.5.0", "2.6.0"],
+    keywords: ["educação", "curso", "aula", "aprender", "módulo", "desafio", "dica"]
   },
   {
     url: "/app/alerts",
-    versions: ["2.4.0"],
+    versions: ["2.4.0", "2.5.0", "2.6.0"],
     keywords: ["alerta", "notificação", "aviso"]
   },
   {
     url: "/app/workspaces",
-    versions: ["2.6.0"],
+    versions: ["2.6.0", "2.6.1"],
     keywords: ["workspace", "convite", "membro", "colaboração"]
   },
   {
     url: "/app/settings",
-    versions: ["2.5.1"],
-    keywords: ["tema", "aparência", "configuração"]
+    versions: ["2.5.1", "2.6.0", "2.6.1"],
+    keywords: ["tema", "aparência", "configuração", "changelog"]
   },
   {
     url: "/app/goals",
-    versions: [],
-    keywords: ["meta", "objetivo", "aporte"]
+    versions: ["2.5.0", "2.6.0"],
+    keywords: ["meta", "objetivo", "aporte", "milestones"]
   },
   {
     url: "/app/investments",
-    versions: [],
-    keywords: ["investimento", "carteira", "ativo"]
+    versions: ["2.5.0", "2.6.0"],
+    keywords: ["investimento", "carteira", "ativo", "patrimônio"]
+  },
+  {
+    url: "/app/budgets",
+    versions: ["2.5.0", "2.6.0"],
+    keywords: ["orçamento", "budget", "limite"]
+  },
+  {
+    url: "/app/transactions",
+    versions: ["2.5.0", "2.6.0"],
+    keywords: ["transação", "receita", "despesa", "recorrente"]
+  },
+  {
+    url: "/app/incoming",
+    versions: ["2.5.0"],
+    keywords: ["lançamento", "futuro", "previsto"]
+  },
+  {
+    url: "/app/analytics",
+    versions: ["2.5.0", "2.6.0"],
+    keywords: ["análise", "gráfico", "comparação", "tendência"]
   }
 ];
 

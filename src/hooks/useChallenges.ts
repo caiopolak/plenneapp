@@ -36,22 +36,23 @@ export function useChallenges() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Buscar desafios do usuário
+  // Buscar desafios do usuário - FILTRA POR WORKSPACE
   const { data: challenges = [], isLoading } = useQuery({
     queryKey: ['challenges', user?.id, workspace?.id],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user || !workspace?.id) return [];
 
       const { data, error } = await supabase
         .from('financial_challenges')
         .select('*')
+        .eq('workspace_id', workspace.id)
         .or(`user_id.eq.${user.id},creator_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as Challenge[];
     },
-    enabled: !!user
+    enabled: !!user && !!workspace?.id
   });
 
   // Gerar sugestões de desafios automáticos baseados nos dados financeiros
@@ -170,7 +171,7 @@ export function useChallenges() {
       const { data: goals } = await supabase
         .from('financial_goals')
         .select('name, current_amount, target_amount')
-        .eq('user_id', user.id)
+        .eq('workspace_id', workspace.id)
         .ilike('name', '%reserva%');
 
       const hasEmergencyFund = goals && goals.length > 0 && 

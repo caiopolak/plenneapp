@@ -15,6 +15,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.6.2",
+    date: "2025-01-10",
+    notes: "Correções de filtros de workspace em alertas, desafios e dicas + badges restaurados",
+    changes: [
+      "Correção: Desafios agora filtram corretamente pelo workspace ativo",
+      "Correção: Sugestões automáticas de desafios respeitam o workspace selecionado",
+      "Badges 'Novo' restaurados em todas as features recentes",
+      "Mapeamento expandido de features para badges automáticos",
+      "Performance: Limpeza automática de badges visitados há mais de 30 dias"
+    ]
+  },
+  {
     version: "2.6.1",
     date: "2025-01-10",
     notes: "Sistema inteligente de badges 'Novo' e histórico completo de atualizações",
