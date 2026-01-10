@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Lesson, LessonMaterial } from "@/hooks/useCourseModules";
 import { cn } from "@/lib/utils";
+import { renderSafeMarkdown } from "@/lib/markdownSanitizer";
 
 interface LessonReadingModeProps {
   lesson: Lesson;
@@ -116,36 +117,12 @@ export function LessonReadingMode({
     }
   };
 
-  // Renderizar Markdown melhorado
+  // Renderizar Markdown melhorado (sanitizado)
   const renderMarkdown = (content: string) => {
-    let html = content
-      // Headers
-      .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold mt-8 mb-4 text-primary border-b border-border pb-2">$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold mt-10 mb-4 text-primary">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-bold mt-10 mb-6 text-primary">$1</h1>')
-      // Bold and italic
-      .replace(/\*\*\*(.*?)\*\*\*/gim, '<strong class="font-bold text-primary"><em>$1</em></strong>')
-      .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-semibold text-foreground">$1</strong>')
-      .replace(/\*(.*?)\*/gim, '<em class="italic text-muted-foreground">$1</em>')
-      // Code blocks
-      .replace(/```([\s\S]*?)```/gim, '<pre class="bg-muted rounded-lg p-4 my-4 overflow-x-auto border"><code class="text-sm">$1</code></pre>')
-      .replace(/`(.*?)`/gim, '<code class="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">$1</code>')
-      // Blockquotes
-      .replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-primary pl-4 my-4 italic text-muted-foreground bg-muted/30 py-2 pr-4 rounded-r">$1</blockquote>')
-      // Lists
-      .replace(/^\- (.*$)/gim, '<li class="ml-6 my-2 list-disc">$1</li>')
-      .replace(/^\d+\. (.*$)/gim, '<li class="ml-6 my-2 list-decimal">$1</li>')
-      // Horizontal rules
-      .replace(/^---$/gim, '<hr class="my-8 border-border" />')
-      // Links
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary/80">$1</a>')
-      // Paragraphs
-      .replace(/\n\n/gim, '</p><p class="my-4">')
-      .replace(/\n/gim, '<br />');
-
+    const sanitizedHtml = renderSafeMarkdown(content);
     return (
       <div 
-        dangerouslySetInnerHTML={{ __html: `<p class="my-4">${html}</p>` }} 
+        dangerouslySetInnerHTML={{ __html: sanitizedHtml }} 
         className={cn("prose prose-lg max-w-none dark:prose-invert", getFontSizeClass())}
       />
     );
