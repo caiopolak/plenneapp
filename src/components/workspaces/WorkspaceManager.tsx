@@ -45,23 +45,49 @@ export function WorkspaceManager() {
 
   async function handleCreateWorkspace() {
     if (!newName.trim() || !user) return;
+
+    const createdName = newName.trim();
+    const createdType = newType;
+
     const res = await supabase
       .from("workspaces")
       .insert([
         {
-          name: newName.trim(),
-          type: newType,
+          name: createdName,
+          type: createdType,
           owner_id: user.id,
         },
       ])
       .select()
       .single();
+
     if (!res.error && res.data) {
+      // Garantir membership do owner (algumas políticas RLS dependem disso)
+      await supabase.from("workspace_members").insert({
+        workspace_id: res.data.id,
+        user_id: user.id,
+        status: "active",
+        role: "owner",
+      });
+
+      // Selecionar imediatamente o novo workspace (e persistir)
+      setCurrent(res.data);
+
       setNewName("");
       setNewType("personal");
       setCreating(false);
       await reload();
-      toast({ title: `Workspace "${newName}" criado com sucesso!`, description: `Tipo: ${newType === 'personal' ? 'Pessoal' : newType === 'family' ? 'Família' : 'Empresa'}` });
+
+      toast({
+        title: `Workspace "${createdName}" criado com sucesso!`,
+        description: `Tipo: ${
+          createdType === "personal"
+            ? "Pessoal"
+            : createdType === "family"
+              ? "Família"
+              : "Empresa"
+        }`,
+      });
     } else {
       toast({
         variant: "destructive",
