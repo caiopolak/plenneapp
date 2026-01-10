@@ -22,10 +22,14 @@ export function useBudgets() {
   const [budgets, setBudgets] = useState<BudgetWithSpent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  safeLog("info", "useBudgets - init", { workspaceId: current?.id, userId: user?.id });
+  // Use primitive values for dependencies
+  const userId = user?.id;
+  const workspaceId = current?.id;
+
+  safeLog("info", "useBudgets - init", { workspaceId, userId });
 
   const fetchBudgets = async (year?: number, month?: number) => {
-    if (!current?.id || !user?.id) {
+    if (!workspaceId || !userId) {
       safeLog("info", "useBudgets - No workspace or user, clearing budgets");
       setBudgets([]);
       setLoading(false);
@@ -74,13 +78,13 @@ export function useBudgets() {
   };
 
   const createBudget = async (category: string, amount: number, year: number, month: number) => {
-    if (!current?.id || !user?.id) {
+    if (!workspaceId || !userId) {
       safeLog("info", "useBudgets - Cannot create budget: no workspace or user");
       return false;
     }
 
     try {
-      await createBudgetInDB(user.id, current.id, category, amount, year, month);
+      await createBudgetInDB(userId, workspaceId, category, amount, year, month);
 
       toast({
         title: "Orçamento criado!",
@@ -149,9 +153,9 @@ export function useBudgets() {
   };
 
   useEffect(() => {
-    safeLog("info", "useBudgets - Effect triggered", { workspaceId: current?.id, userId: user?.id });
+    safeLog("info", "useBudgets - Effect triggered", { workspaceId, userId });
     fetchBudgets();
-  }, [current?.id, user?.id]);
+  }, [workspaceId, userId]);
 
   return {
     budgets,
