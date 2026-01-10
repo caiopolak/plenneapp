@@ -27,7 +27,10 @@ export interface AutoChallengeSuggestion {
   target_amount: number | null;
   duration_days: number;
   reason: string;
-  category: string;
+  category: 'spending' | 'saving' | 'investment' | 'habit' | 'emergency_fund' | 'debt';
+  difficulty: 'easy' | 'medium' | 'hard';
+  icon: string;
+  reward_text: string;
 }
 
 export function useChallenges() {
@@ -55,7 +58,7 @@ export function useChallenges() {
     enabled: !!user && !!workspace?.id
   });
 
-  // Gerar sugestões de desafios automáticos baseados nos dados financeiros
+  // Gerar sugestões de desafios automáticos baseados nos dados financeiros - V2.0
   const { data: autoSuggestions = [] } = useQuery({
     queryKey: ['auto-challenges-suggestions', user?.id, workspace?.id],
     queryFn: async (): Promise<AutoChallengeSuggestion[]> => {
@@ -69,23 +72,43 @@ export function useChallenges() {
 
       const { data: transactions } = await supabase
         .from('transactions')
-        .select('category, amount, type, description')
+        .select('category, amount, type, description, date')
         .eq('user_id', user.id)
         .eq('workspace_id', workspace.id)
         .gte('date', lastMonth.toISOString().split('T')[0]);
 
-      if (!transactions || transactions.length === 0) return [];
+      if (!transactions || transactions.length === 0) {
+        // Desafio para iniciantes
+        suggestions.push({
+          id: 'first_transaction',
+          title: '🚀 Registre sua primeira transação',
+          description: 'Comece a controlar suas finanças registrando seus gastos e receitas.',
+          target_amount: null,
+          duration_days: 7,
+          reason: 'Você ainda não tem transações registradas',
+          category: 'habit',
+          difficulty: 'easy',
+          icon: '🎯',
+          reward_text: 'Desbloqueie insights personalizados!'
+        });
+        return suggestions;
+      }
 
       // Analisar gastos por categoria
       const categorySpending: Record<string, number> = {};
       let totalExpenses = 0;
       let totalIncome = 0;
+      const weekdaySpending: Record<number, number> = {};
 
       transactions.forEach(t => {
         if (t.type === 'expense') {
           const cat = t.category || 'Outros';
           categorySpending[cat] = (categorySpending[cat] || 0) + Number(t.amount);
           totalExpenses += Number(t.amount);
+          
+          // Analisar por dia da semana
+          const dayOfWeek = new Date(t.date).getDay();
+          weekdaySpending[dayOfWeek] = (weekdaySpending[dayOfWeek] || 0) + Number(t.amount);
         } else {
           totalIncome += Number(t.amount);
         }
@@ -95,101 +118,235 @@ export function useChallenges() {
       const sortedCategories = Object.entries(categorySpending)
         .sort(([, a], [, b]) => b - a);
 
-      // Desafio 1: Reduzir maior categoria de gasto em 20%
+      // ===== DESAFIO 1: Reduzir maior categoria de gasto =====
       if (sortedCategories.length > 0) {
         const [topCategory, topAmount] = sortedCategories[0];
         const targetReduction = topAmount * 0.2;
+        const percentage = ((topAmount / totalExpenses) * 100).toFixed(0);
         
+        const percentageNum = parseFloat(percentage);
         suggestions.push({
           id: `reduce_${topCategory.toLowerCase().replace(/\s/g, '_')}`,
-          title: `Reduza seus gastos com ${topCategory}`,
-          description: `Você gastou R$ ${topAmount.toFixed(2)} em ${topCategory} no último mês. Desafie-se a reduzir 20% desse valor!`,
+          title: `🎯 Reduza ${topCategory} em 20%`,
+          description: `${topCategory} representa ${percentage}% dos seus gastos (R$ ${topAmount.toFixed(2)}). Economize R$ ${targetReduction.toFixed(2)}!`,
           target_amount: targetReduction,
           duration_days: 30,
-          reason: `Baseado na análise das suas transações, ${topCategory} é sua maior categoria de gastos`,
-          category: 'spending'
+          reason: `${topCategory} é sua maior categoria de gastos`,
+          category: 'spending',
+          difficulty: percentageNum > 30 ? 'hard' : 'medium',
+          icon: '📉',
+          reward_text: `Economize R$ ${targetReduction.toFixed(2)} por mês!`
         });
       }
 
-      // Desafio 2: Verificar se tem delivery/alimentação alta
-      const deliveryKeywords = ['delivery', 'ifood', 'rappi', 'uber eats', 'restaurante'];
+      // ===== DESAFIO 2: Delivery/Alimentação =====
+      const deliveryKeywords = ['delivery', 'ifood', 'rappi', 'uber eats', 'restaurante', 'lanchonete', 'fast food'];
       const deliverySpending = transactions
         .filter(t => t.type === 'expense' && deliveryKeywords.some(k => 
           t.description?.toLowerCase().includes(k) || t.category?.toLowerCase().includes(k)
         ))
         .reduce((acc, t) => acc + Number(t.amount), 0);
 
-      if (deliverySpending > 200) {
+      if (deliverySpending > 150) {
         suggestions.push({
           id: 'reduce_delivery',
-          title: 'Desafio Zero Delivery por 2 semanas',
-          description: `Você gastou R$ ${deliverySpending.toFixed(2)} com delivery/restaurantes. Experimente cozinhar em casa por 14 dias!`,
-          target_amount: deliverySpending,
+          title: '🍳 Desafio: Cozinhe em Casa',
+          description: `Você gastou R$ ${deliverySpending.toFixed(2)} com delivery/restaurantes. Cozinhe em casa por 14 dias!`,
+          target_amount: deliverySpending * 0.7,
           duration_days: 14,
-          reason: 'Delivery e restaurantes representam uma parcela significativa dos seus gastos',
-          category: 'saving'
+          reason: 'Delivery representa um gasto significativo',
+          category: 'saving',
+          difficulty: 'medium',
+          icon: '🍳',
+          reward_text: `Economize até R$ ${(deliverySpending * 0.7).toFixed(2)}!`
         });
       }
 
-      // Desafio 3: Poupar baseado na taxa de economia
+      // ===== DESAFIO 3: Taxa de Poupança =====
       const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
       
-      if (savingsRate < 20) {
-        const targetSavings = totalIncome * 0.1; // 10% da renda
+      if (savingsRate < 15) {
+        const targetSavings = totalIncome * 0.15;
         suggestions.push({
-          id: 'save_10_percent',
-          title: 'Poupe 10% da sua renda este mês',
-          description: `Sua taxa de economia está em ${savingsRate.toFixed(1)}%. Vamos aumentar para pelo menos 10%!`,
+          id: 'improve_savings',
+          title: '💰 Poupe 15% da Renda',
+          description: `Sua taxa de economia está em ${savingsRate.toFixed(1)}%. Aumente para 15% poupando R$ ${targetSavings.toFixed(2)}!`,
           target_amount: targetSavings,
           duration_days: 30,
-          reason: 'Especialistas recomendam poupar pelo menos 20% da renda',
-          category: 'saving'
+          reason: 'Taxa de poupança abaixo do recomendado',
+          category: 'saving',
+          difficulty: savingsRate < 5 ? 'hard' : 'medium',
+          icon: '🏦',
+          reward_text: 'Construa um futuro financeiro sólido!'
         });
       }
 
-      // Desafio 4: Compras por impulso
-      const impulseKeywords = ['shopping', 'shein', 'aliexpress', 'mercado livre', 'amazon', 'shopee'];
+      // ===== DESAFIO 4: Compras por Impulso =====
+      const impulseKeywords = ['shopping', 'shein', 'aliexpress', 'mercado livre', 'amazon', 'shopee', 'magalu', 'americanas'];
       const impulseSpending = transactions
         .filter(t => t.type === 'expense' && impulseKeywords.some(k => 
           t.description?.toLowerCase().includes(k)
         ))
         .reduce((acc, t) => acc + Number(t.amount), 0);
 
-      if (impulseSpending > 300) {
+      if (impulseSpending > 200) {
         suggestions.push({
-          id: 'no_impulse_buying',
-          title: '7 dias sem compras online',
-          description: 'Antes de comprar, espere 24h. Você vai perceber que muitas compras são por impulso!',
+          id: 'no_impulse',
+          title: '🛑 7 Dias Sem Compras Online',
+          description: `Você gastou R$ ${impulseSpending.toFixed(2)} em e-commerce. Pause as compras por 7 dias!`,
           target_amount: null,
           duration_days: 7,
-          reason: `Você gastou R$ ${impulseSpending.toFixed(2)} em compras online no último mês`,
-          category: 'spending'
+          reason: 'Muitas compras online detectadas',
+          category: 'habit',
+          difficulty: 'easy',
+          icon: '🛒',
+          reward_text: 'Evite compras por impulso!'
         });
       }
 
-      // Desafio 5: Reserva de emergência
+      // ===== DESAFIO 5: Fins de Semana Caros =====
+      const weekendSpending = (weekdaySpending[0] || 0) + (weekdaySpending[6] || 0);
+      const weekdayTotal = Object.entries(weekdaySpending)
+        .filter(([day]) => day !== '0' && day !== '6')
+        .reduce((sum, [, val]) => sum + val, 0);
+      
+      if (weekendSpending > weekdayTotal * 0.5) {
+        suggestions.push({
+          id: 'frugal_weekend',
+          title: '📅 Fim de Semana Econômico',
+          description: `Você gasta muito nos fins de semana (R$ ${weekendSpending.toFixed(2)}). Tente um fim de semana sem gastar!`,
+          target_amount: weekendSpending * 0.8,
+          duration_days: 3,
+          reason: 'Gastos elevados nos fins de semana',
+          category: 'spending',
+          difficulty: 'easy',
+          icon: '🌞',
+          reward_text: 'Descubra diversões gratuitas!'
+        });
+      }
+
+      // ===== DESAFIO 6: Reserva de Emergência =====
       const { data: goals } = await supabase
         .from('financial_goals')
         .select('name, current_amount, target_amount')
         .eq('workspace_id', workspace.id)
-        .ilike('name', '%reserva%');
+        .or(`name.ilike.%reserva%,name.ilike.%emergência%,name.ilike.%emergencia%`);
 
       const hasEmergencyFund = goals && goals.length > 0 && 
         goals.some(g => Number(g.current_amount) >= Number(g.target_amount) * 0.5);
 
       if (!hasEmergencyFund) {
+        const suggestedAmount = totalExpenses > 0 ? totalExpenses * 0.1 : 500;
         suggestions.push({
           id: 'emergency_fund',
-          title: 'Comece sua reserva de emergência',
-          description: 'Guarde R$ 500 em 45 dias para começar sua reserva de emergência.',
-          target_amount: 500,
-          duration_days: 45,
-          reason: 'Você ainda não tem uma reserva de emergência configurada',
-          category: 'emergency_fund'
+          title: '🛡️ Inicie sua Reserva de Emergência',
+          description: `Guarde R$ ${suggestedAmount.toFixed(2)} em 30 dias para começar sua reserva de segurança.`,
+          target_amount: suggestedAmount,
+          duration_days: 30,
+          reason: 'Você ainda não tem reserva de emergência',
+          category: 'emergency_fund',
+          difficulty: 'medium',
+          icon: '🛡️',
+          reward_text: 'Tenha paz financeira!'
         });
       }
 
-      return suggestions;
+      // ===== DESAFIO 7: Assinaturas =====
+      const subscriptionKeywords = ['netflix', 'spotify', 'amazon prime', 'disney', 'hbo', 'globoplay', 'deezer', 'youtube premium', 'apple'];
+      const subscriptionSpending = transactions
+        .filter(t => t.type === 'expense' && subscriptionKeywords.some(k => 
+          t.description?.toLowerCase().includes(k) || t.category?.toLowerCase().includes('assinatura')
+        ))
+        .reduce((acc, t) => acc + Number(t.amount), 0);
+
+      if (subscriptionSpending > 100) {
+        suggestions.push({
+          id: 'review_subscriptions',
+          title: '📺 Revise suas Assinaturas',
+          description: `Você gasta R$ ${subscriptionSpending.toFixed(2)} em assinaturas. Cancele as que não usa!`,
+          target_amount: subscriptionSpending * 0.3,
+          duration_days: 7,
+          reason: 'Muitas assinaturas ativas',
+          category: 'spending',
+          difficulty: 'easy',
+          icon: '📱',
+          reward_text: `Economize até R$ ${(subscriptionSpending * 0.3).toFixed(2)}/mês!`
+        });
+      }
+
+      // ===== DESAFIO 8: Sem Gastar Nada =====
+      if (totalExpenses > 0) {
+        suggestions.push({
+          id: 'no_spend_day',
+          title: '🚫 Dia Zero Gasto',
+          description: 'Passe 24 horas sem gastar absolutamente nada. Planeje com antecedência!',
+          target_amount: null,
+          duration_days: 1,
+          reason: 'Desenvolva consciência sobre gastos',
+          category: 'habit',
+          difficulty: 'easy',
+          icon: '💪',
+          reward_text: 'Prove que você controla seu dinheiro!'
+        });
+      }
+
+      // ===== DESAFIO 9: Investir pela Primeira Vez =====
+      const { data: investments } = await supabase
+        .from('investments')
+        .select('id')
+        .eq('workspace_id', workspace.id)
+        .limit(1);
+
+      if (!investments || investments.length === 0) {
+        suggestions.push({
+          id: 'first_investment',
+          title: '📈 Faça seu Primeiro Investimento',
+          description: 'Invista qualquer valor em renda fixa ou Tesouro Direto. Comece pequeno!',
+          target_amount: 100,
+          duration_days: 30,
+          reason: 'Você ainda não possui investimentos',
+          category: 'investment',
+          difficulty: 'medium',
+          icon: '📈',
+          reward_text: 'Comece a fazer seu dinheiro trabalhar!'
+        });
+      }
+
+      // ===== DESAFIO 10: Café Consciente =====
+      const coffeeKeywords = ['café', 'starbucks', 'cafeteria', 'coffee'];
+      const coffeeSpending = transactions
+        .filter(t => t.type === 'expense' && coffeeKeywords.some(k => 
+          t.description?.toLowerCase().includes(k)
+        ))
+        .reduce((acc, t) => acc + Number(t.amount), 0);
+
+      if (coffeeSpending > 80) {
+        suggestions.push({
+          id: 'coffee_challenge',
+          title: '☕ Café de Casa por 2 Semanas',
+          description: `Você gastou R$ ${coffeeSpending.toFixed(2)} em cafés fora. Leve de casa por 14 dias!`,
+          target_amount: coffeeSpending * 0.8,
+          duration_days: 14,
+          reason: 'Gastos frequentes com café fora de casa',
+          category: 'habit',
+          difficulty: 'easy',
+          icon: '☕',
+          reward_text: `Economize R$ ${(coffeeSpending * 0.8).toFixed(2)}!`
+        });
+      }
+
+      // Ordenar por relevância (dificuldade + economia potencial)
+      return suggestions.sort((a, b) => {
+        const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
+        const aSavings = a.target_amount || 0;
+        const bSavings = b.target_amount || 0;
+        
+        // Priorizar fáceis com boa economia
+        const aScore = (aSavings / 100) - difficultyOrder[a.difficulty];
+        const bScore = (bSavings / 100) - difficultyOrder[b.difficulty];
+        
+        return bScore - aScore;
+      }).slice(0, 5); // Limitar a 5 sugestões
     },
     enabled: !!user && !!workspace,
     staleTime: 5 * 60 * 1000 // 5 minutos
@@ -225,7 +382,7 @@ export function useChallenges() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['challenges'] });
-      toast({ title: "Desafio criado com sucesso!" });
+      toast({ title: "🏆 Desafio aceito!", description: "Boa sorte! Você consegue!" });
     },
     onError: (error) => {
       toast({ title: "Erro ao criar desafio", description: error.message, variant: "destructive" });
@@ -286,13 +443,19 @@ export function useChallenges() {
   };
 
   // Estatísticas de desafios
+  const activeChallenges = challenges.filter(c => c.status === 'active');
+  const completedChallenges = challenges.filter(c => c.status === 'completed');
+  
   const stats = {
     total: challenges.length,
-    active: challenges.filter(c => c.status === 'active').length,
-    completed: challenges.filter(c => c.status === 'completed').length,
+    active: activeChallenges.length,
+    completed: completedChallenges.length,
+    failed: challenges.filter(c => c.status === 'failed').length,
     completionRate: challenges.length > 0 
-      ? (challenges.filter(c => c.status === 'completed').length / challenges.length) * 100 
-      : 0
+      ? (completedChallenges.length / challenges.length) * 100 
+      : 0,
+    streak: calculateStreak(completedChallenges),
+    totalSaved: calculateTotalSaved(completedChallenges)
   };
 
   return {
@@ -300,9 +463,46 @@ export function useChallenges() {
     isLoading,
     autoSuggestions,
     stats,
+    activeChallenges,
+    completedChallenges,
     createChallengeMutation,
     updateStatusMutation,
     deleteChallengeMutation,
     acceptSuggestion
   };
+}
+
+// Calcular sequência de desafios completados
+function calculateStreak(completedChallenges: Challenge[]): number {
+  if (completedChallenges.length === 0) return 0;
+  
+  const sorted = [...completedChallenges].sort(
+    (a, b) => new Date(b.completed_at || 0).getTime() - new Date(a.completed_at || 0).getTime()
+  );
+  
+  let streak = 0;
+  let lastDate = new Date();
+  
+  for (const challenge of sorted) {
+    if (!challenge.completed_at) continue;
+    
+    const completedDate = new Date(challenge.completed_at);
+    const daysDiff = Math.floor((lastDate.getTime() - completedDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysDiff <= 7) { // Permite até 7 dias entre desafios para manter streak
+      streak++;
+      lastDate = completedDate;
+    } else {
+      break;
+    }
+  }
+  
+  return streak;
+}
+
+// Calcular total economizado em desafios completados
+function calculateTotalSaved(completedChallenges: Challenge[]): number {
+  return completedChallenges
+    .filter(c => c.target_amount)
+    .reduce((sum, c) => sum + Number(c.target_amount || 0), 0);
 }
