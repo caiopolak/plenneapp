@@ -53,7 +53,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
     if (memberError || !memberRecords || memberRecords.length === 0) {
       safeLog("info", "WorkspaceContext - No workspace members found, trying fallback to owner workspaces");
-      
+
       // Fallback: try to load workspaces where user is owner
       const { data: ownedWorkspaces, error: ownerError } = await supabase
         .from("workspaces")
@@ -67,9 +67,44 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      safeLog("info", "WorkspaceContext - No workspaces found at all");
-      setWorkspaces([]);
-      setCurrent(null);
+      // If the user has no workspaces at all, provision a default personal workspace.
+      safeLog("info", "WorkspaceContext - No workspaces found, creating default workspace");
+
+      const { data: createdWorkspace, error: createWsError } = await supabase
+        .from("workspaces")
+        .insert({
+          name: "Meu Workspace",
+          type: "personal",
+          owner_id: user.id,
+        })
+        .select("*")
+        .single();
+
+      if (createWsError || !createdWorkspace) {
+        safeLog("error", "WorkspaceContext - Failed to create default workspace", {
+          error: createWsError?.message,
+        });
+        setWorkspaces([]);
+        setCurrent(null);
+        return;
+      }
+
+      // Ensure the user is registered as an active member of the workspace too.
+      const { error: createMemberError } = await supabase.from("workspace_members").insert({
+        workspace_id: createdWorkspace.id,
+        user_id: user.id,
+        status: "active",
+        role: "owner",
+      });
+
+      if (createMemberError) {
+        safeLog("warn", "WorkspaceContext - Created workspace but failed to create member record", {
+          error: createMemberError.message,
+        });
+      }
+
+      setWorkspaces([createdWorkspace]);
+      setCurrent(createdWorkspace);
       return;
     }
     // Extrair array de IDs
