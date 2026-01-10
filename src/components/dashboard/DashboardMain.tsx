@@ -10,6 +10,7 @@ import { DashboardChallengesCard } from './DashboardChallengesCard';
 import { DashboardTipsCard } from './DashboardTipsCard';
 import { ConsolidatedHealthDashboard } from './ConsolidatedHealthDashboard';
 import { GoalsWidget } from './GoalsWidget';
+import { TrialDashboardBanner } from './TrialDashboardBanner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UnifiedTransactionForm } from '@/components/transactions/UnifiedTransactionForm';
 import { Button } from '@/components/ui/button';
@@ -187,6 +188,9 @@ export function DashboardMain() {
         <ConsolidatedHealthDashboard />
       ) : (
         <div className="space-y-6">
+          {/* Trial Banner - Topo do Dashboard */}
+          <TrialDashboardBanner />
+
           {/* 1. Welcome Card - Topo com informações do usuário */}
           <div data-tour="welcome-card" className="animate-fade-in stagger-1">
             <WelcomeCard 

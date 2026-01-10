@@ -15,15 +15,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
-    version: "2.3.0",
+    version: "2.4.0",
     date: "2025-01-10",
-    notes: "Sistema de trial Pro, página de comparação de planos, contador real de IA e correções de segurança de temas",
+    notes: "Banner de trial no dashboard, página FAQ, melhorias na landing page e tela de login",
     changes: [
-      "Trial gratuito de 7 dias do plano Pro para novos usuários",
-      "Nova página de comparação de planos (/app/plans) com tabela de features e depoimentos",
-      "Contador real de perguntas do assistente IA no banco de dados com reset mensal",
-      "Correção de restrição de temas por plano (usuários free não podem usar temas premium)",
-      "Melhorias gerais de UX e CTAs de upgrade em todas as páginas"
+      "Banner de trial Pro com contador regressivo no dashboard principal",
+      "Nova página de FAQ com perguntas frequentes organizadas por categoria",
+      "Landing page atualizada com informações precisas sobre planos e trial",
+      "Tela de login melhorada com destaque para trial Pro de 7 dias",
+      "Melhorias gerais de UX e navegação"
     ]
   },
   {
