@@ -2,7 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -62,7 +62,6 @@ async function getFinancialContext(supabaseClient: any, userId: string) {
   try {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
     const todayStr = today.toISOString().split('T')[0];
 
     // Buscar transações do mês atual
@@ -246,53 +245,68 @@ Diretrizes:
 ${financialContext}
 `;
 
-    // Construir payload para Gemini
-    const geminiPayload = {
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: systemPrompt }]
-        },
-        {
-          role: "model", 
-          parts: [{ text: "Entendido! Sou a Plenne, sua assistente financeira. Estou pronta para ajudar com suas finanças pessoais de forma personalizada. Como posso ajudar você hoje?" }]
-        },
-        ...messages.map((msg) => ({
-          role: msg.role === "assistant" ? "model" : "user",
-          parts: [{ text: msg.content }],
-        }))
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 1024,
-      },
-    };
-
-    console.log("Sending payload to Gemini for user:", user.id);
-
-    const r = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(geminiPayload),
-      }
-    );
-    const data = await r.json();
-
-    if (data.error) {
-      console.error("Gemini API error:", JSON.stringify(data.error));
-      return new Response(JSON.stringify({ error: data.error.message || data.error }), {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
+    // Check for LOVABLE_API_KEY
+    if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "AI service not configured" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
-    const answer =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+    // Construir payload para Lovable AI Gateway (OpenAI compatible)
+    const aiPayload = {
+      model: "google/gemini-3-flash-preview",
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...messages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        }))
+      ],
+      temperature: 0.7,
+      max_tokens: 1024,
+    };
+
+    console.log("Sending payload to Lovable AI Gateway for user:", user.id);
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(aiPayload),
+    });
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        console.error("Rate limit exceeded");
+        return new Response(
+          JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns minutos." }),
+          { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      if (response.status === 402) {
+        console.error("Payment required");
+        return new Response(
+          JSON.stringify({ error: "Créditos de IA esgotados. Entre em contato com o suporte." }),
+          { status: 402, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      const errorText = await response.text();
+      console.error("AI Gateway error:", response.status, errorText);
+      return new Response(
+        JSON.stringify({ error: "Erro ao processar sua pergunta. Tente novamente." }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const data = await response.json();
+    const answer = data?.choices?.[0]?.message?.content || 
       "Desculpe, não consegui gerar uma resposta agora. Tente novamente.";
+
+    console.log("Successfully generated response for user:", user.id);
 
     return new Response(JSON.stringify({ answer }), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
