@@ -38,15 +38,42 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Função para definir o workspace atual e salvar no localStorage
-  const setCurrent = useCallback((w: Workspace | null) => {
-    setCurrentState(w);
-    if (w?.id) {
-      localStorage.setItem(WORKSPACE_STORAGE_KEY, w.id);
-      safeLog("info", "WorkspaceContext - Saved current workspace to localStorage", { workspaceId: w.id });
-    } else {
-      localStorage.removeItem(WORKSPACE_STORAGE_KEY);
-    }
-  }, []);
+  const setCurrent = useCallback(
+    (w: Workspace | null) => {
+      setCurrentState(w);
+
+      // Persistência local (best-effort)
+      try {
+        if (w?.id) {
+          localStorage.setItem(WORKSPACE_STORAGE_KEY, w.id);
+          safeLog("info", "WorkspaceContext - Saved current workspace to localStorage", {
+            workspaceId: w.id,
+          });
+        } else {
+          localStorage.removeItem(WORKSPACE_STORAGE_KEY);
+        }
+      } catch (error) {
+        safeLog("warn", "WorkspaceContext - localStorage not available", { error: String(error) });
+      }
+
+      // Persistência no servidor (para manter seleção ao trocar de página/dispositivo)
+      // Obs: tabela profiles tem 1 linha por usuário, então guardamos o workspace ativo nela.
+      if (user?.id) {
+        supabase
+          .from("profiles")
+          .update({ workspace_id: w?.id ?? null })
+          .eq("id", user.id)
+          .then(({ error }) => {
+            if (error) {
+              safeLog("warn", "WorkspaceContext - Failed to persist workspace on profile", {
+                error: error.message,
+              });
+            }
+          });
+      }
+    },
+    [user?.id]
+  );
 
   const reload = useCallback(async () => {
     if (!user) {
@@ -142,13 +169,31 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       if (!error && data && data.length > 0) {
         setWorkspaces(data);
 
-        // Recuperar workspace salvo do localStorage
-        const savedWorkspaceId = localStorage.getItem(WORKSPACE_STORAGE_KEY);
-        const savedWorkspace = savedWorkspaceId ? data.find((w: any) => w.id === savedWorkspaceId) : null;
+        // Preferência: localStorage -> profiles.workspace_id -> primeiro da lista
+        let savedWorkspaceId: string | null = null;
+        try {
+          savedWorkspaceId = localStorage.getItem(WORKSPACE_STORAGE_KEY);
+        } catch {
+          savedWorkspaceId = null;
+        }
 
-        if (savedWorkspace) {
-          safeLog("info", "WorkspaceContext - Restoring saved workspace from localStorage", { workspaceId: savedWorkspaceId });
-          setCurrentState(savedWorkspace);
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("workspace_id")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        const preferredWorkspaceId = savedWorkspaceId || profileData?.workspace_id || null;
+        const preferredWorkspace = preferredWorkspaceId
+          ? data.find((w: any) => w.id === preferredWorkspaceId)
+          : null;
+
+        if (preferredWorkspace) {
+          safeLog("info", "WorkspaceContext - Restoring preferred workspace", {
+            workspaceId: preferredWorkspace.id,
+            source: savedWorkspaceId ? "localStorage" : "profile",
+          });
+          setCurrentState(preferredWorkspace);
         } else {
           // Se o workspace salvo não existe mais, usar o primeiro da lista
           safeLog("info", "WorkspaceContext - Setting first workspace as current", { workspaceId: data[0]?.id });
