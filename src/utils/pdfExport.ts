@@ -20,7 +20,38 @@ async function loadPdfDeps() {
   return { html2canvas, JsPDF } as { html2canvas: any; JsPDF: any };
 }
 
-// Exportar elemento DOM para PDF
+// Estimar a altura do conteúdo para quebra de página inteligente
+function estimateContentHeight(
+  pdf: any,
+  text: string,
+  maxWidth: number,
+  fontSize: number
+): number {
+  pdf.setFontSize(fontSize);
+  const lines = pdf.splitTextToSize(text, maxWidth);
+  // Cada linha tem aproximadamente fontSize * 0.35mm de altura
+  return lines.length * fontSize * 0.4;
+}
+
+// Verificar se há espaço suficiente na página atual
+function checkPageBreak(
+  pdf: any,
+  currentY: number,
+  neededHeight: number,
+  pageHeight: number,
+  margin: number
+): { y: number; pageAdded: boolean } {
+  const availableSpace = pageHeight - margin - currentY;
+  
+  if (neededHeight > availableSpace) {
+    pdf.addPage();
+    return { y: margin + 10, pageAdded: true };
+  }
+  
+  return { y: currentY, pageAdded: false };
+}
+
+// Exportar elemento DOM para PDF com quebra de página inteligente
 export async function exportElementToPDF(
   element: HTMLElement,
   options: PDFExportOptions
@@ -54,7 +85,7 @@ export async function exportElementToPDF(
 
   // Header
   pdf.setFontSize(18);
-  pdf.setTextColor(0, 63, 92); // primary color
+  pdf.setTextColor(0, 63, 92);
   pdf.text(title, margin, 20);
 
   if (subtitle) {
@@ -77,25 +108,26 @@ export async function exportElementToPDF(
   const contentStartY = subtitle ? 35 : 30;
   const availableHeight = pageHeight - contentStartY - margin;
 
-  const scale = Math.min(
-    contentWidth / imgWidth,
-    availableHeight / (imgHeight * (contentWidth / imgWidth))
-  );
-
-  const scaledWidth = imgWidth * scale;
+  // Escalar a imagem para caber na largura
+  const scale = contentWidth / imgWidth;
   const scaledHeight = imgHeight * scale;
 
-  // Se a imagem é muito alta, dividir em páginas
+  // Se a imagem é muito alta, dividir em páginas com quebra inteligente
   if (scaledHeight > availableHeight) {
-    const pages = Math.ceil(scaledHeight / availableHeight);
+    // Calcular quantos pixels correspondem a uma página
+    const pixelsPerPage = (availableHeight / scale);
+    const totalPages = Math.ceil(imgHeight / pixelsPerPage);
     
-    for (let i = 0; i < pages; i++) {
-      if (i > 0) pdf.addPage();
+    for (let i = 0; i < totalPages; i++) {
+      if (i > 0) {
+        pdf.addPage();
+      }
       
-      const sourceY = (imgHeight / pages) * i;
-      const sourceHeight = imgHeight / pages;
+      const sourceY = pixelsPerPage * i;
+      const sourceHeight = Math.min(pixelsPerPage, imgHeight - sourceY);
+      const destHeight = sourceHeight * scale;
       
-      // Recortar a parte da imagem para esta página
+      // Criar canvas temporário para esta fatia
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = imgWidth;
       tempCanvas.height = sourceHeight;
@@ -104,9 +136,10 @@ export async function exportElementToPDF(
       if (ctx) {
         const img = new Image();
         img.src = imgData;
-        await new Promise(resolve => {
-          img.onload = resolve;
+        await new Promise<void>(resolve => {
+          img.onload = () => resolve();
         });
+        
         ctx.drawImage(
           img, 
           0, sourceY, imgWidth, sourceHeight,
@@ -114,21 +147,23 @@ export async function exportElementToPDF(
         );
         
         const partData = tempCanvas.toDataURL('image/png');
+        const yPosition = i === 0 ? contentStartY : margin;
+        
         pdf.addImage(
           partData,
           'PNG',
           margin,
-          i === 0 ? contentStartY : margin,
+          yPosition,
           contentWidth,
-          availableHeight
+          destHeight
         );
       }
     }
   } else {
-    pdf.addImage(imgData, 'PNG', margin, contentStartY, scaledWidth, scaledHeight);
+    pdf.addImage(imgData, 'PNG', margin, contentStartY, contentWidth, scaledHeight);
   }
 
-  // Footer
+  // Footer em todas as páginas
   const totalPages = pdf.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     pdf.setPage(i);
@@ -146,8 +181,8 @@ export async function exportElementToPDF(
   pdf.save(`${filename}.pdf`);
 }
 
-// Gerar PDF de relatório consolidado com dados estruturados
-export async function generateConsolidatedPDF(data: {
+// Interface para dados do relatório consolidado
+interface ConsolidatedReportData {
   netWorth: number;
   currentBalance: number;
   totalInvested: number;
@@ -159,7 +194,10 @@ export async function generateConsolidatedPDF(data: {
   investments: Array<{ name: string; type: string; amount: number; return: number | null }>;
   upcomingTransactions: number;
   projectedBalance: number;
-}): Promise<void> {
+}
+
+// Gerar PDF de relatório consolidado com dados estruturados
+export async function generateConsolidatedPDF(data: ConsolidatedReportData): Promise<void> {
   const { JsPDF } = await loadPdfDeps();
 
   const pdf = new JsPDF({
@@ -169,11 +207,22 @@ export async function generateConsolidatedPDF(data: {
   });
 
   const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 15;
   let y = 20;
 
   const formatCurrency = (value: number) => 
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+
+  // Função auxiliar para verificar quebra de página
+  const ensureSpace = (neededHeight: number) => {
+    if (y + neededHeight > pageHeight - margin - 15) {
+      pdf.addPage();
+      y = margin + 10;
+      return true;
+    }
+    return false;
+  };
 
   // ========== HEADER ==========
   pdf.setFillColor(0, 63, 92);
@@ -189,6 +238,7 @@ export async function generateConsolidatedPDF(data: {
   y = 55;
 
   // ========== PATRIMÔNIO ==========
+  ensureSpace(50);
   pdf.setTextColor(0, 63, 92);
   pdf.setFontSize(14);
   pdf.text('Patrimônio Líquido', margin, y);
@@ -212,6 +262,7 @@ export async function generateConsolidatedPDF(data: {
   y += 45;
 
   // ========== FLUXO MENSAL ==========
+  ensureSpace(45);
   pdf.setTextColor(0, 63, 92);
   pdf.setFontSize(14);
   pdf.text('Fluxo do Mês', margin, y);
@@ -251,25 +302,37 @@ export async function generateConsolidatedPDF(data: {
 
   // ========== METAS ==========
   if (data.goals.length > 0) {
+    ensureSpace(30 + Math.min(data.goals.length, 5) * 22);
     pdf.setTextColor(0, 63, 92);
     pdf.setFontSize(14);
     pdf.text('Metas Financeiras', margin, y);
     y += 8;
 
-    data.goals.slice(0, 5).forEach((goal, i) => {
+    data.goals.slice(0, 5).forEach((goal) => {
+      // Verificar espaço antes de cada meta
+      if (ensureSpace(22)) {
+        // Se adicionou página, recriar cabeçalho da seção
+        pdf.setTextColor(0, 63, 92);
+        pdf.setFontSize(12);
+        pdf.text('Metas Financeiras (cont.)', margin, y);
+        y += 8;
+      }
+      
       pdf.setFillColor(250, 250, 250);
       pdf.roundedRect(margin, y, pageWidth - margin * 2, 18, 2, 2, 'F');
       
       pdf.setFontSize(10);
       pdf.setTextColor(50, 50, 50);
-      pdf.text(goal.name, margin + 5, y + 8);
+      // Truncar nome se muito longo
+      const truncatedName = goal.name.length > 30 ? goal.name.substring(0, 27) + '...' : goal.name;
+      pdf.text(truncatedName, margin + 5, y + 8);
       
       pdf.setTextColor(100, 100, 100);
-      pdf.text(`${goal.progress.toFixed(0)}%`, margin + 120, y + 8);
-      pdf.text(`${formatCurrency(goal.current)} / ${formatCurrency(goal.target)}`, margin + 140, y + 8);
+      pdf.text(`${goal.progress.toFixed(0)}%`, margin + 100, y + 8);
+      pdf.text(`${formatCurrency(goal.current)} / ${formatCurrency(goal.target)}`, margin + 115, y + 8);
       
       // Progress bar
-      const barWidth = 100;
+      const barWidth = 90;
       const barX = margin + 5;
       const barY = y + 12;
       pdf.setFillColor(230, 230, 230);
@@ -284,6 +347,7 @@ export async function generateConsolidatedPDF(data: {
 
   // ========== INVESTIMENTOS ==========
   if (data.investments.length > 0) {
+    ensureSpace(25 + Math.min(data.investments.length, 8) * 8);
     pdf.setTextColor(0, 63, 92);
     pdf.setFontSize(14);
     pdf.text('Investimentos', margin, y);
@@ -301,13 +365,27 @@ export async function generateConsolidatedPDF(data: {
     y += 8;
 
     data.investments.slice(0, 8).forEach((inv, i) => {
+      // Verificar espaço antes de cada linha
+      if (ensureSpace(8)) {
+        // Recriar header da tabela na nova página
+        pdf.setFillColor(0, 63, 92);
+        pdf.rect(margin, y, pageWidth - margin * 2, 8, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(9);
+        pdf.text('Nome', margin + 5, y + 5.5);
+        pdf.text('Tipo', margin + 70, y + 5.5);
+        pdf.text('Valor', margin + 110, y + 5.5);
+        pdf.text('Retorno', margin + 150, y + 5.5);
+        y += 8;
+      }
+      
       pdf.setFillColor(i % 2 === 0 ? 250 : 245, i % 2 === 0 ? 250 : 245, i % 2 === 0 ? 250 : 245);
       pdf.rect(margin, y, pageWidth - margin * 2, 7, 'F');
       
       pdf.setTextColor(50, 50, 50);
       pdf.setFontSize(9);
       pdf.text(inv.name.substring(0, 25), margin + 5, y + 5);
-      pdf.text(inv.type, margin + 70, y + 5);
+      pdf.text(inv.type.substring(0, 15), margin + 70, y + 5);
       pdf.text(formatCurrency(inv.amount), margin + 110, y + 5);
       pdf.text(inv.return ? `${inv.return.toFixed(1)}%` : '-', margin + 150, y + 5);
       y += 7;
@@ -316,6 +394,7 @@ export async function generateConsolidatedPDF(data: {
   }
 
   // ========== PROJEÇÃO ==========
+  ensureSpace(35);
   pdf.setTextColor(0, 63, 92);
   pdf.setFontSize(14);
   pdf.text('Projeção 30 Dias', margin, y);
@@ -328,15 +407,20 @@ export async function generateConsolidatedPDF(data: {
   pdf.text(`${data.upcomingTransactions} transações pendentes`, margin + 10, y + 8);
   pdf.text(`Saldo projetado: ${formatCurrency(data.projectedBalance)}`, margin + 10, y + 16);
 
-  // ========== FOOTER ==========
-  pdf.setFontSize(8);
-  pdf.setTextColor(150, 150, 150);
-  pdf.text(
-    'Relatório gerado automaticamente pelo Plenne. Os valores são estimativas baseadas nos dados cadastrados.',
-    pageWidth / 2,
-    pdf.internal.pageSize.getHeight() - 10,
-    { align: 'center' }
-  );
+  // ========== FOOTER EM TODAS AS PÁGINAS ==========
+  const totalPages = pdf.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    pdf.setPage(i);
+    pdf.setFontSize(8);
+    pdf.setTextColor(150, 150, 150);
+    pdf.text(
+      `Página ${i} de ${totalPages}`,
+      pageWidth / 2,
+      pageHeight - 10,
+      { align: 'center' }
+    );
+    pdf.text('Plenne - Seu parceiro financeiro', margin, pageHeight - 10);
+  }
 
   pdf.save(`relatorio-financeiro-${new Date().toISOString().split('T')[0]}.pdf`);
 }
