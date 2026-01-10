@@ -7,6 +7,7 @@ import { BarChart3, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { GoalForm } from './GoalForm';
 import { Tables } from '@/integrations/supabase/types';
 import { GoalDetailsModalEnhanced } from "./GoalDetailsModalEnhanced";
@@ -47,15 +48,21 @@ export function GoalList() {
 
   const { toast } = useToast();
   const { user } = useAuth();
+  const { current } = useWorkspace();
 
   const fetchGoals = async () => {
-    if (!user) return;
+    if (!user || !current?.id) {
+      setGoals([]);
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
         .from('financial_goals')
         .select('*')
         .eq('user_id', user.id)
+        .eq('workspace_id', current.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -73,7 +80,7 @@ export function GoalList() {
 
   useEffect(() => {
     fetchGoals();
-  }, [user]);
+  }, [user, current?.id]);
 
   const deleteGoal = async (id: string) => {
     try {

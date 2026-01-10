@@ -8,6 +8,7 @@ import { ChevronDown, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { InvestmentForm } from './InvestmentForm';
 import { InvestmentCardEnhanced } from "./InvestmentCardEnhanced";
 import { InvestmentDetailsModal } from "./InvestmentDetailsModal";
@@ -45,15 +46,21 @@ export function InvestmentList() {
 
   const { toast } = useToast();
   const { user } = useAuth();
+  const { current } = useWorkspace();
 
   const fetchInvestments = async () => {
-    if (!user) return;
+    if (!user || !current?.id) {
+      setInvestments([]);
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
         .from('investments')
         .select('*')
         .eq('user_id', user.id)
+        .eq('workspace_id', current.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -71,7 +78,7 @@ export function InvestmentList() {
 
   useEffect(() => {
     fetchInvestments();
-  }, [user]);
+  }, [user, current?.id]);
 
   const deleteInvestment = async (id: string) => {
     try {

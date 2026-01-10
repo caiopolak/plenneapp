@@ -13,6 +13,7 @@ import { useAssistantUsage } from "@/hooks/useAssistantUsage";
 import { useAssistantConversations, type Message } from "@/hooks/useAssistantConversations";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { AssistantUsageCounter } from "@/components/subscription/AssistantUsageCounter";
 import { supabase } from "@/integrations/supabase/client";
 import { exportConversationToPDF, exportConversationToCSV, exportAllConversationsToCSV } from "@/utils/assistantExport";
@@ -30,6 +31,7 @@ export function FinancialAssistant() {
   const { isFree, isBusiness } = usePlanAccess();
   const { usage, incrementUsage } = useAssistantUsage();
   const { session } = useAuth();
+  const { current: currentWorkspace } = useWorkspace();
   const navigate = useNavigate();
   
   const {
@@ -102,6 +104,7 @@ export function FinancialAssistant() {
           body: JSON.stringify({
             messages: nextMessages.map(msg => ({ role: msg.role, content: msg.content })),
             stream: true,
+            workspace_id: currentWorkspace?.id,
           }),
         }
       );
