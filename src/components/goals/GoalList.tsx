@@ -20,6 +20,7 @@ import { usePaginatedLoad } from "@/hooks/useLazyLoad";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCard } from "./GoalCard";
 import { AddValueModal } from "./AddValueModal";
+import { FeatureTooltip, featureTooltips } from '@/components/ui/feature-tooltip';
 
 type Goal = Tables<'financial_goals'>;
 
@@ -284,8 +285,9 @@ export function GoalList() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
+            <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text flex items-center gap-2">
               Metas Financeiras
+              <FeatureTooltip {...featureTooltips.goals} />
             </h1>
             <p className="text-muted-foreground text-sm">
               Defina objetivos e acompanhe seu progresso rumo aos seus sonhos
