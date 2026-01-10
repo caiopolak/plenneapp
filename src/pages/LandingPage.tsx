@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,10 +17,12 @@ import {
   MessageCircle,
   Sparkles,
   Moon,
-  Sun
+  Sun,
+  Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { LogoPlenne } from '@/components/layout/LogoPlenne';
+import { useAuth } from '@/contexts/AuthContext';
 
 const features = [
   {
@@ -142,17 +144,46 @@ const testimonials = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [isDark, setIsDark] = React.useState(false);
+  const { user, loading } = useAuth();
+  const [isDark, setIsDark] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const isDarkMode = document.documentElement.classList.contains('dark');
     setIsDark(isDarkMode);
   }, []);
+
+  // Redirecionar automaticamente se o usuário já está logado
+  useEffect(() => {
+    if (!loading && user) {
+      setIsRedirecting(true);
+      const timer = setTimeout(() => {
+        navigate('/app');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [user, loading, navigate]);
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');
     setIsDark(!isDark);
   };
+
+  // Mostrar feedback visual durante redirecionamento
+  if (isRedirecting) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-6">
+        <LogoPlenne />
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          <span className="text-lg">Entrando no Plenne...</span>
+        </div>
+        <p className="text-sm text-muted-foreground animate-pulse">
+          Redirecionando para o seu dashboard
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
