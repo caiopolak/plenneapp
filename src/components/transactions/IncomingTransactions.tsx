@@ -48,8 +48,12 @@ export function IncomingTransactions() {
   const { current: workspace } = useWorkspace();
   const { toast } = useToast();
 
+  // Use primitive values for dependencies to ensure proper re-renders
+  const userId = user?.id;
+  const workspaceId = workspace?.id;
+
   const fetchIncomingTransactions = async () => {
-    if (!user || !workspace?.id) {
+    if (!userId || !workspaceId) {
       setIncomingTransactions([]);
       setLoading(false);
       return;
@@ -64,8 +68,8 @@ export function IncomingTransactions() {
       const { data: incomingData, error: incomingError } = await supabase
         .from('incoming_transactions')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('workspace_id', workspace.id)
+        .eq('user_id', userId)
+        .eq('workspace_id', workspaceId)
         .eq('status', 'pending')
         .order('expected_date', { ascending: true });
 
@@ -74,8 +78,8 @@ export function IncomingTransactions() {
       const { data: recurringData, error: recurringError } = await supabase
         .from('transactions')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('workspace_id', workspace.id)
+        .eq('user_id', userId)
+        .eq('workspace_id', workspaceId)
         .eq('is_recurring', true)
         .gt('date', todayStr)
         .lte('date', futureLimit)
@@ -120,7 +124,7 @@ export function IncomingTransactions() {
 
   useEffect(() => {
     fetchIncomingTransactions();
-  }, [user, workspace]);
+  }, [userId, workspaceId]);
 
   const filteredTransactions = useMemo(() => {
     let result = incomingTransactions;

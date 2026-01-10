@@ -50,8 +50,12 @@ export function GoalList() {
   const { user } = useAuth();
   const { current } = useWorkspace();
 
+  // Use primitive values for dependencies to ensure proper re-renders
+  const userId = user?.id;
+  const workspaceId = current?.id;
+
   const fetchGoals = async () => {
-    if (!user || !current?.id) {
+    if (!userId || !workspaceId) {
       setGoals([]);
       setLoading(false);
       return;
@@ -61,8 +65,8 @@ export function GoalList() {
       const { data, error } = await supabase
         .from('financial_goals')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('workspace_id', current.id)
+        .eq('user_id', userId)
+        .eq('workspace_id', workspaceId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -80,7 +84,7 @@ export function GoalList() {
 
   useEffect(() => {
     fetchGoals();
-  }, [user, current?.id]);
+  }, [userId, workspaceId]);
 
   const deleteGoal = async (id: string) => {
     try {

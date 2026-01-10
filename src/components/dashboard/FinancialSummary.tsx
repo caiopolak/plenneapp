@@ -29,8 +29,12 @@ export function FinancialSummary() {
   const { user } = useAuth();
   const { current } = useWorkspace();
 
+  // Use primitive values for dependencies to ensure proper re-renders
+  const userId = user?.id;
+  const workspaceId = current?.id;
+
   const fetchFinancialData = async () => {
-    if (!user || !current?.id) {
+    if (!userId || !workspaceId) {
       setLoading(false);
       return;
     }
@@ -44,8 +48,8 @@ export function FinancialSummary() {
       const { data: transactions, error: transactionsError } = await supabase
         .from('transactions')
         .select('type, amount')
-        .eq('user_id', user.id)
-        .eq('workspace_id', current.id)
+        .eq('user_id', userId)
+        .eq('workspace_id', workspaceId)
         .gte('date', firstDayOfMonth.toISOString().split('T')[0])
         .lte('date', lastDayOfMonth.toISOString().split('T')[0]);
 
@@ -55,8 +59,8 @@ export function FinancialSummary() {
       const { data: investments, error: investmentsError } = await supabase
         .from('investments')
         .select('amount')
-        .eq('user_id', user.id)
-        .eq('workspace_id', current.id);
+        .eq('user_id', userId)
+        .eq('workspace_id', workspaceId);
 
       if (investmentsError) throw investmentsError;
 
@@ -64,8 +68,8 @@ export function FinancialSummary() {
       const { data: goals, error: goalsError } = await supabase
         .from('financial_goals')
         .select('target_amount, current_amount')
-        .eq('user_id', user.id)
-        .eq('workspace_id', current.id);
+        .eq('user_id', userId)
+        .eq('workspace_id', workspaceId);
 
       if (goalsError) throw goalsError;
 
@@ -95,7 +99,7 @@ export function FinancialSummary() {
 
   useEffect(() => {
     fetchFinancialData();
-  }, [user, current?.id]);
+  }, [userId, workspaceId]);
 
   const balance = data.totalIncome - data.totalExpense;
   const goalsProgress = data.totalGoals > 0 ? (data.completedGoals / data.totalGoals) * 100 : 0;

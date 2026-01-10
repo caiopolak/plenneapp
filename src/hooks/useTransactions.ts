@@ -16,10 +16,14 @@ export function useTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
-  safeLog("info", "useTransactions - init", { workspaceId: current?.id, userId: user?.id });
+  // Use primitive values for dependencies to ensure proper re-renders
+  const userId = user?.id;
+  const workspaceId = current?.id;
+
+  safeLog("info", "useTransactions - init", { workspaceId, userId });
 
   const fetchTransactions = useCallback(async () => {
-    if (!user || !current?.id) {
+    if (!userId || !workspaceId) {
       safeLog("info", "useTransactions - No user or workspace, clearing transactions");
       setTransactions([]);
       setLoading(false);
@@ -28,13 +32,13 @@ export function useTransactions() {
 
     setLoading(true);
     try {
-      safeLog("info", "useTransactions - Fetching transactions", { workspaceId: current.id });
+      safeLog("info", "useTransactions - Fetching transactions", { workspaceId });
 
       const { data, error } = await supabase
         .from('transactions')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('workspace_id', current.id)
+        .eq('user_id', userId)
+        .eq('workspace_id', workspaceId)
         .order('date', { ascending: false });
 
       if (error) throw error;
@@ -51,10 +55,10 @@ export function useTransactions() {
     } finally {
       setLoading(false);
     }
-  }, [user, current?.id, toast]);
+  }, [userId, workspaceId, toast]);
 
   useEffect(() => {
-    safeLog("info", "useTransactions - Effect triggered");
+    safeLog("info", "useTransactions - Effect triggered", { workspaceId });
     fetchTransactions();
   }, [fetchTransactions]);
 

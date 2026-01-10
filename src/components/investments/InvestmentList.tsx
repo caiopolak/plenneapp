@@ -48,8 +48,12 @@ export function InvestmentList() {
   const { user } = useAuth();
   const { current } = useWorkspace();
 
+  // Use primitive values for dependencies to ensure proper re-renders
+  const userId = user?.id;
+  const workspaceId = current?.id;
+
   const fetchInvestments = async () => {
-    if (!user || !current?.id) {
+    if (!userId || !workspaceId) {
       setInvestments([]);
       setLoading(false);
       return;
@@ -59,8 +63,8 @@ export function InvestmentList() {
       const { data, error } = await supabase
         .from('investments')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('workspace_id', current.id)
+        .eq('user_id', userId)
+        .eq('workspace_id', workspaceId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -78,7 +82,7 @@ export function InvestmentList() {
 
   useEffect(() => {
     fetchInvestments();
-  }, [user, current?.id]);
+  }, [userId, workspaceId]);
 
   const deleteInvestment = async (id: string) => {
     try {
