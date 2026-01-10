@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useProfile } from '@/hooks/useProfile';
 import { useToast } from '@/hooks/use-toast';
+import { useSearchParams } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Check, 
   X, 
@@ -21,10 +23,25 @@ import {
   Zap,
   GraduationCap,
   Clock,
-  Infinity
+  Infinity,
+  Loader2,
+  ExternalLink,
+  RefreshCw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
+
+// Mapeamento de planos para Stripe
+const PLAN_CONFIG = {
+  pro: {
+    productId: "prod_TlMzzxUsTutJVI",
+    priceId: "price_1SnqFTQlp6tc3wqJdvJa8h3z"
+  },
+  business: {
+    productId: "prod_TlN1HxBDoXXvb2",
+    priceId: "price_1SnqHfQlp6tc3wqJKqC2mkgX"
+  }
+};
 
 // Definição detalhada das features por plano
 const planFeatures = {
@@ -213,11 +230,62 @@ function FeatureValue({ value, planId }: { value: string | boolean; planId: stri
 }
 
 export function SubscriptionPlans() {
-  const { subscription } = useProfile();
+  const { subscription, refetch } = useProfile();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [checkingSubscription, setCheckingSubscription] = useState(false);
+  
   const currentPlan = subscription?.plan || 'free';
 
-  const handleSelectPlan = (planId: string) => {
+  // Verificar parâmetros de retorno do Stripe
+  useEffect(() => {
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+    
+    if (success === 'true') {
+      toast({
+        title: "🎉 Assinatura realizada!",
+        description: "Sua assinatura foi processada com sucesso. Atualizando status..."
+      });
+      handleCheckSubscription();
+    } else if (canceled === 'true') {
+      toast({
+        title: "Assinatura cancelada",
+        description: "Você cancelou o processo de assinatura. Pode tentar novamente quando quiser."
+      });
+    }
+  }, [searchParams]);
+
+  const handleCheckSubscription = async () => {
+    setCheckingSubscription(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      
+      if (error) throw error;
+      
+      console.log('Subscription check result:', data);
+      refetch();
+      
+      if (data?.subscribed) {
+        toast({
+          title: "Status atualizado!",
+          description: `Você está no plano ${data.plan.toUpperCase()}.`
+        });
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível verificar o status da assinatura."
+      });
+    } finally {
+      setCheckingSubscription(false);
+    }
+  };
+
+  const handleSelectPlan = async (planId: string) => {
     if (planId === currentPlan) {
       toast({
         title: "Plano Atual",
@@ -227,18 +295,64 @@ export function SubscriptionPlans() {
     }
 
     if (planId === 'free') {
-      toast({
-        title: "Downgrade",
-        description: "Para fazer downgrade, entre em contato com nosso suporte."
-      });
+      // Abrir portal do cliente para gerenciar/cancelar
+      handleManageSubscription();
       return;
     }
 
-    // TODO: Integração com Stripe
-    toast({
-      title: "Em breve!",
-      description: `Integração de pagamento para o plano ${planId} será implementada em breve.`
-    });
+    setLoadingPlan(planId);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { plan: planId }
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        // Abrir checkout do Stripe em nova aba
+        window.open(data.url, '_blank');
+        toast({
+          title: "Checkout aberto!",
+          description: "Complete sua assinatura na nova aba."
+        });
+      }
+    } catch (error) {
+      console.error('Error creating checkout:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível iniciar o checkout. Tente novamente."
+      });
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setLoadingPlan('manage');
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast({
+          title: "Portal aberto!",
+          description: "Gerencie sua assinatura na nova aba."
+        });
+      }
+    } catch (error) {
+      console.error('Error opening portal:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não foi possível abrir o portal. Você precisa ter uma assinatura ativa."
+      });
+    } finally {
+      setLoadingPlan(null);
+    }
   };
 
   return (
@@ -252,12 +366,29 @@ export function SubscriptionPlans() {
           Comece gratuitamente e evolua conforme suas necessidades. Todos os planos incluem 
           acesso ao dashboard completo e controle financeiro básico.
         </p>
+        
+        {/* Botão para verificar/atualizar status */}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleCheckSubscription}
+          disabled={checkingSubscription}
+          className="mt-2"
+        >
+          {checkingSubscription ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <RefreshCw className="h-4 w-4 mr-2" />
+          )}
+          Atualizar Status
+        </Button>
       </div>
 
       {/* Cards de Planos */}
       <div className="grid lg:grid-cols-3 gap-6">
         {plans.map((plan) => {
           const isCurrentPlan = currentPlan === plan.id;
+          const isLoading = loadingPlan === plan.id;
           const PlanIcon = plan.icon;
           
           return (
@@ -266,7 +397,7 @@ export function SubscriptionPlans() {
               className={cn(
                 "relative overflow-hidden transition-all duration-300 hover:shadow-xl",
                 plan.popular && "scale-105 z-10",
-                isCurrentPlan && "ring-2 ring-primary",
+                isCurrentPlan && "ring-2 ring-green-500",
                 plan.borderColor
               )}
             >
@@ -344,11 +475,41 @@ export function SubscriptionPlans() {
                     plan.id === 'business' && "bg-gradient-to-r from-amber-500 to-yellow-500 text-white hover:opacity-90"
                   )}
                   variant={plan.id === 'free' ? 'outline' : 'default'}
-                  disabled={isCurrentPlan}
+                  disabled={isCurrentPlan || isLoading}
                   onClick={() => handleSelectPlan(plan.id)}
                 >
-                  {isCurrentPlan ? 'Plano Atual' : plan.cta}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Processando...
+                    </>
+                  ) : isCurrentPlan ? (
+                    'Plano Atual'
+                  ) : (
+                    <>
+                      {plan.cta}
+                      {plan.id !== 'free' && <ExternalLink className="h-4 w-4 ml-2" />}
+                    </>
+                  )}
                 </Button>
+
+                {/* Manage subscription button for paid plans */}
+                {isCurrentPlan && plan.id !== 'free' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full"
+                    onClick={handleManageSubscription}
+                    disabled={loadingPlan === 'manage'}
+                  >
+                    {loadingPlan === 'manage' ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                    )}
+                    Gerenciar Assinatura
+                  </Button>
+                )}
               </CardContent>
             </Card>
           );
