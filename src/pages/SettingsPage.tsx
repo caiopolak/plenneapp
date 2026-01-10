@@ -131,108 +131,154 @@ export default function SettingsPage() {
     const isActive = currentTheme === theme.name;
     const isHovered = hoveredTheme === theme.name;
     const available = isThemeAvailable(theme);
+    const showBlur = !available && !isHovered;
     
     return (
-      <button
-        key={theme.name}
-        disabled={!available}
-        onClick={() => {
-          if (available) {
-            saveTheme(theme.name);
+      <div key={theme.name} className="relative">
+        <button
+          disabled={!available}
+          onClick={() => {
+            if (available) {
+              saveTheme(theme.name);
+              setHoveredTheme(null);
+            }
+          }}
+          onMouseEnter={() => {
+            // Preview funciona para todos os temas, mesmo bloqueados
+            if (previewTimeoutRef.current) {
+              clearTimeout(previewTimeoutRef.current);
+            }
+            previewTimeoutRef.current = setTimeout(() => {
+              setHoveredTheme(theme.name);
+              applyPreviewTheme(colors, isDarkMode);
+            }, 100);
+          }}
+          onMouseLeave={() => {
+            if (previewTimeoutRef.current) {
+              clearTimeout(previewTimeoutRef.current);
+            }
             setHoveredTheme(null);
-          }
-        }}
-        onMouseEnter={() => {
-          // Preview funciona para todos os temas, mesmo bloqueados
-          if (previewTimeoutRef.current) {
-            clearTimeout(previewTimeoutRef.current);
-          }
-          previewTimeoutRef.current = setTimeout(() => {
-            setHoveredTheme(theme.name);
-            applyPreviewTheme(colors, isDarkMode);
-          }, 100);
-        }}
-        onMouseLeave={() => {
-          if (previewTimeoutRef.current) {
-            clearTimeout(previewTimeoutRef.current);
-          }
-          setHoveredTheme(null);
-          applyTheme(currentTheme);
-        }}
-        className={cn(
-          "group relative p-3 rounded-xl border-2 transition-all duration-300 text-left",
-          "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary/50",
-          !available && "cursor-not-allowed",
-          isActive 
-            ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20" 
-            : isHovered
-              ? "border-primary/60 bg-primary/5 shadow-lg"
-              : "border-border hover:border-primary/50"
-        )}
-      >
-        {/* Lock para temas indisponíveis - apenas indicador visual, não bloqueia hover */}
-        {!available && (
-          <div className="absolute top-1 left-1 z-10">
-            <div className="p-1 rounded-full bg-background/80 backdrop-blur-sm">
-              <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+            applyTheme(currentTheme);
+          }}
+          className={cn(
+            "group relative w-full p-3 rounded-xl border-2 transition-all duration-300 text-left overflow-hidden",
+            "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary/50",
+            !available && "cursor-pointer",
+            isActive 
+              ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20" 
+              : isHovered
+                ? "border-primary/60 bg-primary/5 shadow-lg"
+                : "border-border hover:border-primary/50"
+          )}
+        >
+          {/* Overlay de blur para temas bloqueados - some no hover */}
+          {!available && (
+            <div 
+              className={cn(
+                "absolute inset-0 z-10 rounded-xl transition-all duration-300",
+                showBlur 
+                  ? "backdrop-blur-[2px] bg-background/40" 
+                  : "backdrop-blur-0 bg-transparent"
+              )}
+            />
+          )}
+          
+          {/* Lock icon - visível apenas quando não está em hover */}
+          {!available && showBlur && (
+            <div className="absolute inset-0 flex items-center justify-center z-20">
+              <div className="p-2 rounded-full bg-background/80 backdrop-blur-sm shadow-lg">
+                <Lock className="h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
+          )}
+          
+          {/* Círculos de cores */}
+          <div className="flex gap-1 mb-2">
+            <div
+              className={cn(
+                "w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300",
+                (isHovered || isActive) && "scale-110"
+              )}
+              style={{ backgroundColor: `hsl(${colors.primary})` }}
+            />
+            <div
+              className={cn(
+                "w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-75",
+                (isHovered || isActive) && "scale-110"
+              )}
+              style={{ backgroundColor: `hsl(${colors.secondary})` }}
+            />
+            <div
+              className={cn(
+                "w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-150",
+                (isHovered || isActive) && "scale-110"
+              )}
+              style={{ backgroundColor: `hsl(${colors.accent})` }}
+            />
           </div>
-        )}
-        
-        {/* Círculos de cores */}
-        <div className="flex gap-1 mb-2">
-          <div
-            className={cn(
-              "w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300",
-              (isHovered || isActive) && available && "scale-110"
-            )}
-            style={{ backgroundColor: `hsl(${colors.primary})` }}
-          />
-          <div
-            className={cn(
-              "w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-75",
-              (isHovered || isActive) && available && "scale-110"
-            )}
-            style={{ backgroundColor: `hsl(${colors.secondary})` }}
-          />
-          <div
-            className={cn(
-              "w-6 h-6 rounded-full shadow-sm ring-1 ring-black/10 transition-transform duration-300 delay-150",
-              (isHovered || isActive) && available && "scale-110"
-            )}
-            style={{ backgroundColor: `hsl(${colors.accent})` }}
-          />
-        </div>
-        
-        {/* Nome e badges */}
-        <div className="flex items-center gap-1.5 mb-0.5">
-          <span className="text-sm font-semibold truncate">{theme.label}</span>
-          <PlanBadge plan={theme.plan} />
-        </div>
-        
-        {/* Descrição */}
-        <span className="text-[11px] text-muted-foreground line-clamp-2 leading-tight">
-          {theme.description}
-        </span>
-        
-        {/* Indicador de selecionado */}
-        {isActive && (
-          <div className="absolute top-2 right-2">
-            <div className="bg-primary text-primary-foreground rounded-full p-0.5 animate-scale-in">
-              <CheckCircle className="h-3.5 w-3.5" />
+          
+          {/* Nome e badges */}
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <span className="text-sm font-semibold truncate">{theme.label}</span>
+            <PlanBadge plan={theme.plan} />
+          </div>
+          
+          {/* Descrição */}
+          <span className="text-[11px] text-muted-foreground line-clamp-2 leading-tight">
+            {theme.description}
+          </span>
+          
+          {/* Indicador de selecionado */}
+          {isActive && (
+            <div className="absolute top-2 right-2 z-30">
+              <div className="bg-primary text-primary-foreground rounded-full p-0.5 animate-scale-in">
+                <CheckCircle className="h-3.5 w-3.5" />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+          
+          {/* Preview badge - aparece no hover */}
+          {isHovered && !isActive && available && (
+            <div className="absolute top-2 right-2 z-30">
+              <Badge variant="secondary" className="text-[9px] px-1 py-0 animate-fade-in">
+                Preview
+              </Badge>
+            </div>
+          )}
+        </button>
         
-        {/* Preview badge */}
-        {isHovered && !isActive && (
-          <div className="absolute top-2 right-2">
-            <Badge variant="secondary" className="text-[9px] px-1 py-0 animate-fade-in">
-              {available ? 'Preview' : 'Bloqueado'}
-            </Badge>
+        {/* CTA de upgrade - aparece ao hover em temas bloqueados */}
+        {!available && isHovered && (
+          <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-in">
+            <Button
+              size="sm"
+              variant="default"
+              className={cn(
+                "w-full rounded-t-none rounded-b-lg text-xs font-medium shadow-lg",
+                theme.plan === 'pro' 
+                  ? "bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90" 
+                  : "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
+              )}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate('/app/subscription');
+              }}
+            >
+              {theme.plan === 'pro' ? (
+                <>
+                  <Crown className="h-3 w-3 mr-1" />
+                  Desbloquear com Pro
+                </>
+              ) : (
+                <>
+                  <Building2 className="h-3 w-3 mr-1" />
+                  Desbloquear com Business
+                </>
+              )}
+            </Button>
           </div>
         )}
-      </button>
+      </div>
     );
   };
 
