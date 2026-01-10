@@ -1,10 +1,16 @@
-
 import React from "react";
 import { WorkspaceCard } from "./WorkspaceCard";
+import { toast } from "sonner";
+
+interface Workspace {
+  id: string;
+  name: string;
+  type?: string | null;
+}
 
 interface Props {
-  workspaces: Array<any>;
-  current: any;
+  workspaces: Workspace[];
+  current: Workspace | null;
   editingId: string | null;
   editName: string;
   setEditName: (s: string) => void;
@@ -19,28 +25,49 @@ export function WorkspaceList({
   editingId, editName, setEditName, setEditingId,
   handleSelectWorkspace, handleEditWorkspace, setDeleteTarget
 }: Props) {
+
+  const onSelectWithFeedback = (id: string, name: string) => {
+    handleSelectWorkspace(id);
+    toast.success(`Workspace "${name}" selecionado!`, {
+      description: "Todos os dados agora são deste workspace.",
+      duration: 3000,
+    });
+  };
+
   return (
-    <ul className="space-y-4 mb-7">
-      {workspaces.map((ws) => (
-        <li key={ws.id}>
-          <WorkspaceCard
-            name={ws.name}
-            selected={current?.id === ws.id}
-            onSelect={() => handleSelectWorkspace(ws.id)}
-            onEdit={() =>
-              editingId === ws.id
-                ? setEditingId(null)
-                : (setEditingId(ws.id), setEditName(ws.name))
-            }
-            onDelete={() => setDeleteTarget(ws.id)}
-            onSaveEdit={(value: string) => handleEditWorkspace(ws.id, value)}
-            editing={editingId === ws.id}
-            editName={editName}
-            setEditName={setEditName}
-            disableDelete={workspaces.length === 1}
-          />
-        </li>
-      ))}
-    </ul>
+    <div className="space-y-3 mb-6">
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-muted-foreground">
+          Clique em um workspace para selecioná-lo como ativo
+        </p>
+        <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+          {workspaces.length} workspace{workspaces.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+      
+      <ul className="space-y-3">
+        {workspaces.map((ws) => (
+          <li key={ws.id}>
+            <WorkspaceCard
+              name={ws.name}
+              type={ws.type}
+              selected={current?.id === ws.id}
+              onSelect={() => onSelectWithFeedback(ws.id, ws.name)}
+              onEdit={() =>
+                editingId === ws.id
+                  ? setEditingId(null)
+                  : (setEditingId(ws.id), setEditName(ws.name))
+              }
+              onDelete={() => setDeleteTarget(ws.id)}
+              onSaveEdit={(value: string) => handleEditWorkspace(ws.id, value)}
+              editing={editingId === ws.id}
+              editName={editName}
+              setEditName={setEditName}
+              disableDelete={workspaces.length === 1}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
