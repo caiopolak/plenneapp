@@ -15,6 +15,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.6.0",
+    date: "2025-01-10",
+    notes: "Sistema de convites por e-mail para workspaces e melhorias de colaboração",
+    changes: [
+      "Convites de workspace enviados por e-mail via Resend",
+      "E-mails profissionais com domínio próprio @plenne.app",
+      "Link de aceitar convite direto no e-mail",
+      "Gestão de membros do workspace com papéis (Admin/Membro)",
+      "Sistema de fallback automático para criação de workspace padrão",
+      "Melhorias na persistência de seleção de workspace"
+    ]
+  },
+  {
     version: "2.5.1",
     date: "2025-01-10",
     notes: "Preview de temas para todos os planos e badges de novidades",
