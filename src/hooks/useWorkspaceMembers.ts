@@ -107,7 +107,7 @@ export function useWorkspaceMembers() {
         return false;
       }
 
-      // Criar convite
+      // Criar convite no banco
       const { error } = await supabase
         .from("workspace_members")
         .insert({
@@ -119,10 +119,37 @@ export function useWorkspaceMembers() {
 
       if (error) throw error;
 
-      toast({
-        title: "Convite enviado!",
-        description: `O convite foi enviado para ${email}.`
+      // Buscar nome do usuário que está convidando
+      const { data: inviterProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
+      // Enviar email de convite via edge function
+      const { error: emailError } = await supabase.functions.invoke("send-workspace-invite", {
+        body: {
+          invitedEmail: email.toLowerCase(),
+          workspaceName: current.name,
+          inviterName: inviterProfile?.full_name || user.email || "Um usuário",
+          role,
+          workspaceId: current.id
+        }
       });
+
+      if (emailError) {
+        console.error("Erro ao enviar email:", emailError);
+        // Não falhar o convite se o email falhar, apenas avisar
+        toast({
+          title: "Convite criado",
+          description: `O convite foi registrado, mas houve um problema ao enviar o email para ${email}. O usuário poderá aceitar ao fazer login.`
+        });
+      } else {
+        toast({
+          title: "Convite enviado!",
+          description: `O email de convite foi enviado para ${email}.`
+        });
+      }
 
       await fetchMembers();
       return true;
