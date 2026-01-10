@@ -684,11 +684,14 @@ export type Database = {
           current_period_end: string | null
           current_period_start: string | null
           id: string
+          is_trial: boolean | null
           max_members: number | null
           plan: Database["public"]["Enums"]["subscription_plan"]
           status: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          trial_end_date: string | null
+          trial_start_date: string | null
           updated_at: string | null
           usage_limits: Json | null
           user_id: string
@@ -698,11 +701,14 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          is_trial?: boolean | null
           max_members?: number | null
           plan?: Database["public"]["Enums"]["subscription_plan"]
           status?: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string | null
           usage_limits?: Json | null
           user_id: string
@@ -712,11 +718,14 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          is_trial?: boolean | null
           max_members?: number | null
           plan?: Database["public"]["Enums"]["subscription_plan"]
           status?: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string | null
           usage_limits?: Json | null
           user_id?: string
@@ -814,6 +823,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "transactions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_assistant_usage: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_question_at: string | null
+          month_year: string
+          questions_count: number | null
+          updated_at: string | null
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_question_at?: string | null
+          month_year: string
+          questions_count?: number | null
+          updated_at?: string | null
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_question_at?: string | null
+          month_year?: string
+          questions_count?: number | null
+          updated_at?: string | null
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_assistant_usage_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -1047,6 +1097,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_expired_trials: { Args: never; Returns: undefined }
       check_plan_limits:
         | { Args: never; Returns: undefined }
         | {
@@ -1055,6 +1106,7 @@ export type Database = {
           }
       check_user_active: { Args: { p_user: string }; Returns: boolean }
       create_recurring_transactions: { Args: never; Returns: undefined }
+      get_assistant_usage: { Args: { p_user_id: string }; Returns: Json }
       get_request_user: { Args: never; Returns: string }
       get_user_role_from_jwt:
         | { Args: never; Returns: string }
@@ -1066,12 +1118,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_assistant_usage: { Args: { p_user_id: string }; Returns: Json }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_workspace_member: { Args: { _workspace_id: string }; Returns: boolean }
       is_workspace_owner: {
         Args: { _user_id: string; _workspace_id: string }
         Returns: boolean
       }
+      start_pro_trial: { Args: { p_user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

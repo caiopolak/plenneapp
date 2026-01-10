@@ -15,14 +15,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
-    version: "2.2.0",
-    date: "2025-01-09",
-    notes: "Corrigido e atualizado nova funcionalidade de MODULOS DE APRENDIZADO, Educação Financeira e Alertas & Dicas Inteligentes, além de melhorias no UX",
+    version: "2.3.0",
+    date: "2025-01-10",
+    notes: "Sistema de trial Pro, página de comparação de planos, contador real de IA e correções de segurança de temas",
     changes: [
-      "Nova funcionalidade de Módulos de Aprendizado",
-      "Melhorias na Educação Financeira",
-      "Alertas & Dicas Inteligentes aprimorados",
-      "Melhorias gerais de UX"
+      "Trial gratuito de 7 dias do plano Pro para novos usuários",
+      "Nova página de comparação de planos (/app/plans) com tabela de features e depoimentos",
+      "Contador real de perguntas do assistente IA no banco de dados com reset mensal",
+      "Correção de restrição de temas por plano (usuários free não podem usar temas premium)",
+      "Melhorias gerais de UX e CTAs de upgrade em todas as páginas"
     ]
   },
   {

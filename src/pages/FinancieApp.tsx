@@ -10,6 +10,7 @@ import SettingsPage from "./SettingsPage";
 import IncomingPage from "./IncomingPage";
 import AlertsPage from "./AlertsPage";
 import ReportsPage from "./ReportsPage";
+import PlansPage from "./PlansPage";
 import { WorkspaceManager } from "@/components/workspaces/WorkspaceManager";
 import { SubscriptionPlans } from "@/components/subscription/SubscriptionPlans";
 import { TransactionList } from "@/components/transactions/TransactionList";
@@ -65,6 +66,7 @@ export default function FinancieApp() {
             <Route path="/app/education" element={<EducationNew />} />
             <Route path="/app/assistant" element={<AssistantPage />} />
             <Route path="/app/subscription" element={<SubscriptionPlans />} />
+            <Route path="/app/plans" element={<PlansPage />} />
             <Route path="/app/settings" element={<SettingsPage />} />
             
             {/* Sub-rotas existentes */}
