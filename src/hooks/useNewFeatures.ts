@@ -37,8 +37,40 @@ function saveVisitedFeatures(visited: VisitedFeatures): void {
   }
 }
 
+// Limpar badges de versões antigas ao inicializar
+function cleanupOldVisits(): void {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return;
+    
+    const visited = JSON.parse(stored) as VisitedFeatures;
+    const cleaned = Object.entries(visited).reduce((acc, [key, val]) => {
+      const visitDate = new Date(val.visitedAt);
+      const daysSinceVisit = Math.floor((Date.now() - visitDate.getTime()) / (24 * 60 * 60 * 1000));
+      // Manter apenas visitas recentes (menos de 7 dias para garantir badges apareçam)
+      if (daysSinceVisit < 7) {
+        acc[key] = val;
+      }
+      return acc;
+    }, {} as VisitedFeatures);
+    
+    // Só salvar se algo foi removido
+    if (Object.keys(cleaned).length !== Object.keys(visited).length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+    }
+  } catch {
+    // Ignore
+  }
+}
+
 export function useNewFeatures() {
   const location = useLocation();
+  
+  // Limpar visitas antigas na inicialização
+  useEffect(() => {
+    cleanupOldVisits();
+  }, []);
+  
   const [visitedFeatures, setVisitedFeatures] = useState<VisitedFeatures>(getVisitedFeatures);
 
   // Marcar página atual como visitada
@@ -53,8 +85,20 @@ export function useNewFeatures() {
       
       // Só marca como visitada se não visitou ou se visitou em versão anterior
       if (!previousVisit || previousVisit.version !== featureInfo.latestVersion) {
+        // Limpar automaticamente visitas de versões antigas para mostrar badges novos
+        // Também limpar visitas com mais de 30 dias para permitir re-exibição
+        const cleanedVisited = Object.entries(visited).reduce((acc, [key, val]) => {
+          const visitDate = new Date(val.visitedAt);
+          const daysSinceVisit = Math.floor((Date.now() - visitDate.getTime()) / (24 * 60 * 60 * 1000));
+          // Manter apenas visitas recentes (menos de 30 dias)
+          if (daysSinceVisit < 30) {
+            acc[key] = val;
+          }
+          return acc;
+        }, {} as VisitedFeatures);
+        
         const updated = {
-          ...visited,
+          ...cleanedVisited,
           [currentPath]: {
             visitedAt: new Date().toISOString(),
             version: featureInfo.latestVersion
