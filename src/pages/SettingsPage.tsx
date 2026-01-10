@@ -143,7 +143,7 @@ export default function SettingsPage() {
           }
         }}
         onMouseEnter={() => {
-          if (!available) return;
+          // Preview funciona para todos os temas, mesmo bloqueados
           if (previewTimeoutRef.current) {
             clearTimeout(previewTimeoutRef.current);
           }
@@ -161,19 +161,21 @@ export default function SettingsPage() {
         }}
         className={cn(
           "group relative p-3 rounded-xl border-2 transition-all duration-300 text-left",
-          available && "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary/50",
-          !available && "opacity-60 cursor-not-allowed",
+          "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary/50",
+          !available && "cursor-not-allowed",
           isActive 
             ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20" 
-            : isHovered && available
+            : isHovered
               ? "border-primary/60 bg-primary/5 shadow-lg"
               : "border-border hover:border-primary/50"
         )}
       >
-        {/* Lock para temas indisponíveis */}
+        {/* Lock para temas indisponíveis - apenas indicador visual, não bloqueia hover */}
         {!available && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-xl z-10">
-            <Lock className="h-5 w-5 text-muted-foreground" />
+          <div className="absolute top-1 left-1 z-10">
+            <div className="p-1 rounded-full bg-background/80 backdrop-blur-sm">
+              <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
           </div>
         )}
         
@@ -223,10 +225,10 @@ export default function SettingsPage() {
         )}
         
         {/* Preview badge */}
-        {isHovered && !isActive && available && (
+        {isHovered && !isActive && (
           <div className="absolute top-2 right-2">
             <Badge variant="secondary" className="text-[9px] px-1 py-0 animate-fade-in">
-              Preview
+              {available ? 'Preview' : 'Bloqueado'}
             </Badge>
           </div>
         )}
@@ -248,6 +250,9 @@ export default function SettingsPage() {
           <TabsTrigger value="appearance" className="flex items-center gap-2">
             <Palette className="h-4 w-4" />
             <span className="hidden sm:inline">Aparência</span>
+            <Badge variant="secondary" className="ml-1 text-[9px] px-1 py-0 h-4 bg-secondary/20 text-secondary border-secondary/30">
+              Novo
+            </Badge>
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
