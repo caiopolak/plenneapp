@@ -295,8 +295,15 @@ export function SubscriptionPlans() {
     }
 
     if (planId === 'free') {
-      // Abrir portal do cliente para gerenciar/cancelar
-      handleManageSubscription();
+      // Só abre o portal se o usuário tiver uma assinatura paga ativa
+      if (currentPlan !== 'free') {
+        handleManageSubscription();
+      } else {
+        toast({
+          title: "Plano Gratuito",
+          description: "Você já está no plano gratuito. Escolha Pro ou Business para fazer upgrade!"
+        });
+      }
       return;
     }
 
