@@ -113,7 +113,7 @@ serve(async (req) => {
 
     // Send email using Resend
     const emailResponse = await resend.emails.send({
-      from: "Plenne <noreply@resend.dev>",
+      from: "Plenne <noreply@plenne.app>",
       to: [invitedEmail],
       subject: `${inviterName || 'Alguém'} convidou você para o workspace "${workspaceName}" no Plenne`,
       html: emailHtml,
