@@ -31,6 +31,7 @@ export function WorkspaceManager() {
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
+  const [newType, setNewType] = useState("personal");
   const [editName, setEditName] = useState("");
   const { user } = useAuth();
   const { toast } = useToast();
@@ -49,7 +50,7 @@ export function WorkspaceManager() {
       .insert([
         {
           name: newName.trim(),
-          type: "personal",
+          type: newType,
           owner_id: user.id,
         },
       ])
@@ -57,9 +58,10 @@ export function WorkspaceManager() {
       .single();
     if (!res.error && res.data) {
       setNewName("");
+      setNewType("personal");
       setCreating(false);
       await reload();
-      toast({ title: "Workspace criada com sucesso!" });
+      toast({ title: `Workspace "${newName}" criado com sucesso!`, description: `Tipo: ${newType === 'personal' ? 'Pessoal' : newType === 'family' ? 'Família' : 'Empresa'}` });
     } else {
       toast({
         variant: "destructive",
@@ -154,10 +156,13 @@ export function WorkspaceManager() {
             creating={creating}
             newName={newName}
             setNewName={setNewName}
+            newType={newType}
+            setNewType={setNewType}
             onCreate={handleCreateWorkspace}
             onCancel={() => {
               setCreating(false);
               setNewName("");
+              setNewType("personal");
             }}
             setCreating={setCreating}
           />
@@ -185,10 +190,13 @@ export function WorkspaceManager() {
               creating={creating}
               newName={newName}
               setNewName={setNewName}
+              newType={newType}
+              setNewType={setNewType}
               onCreate={handleCreateWorkspace}
               onCancel={() => {
                 setCreating(false);
                 setNewName("");
+                setNewType("personal");
               }}
               setCreating={setCreating}
             />
