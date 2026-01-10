@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Clock
 } from 'lucide-react';
+import { FeatureTooltip, featureTooltips } from '@/components/ui/feature-tooltip';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useQuery } from '@tanstack/react-query';
@@ -191,6 +192,7 @@ export function DashboardOverview() {
               <Wallet className="h-4 w-4 text-primary" />
             </div>
             Resumo do Mês
+            <FeatureTooltip {...featureTooltips.dashboard} />
           </CardTitle>
           <Badge variant="outline" className="text-muted-foreground capitalize text-xs">
             📅 {currentMonth}

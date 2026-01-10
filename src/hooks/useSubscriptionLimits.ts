@@ -29,27 +29,27 @@ export function useSubscriptionLimits() {
 
       const plan = subscription?.plan || 'free';
 
-      // Definir limites baseado no plano
+      // Definir limites baseado no plano (sincronizado com SubscriptionPlans.tsx)
       const planLimits: Record<string, PlanLimits> = {
         free: {
-          transactions: 50,
-          goals: 3,
-          investments: 5,
-          workspaces: 1,
+          transactions: 100,    // 100 transações/mês
+          goals: 3,             // 3 metas
+          investments: 5,       // 5 investimentos
+          workspaces: 1,        // 1 workspace pessoal
           plan: 'free'
         },
         pro: {
-          transactions: 500,
-          goals: 15,
-          investments: 25,
-          workspaces: 3,
+          transactions: 500,    // 500 transações/mês
+          goals: 15,            // 15 metas
+          investments: 25,      // 25 investimentos
+          workspaces: 3,        // 3 workspaces
           plan: 'pro'
         },
         business: {
-          transactions: -1, // Ilimitado
-          goals: -1,
-          investments: -1,
-          workspaces: 10,
+          transactions: -1,     // Ilimitado
+          goals: -1,            // Ilimitado
+          investments: -1,      // Ilimitado
+          workspaces: 10,       // 10 workspaces
           plan: 'business'
         }
       };
