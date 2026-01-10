@@ -36,58 +36,53 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProfile } from "@/hooks/useProfile";
 import { usePlenneSlogan } from "@/hooks/usePlenneSlogan";
+import { useNewFeatures } from "@/hooks/useNewFeatures";
 import { Badge } from "@/components/ui/badge";
 import { WorkspaceSwitcher } from "@/components/workspaces/WorkspaceSwitcher";
 
+// Itens do menu - badge agora é calculado automaticamente pelo hook
 const mainItems = [
   {
     title: "Visão Geral",
     url: "/app",
     icon: Home,
-    description: "Seu painel financeiro completo",
-    badge: null
+    description: "Seu painel financeiro completo"
   },
   {
     title: "Transações",
     url: "/app/transactions",
     icon: BarChart3,
-    description: "Receitas e despesas",
-    badge: null
+    description: "Receitas e despesas"
   },
   {
     title: "Metas",
     url: "/app/goals",
     icon: Target,
-    description: "Seus objetivos financeiros",
-    badge: null
+    description: "Seus objetivos financeiros"
   },
   {
     title: "Investimentos", 
     url: "/app/investments",
     icon: TrendingUp,
-    description: "Sua carteira de ativos",
-    badge: null
+    description: "Sua carteira de ativos"
   },
   {
     title: "Orçamentos",
     url: "/app/budgets",
     icon: PiggyBank,
-    description: "Controle por categoria",
-    badge: null
+    description: "Controle por categoria"
   },
   {
     title: "Análises",
     url: "/app/analytics",
     icon: BarChart3,
-    description: "Gráficos e insights",
-    badge: null
+    description: "Gráficos e insights"
   },
   {
     title: "Relatórios",
     url: "/app/reports",
     icon: FileText,
-    description: "Visão consolidada",
-    badge: "Novo"
+    description: "Visão consolidada"
   },
 ];
 
@@ -96,22 +91,19 @@ const educationItems = [
     title: "Aprender",
     url: "/app/education",
     icon: GraduationCap,
-    description: "Educação financeira",
-    badge: "Novo"
+    description: "Educação financeira"
   },
   {
     title: "Assistente IA",
     url: "/app/assistant",
     icon: MessageCircle,
-    description: "Tire suas dúvidas",
-    badge: "Novo"
+    description: "Tire suas dúvidas"
   },
   {
     title: "Alertas",
     url: "/app/alerts",
     icon: Bell,
-    description: "Notificações inteligentes",
-    badge: "Novo"
+    description: "Notificações inteligentes"
   },
 ];
 
@@ -120,36 +112,31 @@ const configItems = [
     title: "Meu Perfil",
     url: "/app/profile",
     icon: User,
-    description: "Seus dados pessoais",
-    badge: null
+    description: "Seus dados pessoais"
   },
   {
     title: "Workspaces",
     url: "/app/workspaces",
     icon: Building2,
-    description: "Ambientes separados",
-    badge: null
+    description: "Ambientes separados"
   },
   {
     title: "Planos",
     url: "/app/subscription",
     icon: CreditCard,
-    description: "Sua assinatura",
-    badge: null
+    description: "Sua assinatura"
   },
   {
     title: "Configurações",
     url: "/app/settings",
     icon: Settings,
-    description: "Preferências do app",
-    badge: null
+    description: "Preferências do app"
   },
   {
     title: "Ajuda (FAQ)",
     url: "/app/faq",
     icon: HelpCircle,
-    description: "Perguntas frequentes",
-    badge: null
+    description: "Perguntas frequentes"
   },
 ];
 
@@ -159,6 +146,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const { profile } = useProfile();
   const { getRandomSlogan } = usePlenneSlogan();
+  const { shouldShowNewBadge } = useNewFeatures();
 
   const handleSignOut = async () => {
     await signOut();
@@ -207,9 +195,9 @@ export function AppSidebar() {
                           <item.icon className={`h-5 w-5 md:h-4 md:w-4 shrink-0 ${isActive ? 'text-primary' : ''}`} />
                         </div>
                         <span className="text-base md:text-sm">{item.title}</span>
-                        {item.badge && (
+                        {shouldShowNewBadge(item.url) && (
                           <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-5 bg-secondary/20 text-secondary border-secondary/30">
-                            {item.badge}
+                            Novo
                           </Badge>
                         )}
                       </a>
@@ -246,9 +234,9 @@ export function AppSidebar() {
                           <item.icon className={`h-5 w-5 md:h-4 md:w-4 shrink-0 ${isActive ? 'text-secondary' : ''}`} />
                         </div>
                         <span className="text-base md:text-sm">{item.title}</span>
-                        {item.badge && (
+                        {shouldShowNewBadge(item.url) && (
                           <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-5 bg-secondary/20 text-secondary border-secondary/30">
-                            {item.badge}
+                            Novo
                           </Badge>
                         )}
                       </a>
@@ -285,9 +273,9 @@ export function AppSidebar() {
                           <item.icon className={`h-5 w-5 md:h-4 md:w-4 shrink-0 ${isActive ? 'text-foreground' : ''}`} />
                         </div>
                         <span className="text-base md:text-sm">{item.title}</span>
-                        {item.badge && (
+                        {shouldShowNewBadge(item.url) && (
                           <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-5 bg-secondary/20 text-secondary border-secondary/30">
-                            {item.badge}
+                            Novo
                           </Badge>
                         )}
                       </a>
