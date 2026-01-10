@@ -15,6 +15,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.5.1",
+    date: "2025-01-10",
+    notes: "Preview de temas para todos os planos e badges de novidades",
+    changes: [
+      "Preview visual de temas ao passar o mouse (todos os planos podem visualizar)",
+      "Badge 'Novo' no Assistente IA no menu lateral",
+      "Badge 'Novo' na aba Aparência das configurações",
+      "Temas bloqueados agora mostram preview antes de exigir upgrade",
+      "Melhorias de UX na seleção de temas"
+    ]
+  },
+  {
     version: "2.5.0",
     date: "2025-01-10",
     notes: "Assistente IA com streaming, histórico de conversas e exportação PDF/CSV",

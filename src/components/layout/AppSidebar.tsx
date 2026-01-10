@@ -102,7 +102,7 @@ const educationItems = [
     url: "/app/assistant",
     icon: MessageCircle,
     description: "Tire suas dúvidas",
-    badge: null
+    badge: "Novo"
   },
   {
     title: "Alertas",
