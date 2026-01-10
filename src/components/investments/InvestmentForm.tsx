@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Crown, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +17,9 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { WorkspaceSelect } from "../common/WorkspaceSelect";
 import { investmentSchema, validateInput, requireAuth, requireWorkspace, isValidationError } from '@/lib/validation';
 import { checkRateLimit, safeLog } from '@/lib/security';
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
+import { UpgradeCTA } from '@/components/subscription/UpgradeCTA';
+import { cn } from '@/lib/utils';
 
 interface InvestmentFormProps {
   onSuccess?: () => void;
@@ -41,18 +45,31 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
     investment?.purchase_date ? new Date(investment.purchase_date) : new Date()
   );
   const [loading, setLoading] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
   
   const { toast } = useToast();
   const { user } = useAuth();
   const { current, workspaces } = useWorkspace();
+  const { limits, checkLimit } = useSubscriptionLimits();
   const [workspaceId, setWorkspaceId] = useState(
     investment?.workspace_id ?? current?.id ?? (workspaces.length === 1 ? workspaces[0].id : "")
   );
 
   // Reset workspaceId se current mudar
-  React.useEffect(() => {
+  useEffect(() => {
     if (!workspaceId && current?.id) setWorkspaceId(current.id);
   }, [current?.id, workspaceId]);
+
+  // Verificar limite ao abrir formulário para novo investimento
+  useEffect(() => {
+    const checkInvestmentLimit = async () => {
+      if (!investment && user) {
+        const canCreate = await checkLimit('investments');
+        setLimitReached(!canCreate);
+      }
+    };
+    checkInvestmentLimit();
+  }, [investment, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,14 +217,65 @@ export function InvestmentForm({ onSuccess, investment, onCancel }: InvestmentFo
     }
   };
 
+  // Se limite foi atingido, mostrar CTA de upgrade
+  if (limitReached && !investment) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            Limite de Investimentos Atingido
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <UpgradeCTA 
+            feature="Adicionar Mais Investimentos"
+            description={`Você atingiu o limite de ${limits?.investments} investimentos do plano gratuito. Faça upgrade para diversificar sua carteira sem limites!`}
+            requiredPlan="pro"
+            variant="modal"
+          />
+          {onCancel && (
+            <div className="flex justify-center mt-4">
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Voltar
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          {investment ? 'Editar Investimento' : 'Novo Investimento'}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>
+            {investment ? 'Editar Investimento' : 'Novo Investimento'}
+          </CardTitle>
+          {limits && (
+            <Badge variant="outline" className="flex items-center gap-1">
+              {limits.plan === 'free' && <span className="text-xs">FREE</span>}
+              {limits.plan === 'pro' && <><Crown className="w-3 h-3" />PRO</>}
+              {limits.plan === 'business' && <><Crown className="w-3 h-3" />BUSINESS</>}
+            </Badge>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
+        {/* Alerta de limite próximo */}
+        {limits && limits.plan === 'free' && !investment && (
+          <div className="mb-4 p-3 bg-amber-100/50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200 text-sm">
+              <Crown className="w-4 h-4" />
+              <span className="font-medium">Plano Gratuito</span>
+            </div>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+              Você pode adicionar até {limits.investments} investimentos. Faça upgrade para investimentos ilimitados!
+            </p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <WorkspaceSelect
             value={workspaceId}
