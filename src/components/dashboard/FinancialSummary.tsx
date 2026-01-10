@@ -5,6 +5,7 @@ import { GoalProgressCard } from './GoalProgressCard';
 import { FinancialAlertsCard } from './FinancialAlertsCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 
 interface FinancialData {
   totalIncome: number;
@@ -26,9 +27,13 @@ export function FinancialSummary() {
   });
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const { current } = useWorkspace();
 
   const fetchFinancialData = async () => {
-    if (!user) return;
+    if (!user || !current?.id) {
+      setLoading(false);
+      return;
+    }
 
     try {
       // Fetch transactions for current month
@@ -40,6 +45,7 @@ export function FinancialSummary() {
         .from('transactions')
         .select('type, amount')
         .eq('user_id', user.id)
+        .eq('workspace_id', current.id)
         .gte('date', firstDayOfMonth.toISOString().split('T')[0])
         .lte('date', lastDayOfMonth.toISOString().split('T')[0]);
 
@@ -49,7 +55,8 @@ export function FinancialSummary() {
       const { data: investments, error: investmentsError } = await supabase
         .from('investments')
         .select('amount')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('workspace_id', current.id);
 
       if (investmentsError) throw investmentsError;
 
@@ -57,7 +64,8 @@ export function FinancialSummary() {
       const { data: goals, error: goalsError } = await supabase
         .from('financial_goals')
         .select('target_amount, current_amount')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('workspace_id', current.id);
 
       if (goalsError) throw goalsError;
 
@@ -87,7 +95,7 @@ export function FinancialSummary() {
 
   useEffect(() => {
     fetchFinancialData();
-  }, [user]);
+  }, [user, current?.id]);
 
   const balance = data.totalIncome - data.totalExpense;
   const goalsProgress = data.totalGoals > 0 ? (data.completedGoals / data.totalGoals) * 100 : 0;

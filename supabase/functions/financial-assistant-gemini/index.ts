@@ -58,14 +58,15 @@ function validateMessages(messages: unknown): { valid: boolean; error?: string; 
   return { valid: true, data: messages as ChatMessage[] };
 }
 
-async function getFinancialContext(supabaseClient: any, userId: string) {
+async function getFinancialContext(supabaseClient: any, userId: string, workspaceId?: string) {
   try {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
     const todayStr = today.toISOString().split('T')[0];
+    const futureDate = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()).toISOString().split('T')[0];
 
-    // Buscar transações do mês atual
-    const { data: transactions } = await supabaseClient
+    // Buscar transações do mês atual - com filtro de workspace se disponível
+    let transactionsQuery = supabaseClient
       .from('transactions')
       .select('type, amount, category, date')
       .eq('user_id', userId)
@@ -73,6 +74,12 @@ async function getFinancialContext(supabaseClient: any, userId: string) {
       .lte('date', todayStr)
       .order('date', { ascending: false })
       .limit(100);
+    
+    if (workspaceId) {
+      transactionsQuery = transactionsQuery.eq('workspace_id', workspaceId);
+    }
+
+    const { data: transactions } = await transactionsQuery;
 
     // Calcular totais
     let totalIncome = 0;
@@ -88,27 +95,81 @@ async function getFinancialContext(supabaseClient: any, userId: string) {
       }
     });
 
+    // Buscar transações FUTURAS/AGENDADAS (incoming_transactions) - SALÁRIO, RENDA, etc.
+    let incomingQuery = supabaseClient
+      .from('incoming_transactions')
+      .select('type, amount, category, description, expected_date, status')
+      .eq('user_id', userId)
+      .eq('status', 'pending')
+      .gte('expected_date', todayStr)
+      .lte('expected_date', futureDate)
+      .order('expected_date', { ascending: true })
+      .limit(20);
+
+    if (workspaceId) {
+      incomingQuery = incomingQuery.eq('workspace_id', workspaceId);
+    }
+
+    const { data: incomingTransactions } = await incomingQuery;
+
+    // Calcular totais futuros
+    let futureIncome = 0;
+    let futureExpense = 0;
+    const futureTransactionsList: string[] = [];
+
+    (incomingTransactions || []).forEach((t: any) => {
+      const amount = Number(t.amount);
+      const desc = t.description || t.category;
+      const dateFormatted = new Date(t.expected_date).toLocaleDateString('pt-BR');
+      
+      if (t.type === 'income') {
+        futureIncome += amount;
+        futureTransactionsList.push(`+R$ ${amount.toFixed(2)} - ${desc} (${dateFormatted})`);
+      } else {
+        futureExpense += amount;
+        futureTransactionsList.push(`-R$ ${amount.toFixed(2)} - ${desc} (${dateFormatted})`);
+      }
+    });
+
     // Buscar orçamentos do mês
-    const { data: budgets } = await supabaseClient
+    let budgetsQuery = supabaseClient
       .from('budgets')
       .select('category, amount_limit')
       .eq('user_id', userId)
       .eq('year', today.getFullYear())
       .eq('month', today.getMonth() + 1);
 
+    if (workspaceId) {
+      budgetsQuery = budgetsQuery.eq('workspace_id', workspaceId);
+    }
+
+    const { data: budgets } = await budgetsQuery;
+
     // Buscar metas financeiras
-    const { data: goals } = await supabaseClient
+    let goalsQuery = supabaseClient
       .from('financial_goals')
       .select('name, target_amount, current_amount, target_date')
       .eq('user_id', userId)
       .limit(5);
 
+    if (workspaceId) {
+      goalsQuery = goalsQuery.eq('workspace_id', workspaceId);
+    }
+
+    const { data: goals } = await goalsQuery;
+
     // Buscar investimentos
-    const { data: investments } = await supabaseClient
+    let investmentsQuery = supabaseClient
       .from('investments')
       .select('name, type, amount, expected_return')
       .eq('user_id', userId)
       .limit(10);
+
+    if (workspaceId) {
+      investmentsQuery = investmentsQuery.eq('workspace_id', workspaceId);
+    }
+
+    const { data: investments } = await investmentsQuery;
 
     // Buscar desafios ativos
     const { data: challenges } = await supabaseClient
@@ -128,6 +189,7 @@ async function getFinancialContext(supabaseClient: any, userId: string) {
 
     // Montar contexto
     const balance = totalIncome - totalExpense;
+    const projectedBalance = balance + futureIncome - futureExpense;
     
     // Top 5 categorias de gasto
     const topCategories = Object.entries(categorySummary)
@@ -159,21 +221,39 @@ async function getFinancialContext(supabaseClient: any, userId: string) {
       return `${c.title}${targetInfo} - ${c.duration_days} dias${daysInfo}${c.is_automatic ? ' [sugerido pela IA]' : ''}`;
     }).join('; ');
 
+    // Transações futuras/agendadas
+    const futureTransactionsText = futureTransactionsList.length > 0 
+      ? futureTransactionsList.slice(0, 5).join('\n  ') 
+      : 'Nenhuma transação futura agendada';
+
     return `
 CONTEXTO FINANCEIRO DO USUÁRIO (Mês atual: ${today.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}):
-- Receitas do mês: R$ ${totalIncome.toFixed(2)}
-- Despesas do mês: R$ ${totalExpense.toFixed(2)}
-- Saldo do mês: R$ ${balance.toFixed(2)}
-- Principais gastos: ${topCategories || 'Nenhum gasto registrado'}
-${budgetStatus ? `- Orçamentos: ${budgetStatus}` : ''}
-${goalsStatus ? `- Metas: ${goalsStatus}` : ''}
-${totalInvested > 0 ? `- Total investido: R$ ${totalInvested.toFixed(2)}` : ''}
-${challengesStatus ? `- Desafios ativos: ${challengesStatus}` : ''}
-${completedLessons > 0 ? `- Aulas de educação financeira completadas: ${completedLessons}` : ''}
 
-Use estas informações para dar conselhos personalizados e relevantes. 
-Incentive o usuário a continuar seus desafios ativos e parabenize progressos.
-Se o usuário não tem desafios ativos, sugira que ele aceite um desafio baseado nos padrões de gastos.
+📊 RESUMO DO MÊS ATUAL:
+- Receitas realizadas: R$ ${totalIncome.toFixed(2)}
+- Despesas realizadas: R$ ${totalExpense.toFixed(2)}
+- Saldo atual do mês: R$ ${balance.toFixed(2)}
+- Principais gastos: ${topCategories || 'Nenhum gasto registrado'}
+
+📅 TRANSAÇÕES FUTURAS/AGENDADAS (próximo mês):
+- Receitas esperadas: R$ ${futureIncome.toFixed(2)} ${futureIncome > 0 ? '(inclui salário/renda)' : ''}
+- Despesas esperadas: R$ ${futureExpense.toFixed(2)}
+- Saldo projetado: R$ ${projectedBalance.toFixed(2)}
+- Próximas transações:
+  ${futureTransactionsText}
+
+${budgetStatus ? `💰 ORÇAMENTOS: ${budgetStatus}` : ''}
+${goalsStatus ? `🎯 METAS: ${goalsStatus}` : ''}
+${totalInvested > 0 ? `📈 TOTAL INVESTIDO: R$ ${totalInvested.toFixed(2)}` : ''}
+${challengesStatus ? `🏆 DESAFIOS ATIVOS: ${challengesStatus}` : ''}
+${completedLessons > 0 ? `📚 AULAS COMPLETADAS: ${completedLessons}` : ''}
+
+INSTRUÇÕES:
+- Use estas informações para dar conselhos personalizados e relevantes.
+- Considere as transações futuras (salário, renda esperada) ao fazer projeções.
+- Incentive o usuário a continuar seus desafios ativos e parabenize progressos.
+- Se o usuário perguntar sobre salário ou renda, consulte as transações futuras/agendadas.
+- Se o usuário não tem desafios ativos, sugira que ele aceite um desafio baseado nos padrões de gastos.
 `;
   } catch (error) {
     console.error("Error fetching financial context:", error);
@@ -216,6 +296,7 @@ serve(async (req) => {
     const body = await req.json();
     const validation = validateMessages(body.messages);
     const stream = body.stream === true;
+    const workspaceId = body.workspace_id; // Receber workspace_id do frontend
 
     if (!validation.valid) {
       console.error("Input validation failed:", validation.error);
@@ -227,8 +308,8 @@ serve(async (req) => {
 
     const messages = validation.data!;
 
-    // Buscar contexto financeiro do usuário
-    const financialContext = await getFinancialContext(supabaseClient, user.id);
+    // Buscar contexto financeiro do usuário com workspace
+    const financialContext = await getFinancialContext(supabaseClient, user.id, workspaceId);
 
     // System prompt com contexto financeiro
     const systemPrompt = `Você é a Plenne, uma assistente financeira inteligente, amigável e especializada em finanças pessoais brasileiras. 
@@ -242,6 +323,7 @@ Diretrizes:
 - Quando apropriado, sugira ações específicas como criar orçamentos, ajustar gastos ou poupar mais
 - Evite jargões técnicos complexos, explique de forma simples
 - Se não souber algo específico sobre a situação do usuário, pergunte
+- Considere SEMPRE as transações futuras/agendadas ao responder sobre renda, salário ou projeções
 
 ${financialContext}
 `;
@@ -270,7 +352,7 @@ ${financialContext}
       stream: stream,
     };
 
-    console.log("Sending payload to Lovable AI Gateway for user:", user.id, "streaming:", stream);
+    console.log("Sending payload to Lovable AI Gateway for user:", user.id, "workspace:", workspaceId, "streaming:", stream);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
