@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { LessonReadingMode } from "./LessonReadingMode";
+import { renderSimpleMarkdown } from "@/lib/markdownSanitizer";
 
 export function CourseViewer() {
   const { user } = useAuth();
@@ -85,19 +86,10 @@ export function CourseViewer() {
     }
   };
 
-  // Renderizar conteúdo Markdown simples
+  // Renderizar conteúdo Markdown simples (sanitizado)
   const renderMarkdown = (content: string) => {
-    // Conversão básica de Markdown para HTML
-    let html = content
-      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-4 mb-2">$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-6 mb-3">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-6 mb-4">$1</h1>')
-      .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-      .replace(/\*(.*)\*/gim, '<em>$1</em>')
-      .replace(/^\- (.*$)/gim, '<li class="ml-4">$1</li>')
-      .replace(/\n/gim, '<br />');
-    
-    return <div dangerouslySetInnerHTML={{ __html: html }} className="prose prose-sm max-w-none" />;
+    const sanitizedHtml = renderSimpleMarkdown(content);
+    return <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} className="prose prose-sm max-w-none" />;
   };
 
   // Renderizar player de vídeo

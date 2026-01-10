@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useCourseModules, Lesson } from "@/hooks/useCourseModules";
 import { useToast } from "@/hooks/use-toast";
+import { renderPreviewMarkdown } from "@/lib/markdownSanitizer";
 
 interface LessonEditorProps {
   lesson: Lesson;
@@ -168,25 +169,10 @@ export function LessonEditor({ lesson, moduleId, onClose, onSave }: LessonEditor
     }
   };
 
-  // Preview markdown
+  // Preview markdown (sanitizado)
   const renderMarkdownPreview = (content: string) => {
-    let html = content
-      .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold mt-6 mb-3 text-primary">$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold mt-8 mb-4 text-primary">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-bold mt-8 mb-6 text-primary">$1</h1>')
-      .replace(/\*\*\*(.*?)\*\*\*/gim, '<strong><em>$1</em></strong>')
-      .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-semibold">$1</strong>')
-      .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-      .replace(/```([\s\S]*?)```/gim, '<pre class="bg-muted rounded-lg p-4 my-4 border"><code>$1</code></pre>')
-      .replace(/`(.*?)`/gim, '<code class="bg-muted px-1 py-0.5 rounded text-sm">$1</code>')
-      .replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-primary pl-4 my-4 italic">$1</blockquote>')
-      .replace(/^\- (.*$)/gim, '<li class="ml-6 my-1 list-disc">$1</li>')
-      .replace(/^\d+\. (.*$)/gim, '<li class="ml-6 my-1 list-decimal">$1</li>')
-      .replace(/^---$/gim, '<hr class="my-6" />')
-      .replace(/\n\n/gim, '</p><p class="my-4">')
-      .replace(/\n/gim, '<br />');
-
-    return <div dangerouslySetInnerHTML={{ __html: `<p class="my-4">${html}</p>` }} />;
+    const sanitizedHtml = renderPreviewMarkdown(content);
+    return <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
   };
 
   return (
