@@ -34,12 +34,12 @@ import { InfoTooltip } from '@/components/ui/info-tooltip';
 // Mapeamento de planos para Stripe
 const PLAN_CONFIG = {
   pro: {
-    productId: "prod_TlMzzxUsTutJVI",
-    priceId: "price_1SnqFTQlp6tc3wqJdvJa8h3z"
+    productId: "prod_TlNAJ5QJrF3Ihv",
+    priceId: "price_1SnqsY2OsMlpKce4gHyNyFLT"
   },
   business: {
-    productId: "prod_TlN1HxBDoXXvb2",
-    priceId: "price_1SnqHfQlp6tc3wqJKqC2mkgX"
+    productId: "prod_TlNAKmODDZRXvj",
+    priceId: "price_1Snqsk2OsMlpKce4j7Fb7N5Y"
   }
 };
 
