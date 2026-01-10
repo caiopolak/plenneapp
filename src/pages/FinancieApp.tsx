@@ -56,41 +56,22 @@ export default function FinancieApp() {
         <main className="p-4 md:p-6">
           <Routes>
             <Route path="/" element={<DashboardTabs />} />
-            <Route path="/app" element={<DashboardTabs />} />
-            <Route path="/app/incoming" element={<IncomingPage />} />
-            <Route path="/app/profile" element={<ProfilePageNew />} />
-            <Route path="/app/workspaces" element={<WorkspaceManager />} />
-            <Route path="/app/budgets" element={<BudgetPage />} />
-            <Route path="/app/analytics" element={<EnhancedDashboard />} />
-            <Route path="/app/alerts" element={<AlertsPage />} />
-            <Route path="/app/reports" element={<ConsolidatedFinancialReport />} />
-            <Route path="/app/education" element={<EducationNew />} />
-            <Route path="/app/assistant" element={<AssistantPage />} />
-            <Route path="/app/subscription" element={<SubscriptionPlans />} />
-            <Route path="/app/plans" element={<PlansPage />} />
-            <Route path="/app/faq" element={<FAQPage />} />
-            <Route path="/app/settings" element={<SettingsPage />} />
-            
-            {/* Sub-rotas existentes */}
-            <Route path="/app/transactions" element={<TransactionList />} />
-            <Route path="/app/goals" element={<GoalList />} />
-            <Route path="/app/investments" element={<InvestmentList />} />
-            
-            {/* Rotas sem /app para compatibilidade */}
-            <Route path="/profile" element={<ProfilePageNew />} />
-            <Route path="/workspaces" element={<WorkspaceManager />} />
-            <Route path="/budgets" element={<BudgetPage />} />
-            <Route path="/analytics" element={<EnhancedDashboard />} />
-            <Route path="/education" element={<EducationNew />} />
-            <Route path="/assistant" element={<AssistantPage />} />
-            <Route path="/subscription" element={<SubscriptionPlans />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/incoming" element={<IncomingPage />} />
-            <Route path="/alerts" element={<AlertsPage />} />
-            <Route path="/reports" element={<ConsolidatedFinancialReport />} />
-            <Route path="/transactions" element={<TransactionList />} />
-            <Route path="/goals" element={<GoalList />} />
-            <Route path="/investments" element={<InvestmentList />} />
+            <Route path="incoming" element={<IncomingPage />} />
+            <Route path="profile" element={<ProfilePageNew />} />
+            <Route path="workspaces" element={<WorkspaceManager />} />
+            <Route path="budgets" element={<BudgetPage />} />
+            <Route path="analytics" element={<EnhancedDashboard />} />
+            <Route path="alerts" element={<AlertsPage />} />
+            <Route path="reports" element={<ConsolidatedFinancialReport />} />
+            <Route path="education" element={<EducationNew />} />
+            <Route path="assistant" element={<AssistantPage />} />
+            <Route path="subscription" element={<SubscriptionPlans />} />
+            <Route path="plans" element={<PlansPage />} />
+            <Route path="faq" element={<FAQPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="transactions" element={<TransactionList />} />
+            <Route path="goals" element={<GoalList />} />
+            <Route path="investments" element={<InvestmentList />} />
           </Routes>
         </main>
       </SidebarInset>
