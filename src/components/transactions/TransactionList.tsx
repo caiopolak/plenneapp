@@ -16,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { format, isWithinInterval, parseISO, startOfMonth, subMonths, isSameMonth } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { BarChart3, ChevronDown, ChevronUp, X, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TransactionRowSkeleton, AnalyticsCardSkeleton } from '@/components/ui/loading-skeletons';
 import { usePaginatedLoad } from '@/hooks/useLazyLoad';
@@ -228,9 +228,17 @@ export function TransactionList() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
-              Transações
-            </h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
+                Transações
+              </h1>
+              {current && (
+                <Badge variant="outline" className="gap-1.5 border-primary/30 bg-primary/5 text-primary text-xs">
+                  <Building2 className="w-3 h-3" />
+                  {current.name}
+                </Badge>
+              )}
+            </div>
             <p className="text-muted-foreground text-sm">
               Acompanhe cada entrada e saída do seu dinheiro
             </p>

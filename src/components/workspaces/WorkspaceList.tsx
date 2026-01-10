@@ -1,6 +1,7 @@
 import React from "react";
 import { WorkspaceCard } from "./WorkspaceCard";
 import { toast } from "sonner";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 
 interface Workspace {
   id: string;
@@ -25,6 +26,7 @@ export function WorkspaceList({
   editingId, editName, setEditName, setEditingId,
   handleSelectWorkspace, handleEditWorkspace, setDeleteTarget
 }: Props) {
+  const { reload } = useWorkspace();
 
   const onSelectWithFeedback = (id: string, name: string) => {
     handleSelectWorkspace(id);
@@ -49,6 +51,7 @@ export function WorkspaceList({
         {workspaces.map((ws) => (
           <li key={ws.id}>
             <WorkspaceCard
+              id={ws.id}
               name={ws.name}
               type={ws.type}
               selected={current?.id === ws.id}
@@ -64,6 +67,7 @@ export function WorkspaceList({
               editName={editName}
               setEditName={setEditName}
               disableDelete={workspaces.length === 1}
+              onReload={reload}
             />
           </li>
         ))}

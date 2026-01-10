@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { BarChart3, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { BarChart3, ChevronDown, ChevronUp, X, Building2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -296,10 +296,18 @@ export function GoalList() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text flex items-center gap-2">
-              Metas Financeiras
-              <FeatureTooltip {...featureTooltips.goals} />
-            </h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text flex items-center gap-2">
+                Metas Financeiras
+                <FeatureTooltip {...featureTooltips.goals} />
+              </h1>
+              {current && (
+                <Badge variant="outline" className="gap-1.5 border-primary/30 bg-primary/5 text-primary text-xs">
+                  <Building2 className="w-3 h-3" />
+                  {current.name}
+                </Badge>
+              )}
+            </div>
             <p className="text-muted-foreground text-sm">
               Defina objetivos e acompanhe seu progresso rumo aos seus sonhos
             </p>

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, X, Building2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -249,9 +249,17 @@ export function InvestmentList() {
       {/* Header com filtros compactos */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
-            Investimentos
-          </h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-2xl md:text-3xl font-extrabold font-display brand-gradient-text">
+              Investimentos
+            </h1>
+            {current && (
+              <Badge variant="outline" className="gap-1.5 border-primary/30 bg-primary/5 text-primary text-xs">
+                <Building2 className="w-3 h-3" />
+                {current.name}
+              </Badge>
+            )}
+          </div>
           <p className="text-muted-foreground text-sm">
             Acompanhe cada ativo, analise a rentabilidade e tome decisões informadas.
           </p>
