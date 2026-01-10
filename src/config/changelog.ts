@@ -16,7 +16,7 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     version: "2.6.2",
-    date: "2025-01-10",
+    date: "2026-01-10",
     notes: "Correções de filtros de workspace em alertas, desafios e dicas + badges restaurados",
     changes: [
       "Correção: Desafios agora filtram corretamente pelo workspace ativo",
@@ -28,7 +28,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: "2.6.1",
-    date: "2025-01-10",
+    date: "2026-01-10",
     notes: "Sistema inteligente de badges 'Novo' e histórico completo de atualizações",
     changes: [
       "Badges 'Novo' agora são automáticos baseados no changelog",
@@ -41,7 +41,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: "2.6.0",
-    date: "2025-01-10",
+    date: "2026-01-09",
     notes: "Sistema de convites por e-mail para workspaces e melhorias de colaboração",
     changes: [
       "Convites de workspace enviados por e-mail via Resend",
@@ -54,7 +54,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: "2.5.1",
-    date: "2025-01-10",
+    date: "2026-01-08",
     notes: "Preview de temas para todos os planos e badges de novidades",
     changes: [
       "Preview visual de temas ao passar o mouse (todos os planos podem visualizar)",
@@ -66,7 +66,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: "2.5.0",
-    date: "2025-01-10",
+    date: "2026-01-07",
     notes: "Assistente IA com streaming, histórico de conversas e exportação PDF/CSV",
     changes: [
       "Streaming de respostas em tempo real no Assistente Financeiro IA",
@@ -79,7 +79,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: "2.4.0",
-    date: "2025-01-10",
+    date: "2026-01-05",
     notes: "Banner de trial no dashboard, página FAQ, melhorias na landing page e tela de login",
     changes: [
       "Banner de trial Pro com contador regressivo no dashboard principal",
@@ -91,7 +91,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: "2.1.0",
-    date: "2025-01-08",
+    date: "2026-01-03",
     notes: "Correções de cores no modo escuro e melhorias de UX nos workspaces",
     changes: [
       "Correções de cores no modo escuro",
@@ -100,7 +100,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: "2.0.0",
-    date: "2025-01-07",
+    date: "2026-01-01",
     notes: "Melhorias em Cards, dashboard principal, Melhorias de UX em Transações, Investimentos, entre outros Módulos",
     changes: [
       "Redesign dos Cards",
