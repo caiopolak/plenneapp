@@ -14,7 +14,8 @@ import {
   Clock,
   Target,
   TrendingUp,
-  FileText
+  FileText,
+  HelpCircle
 } from "lucide-react";
 
 import {
@@ -140,6 +141,13 @@ const configItems = [
     url: "/app/settings",
     icon: Settings,
     description: "Preferências do app",
+    badge: null
+  },
+  {
+    title: "Ajuda (FAQ)",
+    url: "/app/faq",
+    icon: HelpCircle,
+    description: "Perguntas frequentes",
     badge: null
   },
 ];
