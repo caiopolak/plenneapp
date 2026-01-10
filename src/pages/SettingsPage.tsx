@@ -28,6 +28,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useCurrentProfile } from "@/hooks/useCurrentProfile";
 import { toast } from "sonner";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
+import { ChangelogHistory } from "@/components/settings/ChangelogHistory";
 import { Label } from "@/components/ui/label";
 import { 
   APP_VERSION, 
@@ -547,22 +548,8 @@ export default function SettingsPage() {
             </Card>
           )}
 
-          {/* Notas da versão */}
-          {APP_VERSION.releaseNotes && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <GitBranch className="h-5 w-5 text-primary" />
-                  Novidades da Versão
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                  <p className="text-sm">{APP_VERSION.releaseNotes}</p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Histórico completo de atualizações */}
+          <ChangelogHistory />
 
           {/* Sobre */}
           <Card>
