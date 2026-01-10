@@ -15,6 +15,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.5.0",
+    date: "2025-01-10",
+    notes: "Assistente IA com streaming, histórico de conversas e exportação PDF/CSV",
+    changes: [
+      "Streaming de respostas em tempo real no Assistente Financeiro IA",
+      "Histórico de conversas persistente com aba dedicada",
+      "Exportação de conversas para PDF e CSV",
+      "UI melhorada com contraste adequado para todas as cores de tema",
+      "Integração com Lovable AI Gateway (google/gemini-3-flash-preview)",
+      "Nova tabela de conversas e mensagens no banco de dados"
+    ]
+  },
+  {
     version: "2.4.0",
     date: "2025-01-10",
     notes: "Banner de trial no dashboard, página FAQ, melhorias na landing page e tela de login",
