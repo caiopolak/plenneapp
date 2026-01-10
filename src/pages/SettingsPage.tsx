@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,6 +37,9 @@ import {
 } from "@/config/appVersion";
 import { cn } from "@/lib/utils";
 import { DefaultTheme } from "@/hooks/useThemes";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 // Função para aplicar preview temporário
 const applyPreviewTheme = (colors: Record<string, string>, isDark: boolean) => {
@@ -80,8 +82,24 @@ export default function SettingsPage() {
   const environment = getEnvironment();
   const environmentLabel = getEnvironmentLabel();
 
-  // TODO: Integrar com hook de subscription real
-  const userPlan = 'business' as 'free' | 'pro' | 'business'; // Temporário para demo
+  const navigate = useNavigate();
+
+  // Integrado com hook de subscription real
+  const { data: subscription } = useQuery({
+    queryKey: ['user-subscription', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('subscriptions')
+        .select('plan')
+        .eq('user_id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user
+  });
+  
+  const userPlan = (subscription?.plan || 'free') as 'free' | 'pro' | 'business';
 
   // Verificar se tema está disponível para o plano
   const isThemeAvailable = (theme: DefaultTheme) => {
@@ -305,16 +323,31 @@ export default function SettingsPage() {
           {/* Temas Pro */}
           <Card className="border-primary/20">
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Crown className="h-5 w-5 text-primary" />
-                Temas Pro
-                <Badge variant="outline" className="ml-1 text-[10px] bg-primary/10 border-primary/30">
-                  8 temas
-                </Badge>
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Paletas exclusivas para assinantes Pro e Business
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Crown className="h-5 w-5 text-primary" />
+                    Temas Pro
+                    <Badge variant="outline" className="ml-1 text-[10px] bg-primary/10 border-primary/30">
+                      8 temas
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Paletas exclusivas para assinantes Pro e Business
+                  </CardDescription>
+                </div>
+                {userPlan === 'free' && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-primary/50 text-primary hover:bg-primary/10"
+                    onClick={() => navigate('/app/subscription')}
+                  >
+                    <Crown className="h-3.5 w-3.5 mr-1.5" />
+                    Upgrade
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -326,16 +359,31 @@ export default function SettingsPage() {
           {/* Temas Business */}
           <Card className="border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Building2 className="h-5 w-5 text-amber-500" />
-                Temas Business
-                <Badge variant="outline" className="ml-1 text-[10px] bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400">
-                  Premium
-                </Badge>
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Paletas exclusivas de alto impacto visual
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Building2 className="h-5 w-5 text-amber-500" />
+                    Temas Business
+                    <Badge variant="outline" className="ml-1 text-[10px] bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400">
+                      Premium
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Paletas exclusivas de alto impacto visual
+                  </CardDescription>
+                </div>
+                {userPlan !== 'business' && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-amber-500/50 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+                    onClick={() => navigate('/app/subscription')}
+                  >
+                    <Building2 className="h-3.5 w-3.5 mr-1.5" />
+                    Business
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
