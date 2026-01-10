@@ -9,8 +9,8 @@ const corsHeaders = {
 
 // Mapeamento de planos para price IDs do Stripe
 const PLAN_PRICES = {
-  pro: "price_1SnqFTQlp6tc3wqJdvJa8h3z",
-  business: "price_1SnqHfQlp6tc3wqJKqC2mkgX"
+  pro: "price_1SnqsY2OsMlpKce4gHyNyFLT",
+  business: "price_1Snqsk2OsMlpKce4j7Fb7N5Y"
 };
 
 // Helper logging function
